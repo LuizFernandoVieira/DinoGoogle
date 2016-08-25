@@ -1,17 +1,93 @@
 ################################################################################
 # JOGO - ORGANIZACAO E ARQUITETURA DE COMPUTADORES
 # AUTOR - LUIZ FERNANDO VIEIRA DE CASTRO FERREIRA
+# https://xem.github.io/3DShomebrew/tools/image-to-bin.html
 .data
-img:    .asciiz "dino.bin"
-input:  .asciiz "Teve Input !!! \n"
-ninput: .asciiz "... \n"
+  img:    .asciiz "pokemonHero.bin"
+  input:  .asciiz "Teve Input !!! \n"
+  ninput: .asciiz "... \n"
+
+  .eqv  DINO_RAM            0x10010000
+  .eqv  DINO_POS            0x10040000
+  .eqv  DINO_WIDTH          16
+  .eqv  DINO_HEIGHT         16
+  .eqv  DISPLAY_NEXT_LINE   0x200
 
 .text
 main:
-  jal carregar_imagem
+  jal   load_dino
+  la    $a1, DINO_RAM
+  la    $a2, DINO_POS
+  jal   draw_sprite
+  j     end_game
 
-  # jal  checa_input            # jump to captura_input e salva posição no $ra
-  # j    main                   # jump main
+################################################################################
+# Carregar Imagem do Dino
+#
+#
+#
+
+load_dino:
+  li    $v0, 13               # 13 é o syscall para abrir arquivos
+  la    $a0, img              # endereco da string contendo nome do arquivo
+  li    $a1, 0                # flag = aberto para leitura
+  li    $a2, 0                # modo ignorado
+  syscall                     # abre o arquivo
+
+  move  $a0, $v0              # $a0 é o file descriptor
+
+  li    $t1, DINO_WIDTH
+  li    $t2, DINO_HEIGHT
+  mult  $t1, $t2
+
+  li    $v0, 14               # 14 é o syscall para leitura do arquivo
+  li    $a1, DINO_RAM         # $a1 = buffer, posição da memória que será lido
+  mflo  $a2                   # 32 least significant bits of multiplication # $a2 = cout (IMAGE_WIDTH X IMAGE_HEIGHT = 86x86 = 7396)
+  syscall
+
+  jr    $ra                   # Termina o carregamento da imagem para a memória
+
+################################################################################
+# Desenha Sprite
+# $a1 = endereco na RAM
+# $a2 = endereco no display (heap)
+# Percorre os pixels do canto superior esquerdo da imagem até o canto superior
+# direito. Ao fim desta linha percorre a próxima e assim por diante até que
+# chega no final da imagem
+# Ignora pixels com coloração
+# R = 254
+# G = 189
+# B = 88
+# HEX = FEBD58
+#
+
+draw_sprite:
+  li    $t1, DINO_WIDTH                    # Carrega em $t1 o width da imagem do dino
+  li    $t2, DINO_HEIGHT                   # Carrega em $t2 o height da imagem do dino
+
+draw_sprite_loop:
+  beq   $t1, $zero, fim_loop_desenha_dino  # if ja passou por todos os pixels do width then fim_loop_desenha_dino
+  lb    $t3, 0($a1)                        # Carrega em $t3 o endereco do dino na RAM ($t3 agora guarda um pixel)
+  addi  $t4, $zero, 0x77                   # Salva o valor da cor rosa no registrador $t4
+  beq   $t3, $t4, draw_sprite_jump_pixel   # Se o pixel for da cor rosa então pula aquele pixel (transparencia)
+  sb    $t3, 0($a2)                        # "Desenha", no display, o pixel pego quando dado lb
+
+draw_sprite_jump_pixel:
+	addi  $t1, $t1, -1                       # Agora falta width-1 para acabar de percorrer a imagem
+  addi  $a1, $a1, 1                        # O registrador $a1 terá o próximo pixel salvo na RAM
+  addi $a2, $a2, 1                         # Prepara o próximo pixel que será mostrado no display
+  j draw_sprite_loop                       # Volta a desenhar os proximos pixels que faltam
+
+fim_loop_desenha_dino:
+  addi  $t2, $t2, -1                       # Falta height-1 pixels para o fim do desenho
+  li    $t1, DINO_WIDTH                    # Vai para o primeiro column da row X
+  beq   $t2, $zero, draw_sprite_end        # Se chegou ao height máximo da imagem termina o desenho
+  addi  $a2, $a2, -DINO_WIDTH              # Voltamos $a2 para a primeira colmun daquele row
+  addi  $a2, $a2, DISPLAY_NEXT_LINE        # Pulamos para o próximo row
+  j draw_sprite_loop                       # Volta a desenhar aquela row da imagem
+
+draw_sprite_end:
+  jr    $ra                                # Acaba a subrotina de desenhar o sprite
 
 ################################################################################
 # Input/Output MARS
@@ -28,64 +104,43 @@ main:
 # Transmitter control - 0xffff0008
 # Transmitter data    - 0xffff000c
 
-checa_input:
-  li	  $t0, 0xffff0000	        # Carrega o conteúdo do receiver control para $t0
-  pooling:                      # Waiting for the corresponding device
-    lw    $t1, 0($t0)	          # To set its control "ready" bit (0xffff0000)
-  	andi	$t1, $t1, 0x0001      # Sei sim
-  	beq	  $t1, $0, pooling      # Se o "ready" bit não tiver pronto continua w8
-  	lw	  $v0, 4($t0)	          # Quando fica pronto $v0 recebe o data register
-    li    $t2, 20               # Coloca o keycode da tecla SPACE em $t2
-    beq   $v0, $t2, jump        # if SPACE then jump
-    aux:
-      jr    $ra                   # jump de volta para main em dorme
+  checa_input:
+    li	  $t0, 0xff100004	        # Carrega o conteúdo do receiver control para $t0
+    pooling:                      # Waiting for the corresponding device
+      lw    $t1, 0($t0)	          # To set its control "ready" bit (0xffff0000)
+      andi	$t1, $t1, 0x0001      # Sei sim
+      beq	  $t1, $0, pooling      # Se o "ready" bit não tiver pronto continua w8
+      lw	  $v0, 4($t0)	          # Quando fica pronto $v0 recebe o data register
+      li    $t2, 20               # Coloca o keycode da tecla SPACE em $t2
+      beq   $v0, $t2, jump        # if SPACE then jump
+      aux:
+        jr    $ra                 # jump de volta para main em dorme
 
-jump:
-  li    $v0, 4                # 4 é o syscall para printar
-  la    $t1, input            # $a0 é o endereço do que você deseja printar
-  syscall                     # else printa que nao teve
-  j     aux                   # jump to aux
+  jump:
+    li    $v0, 4                # 4 é o syscall para printar
+    la    $t1, input            # $a0 é o endereço do que você deseja printar
+    syscall                     # else printa que nao teve
+    j     aux                   # jump to aux
 
 
-# volta para depois do jal checa_input
+  ################################################################################
+  # Dorme
+  #
+  #
+  #
+
+  dorme:
+    ori    $v0, $zero, 32		     # 32 é o syscall para sleep
+    ori    $a0, $zero, 60  		   # $a0 é a quantidade de miliseconds que dorme
+    syscall                      # dorme por 60 milisegundos
+    jr     $ra                   # volta para depois do jal dorme da main
+
+################################################################################
+# Termina o Jogo
 #
-# trata_input:
-#   li    $v0, 4                # 4 é o syscall para printar
-#   lw    $a0, 4($t0)           # $a0 é o endereço do que você deseja printar
-#   # la    $a0, input          # $a0 é o endereço do que você deseja printar
-#   syscall                     # print Teve Input !!!
-#   jr     $ra                  # volta para depois do jal checa_input
-
-dorme:
-  ori $v0, $zero, 32		      # 32 é o syscall para sleep
-	ori $a0, $zero, 60  		    # $a0 é a quantidade de miliseconds que dorme
-	syscall                     # dorme por 60 milisegundos
-	jr    $ra                   # volta para depois do jal dorme da main
-
-carregar_imagem:
-  li    $v0, 13               # 13 é o syscall para abrir arquivos
-  la    $a0, img              # endereco da string contendo nome do arquivo
-  li    $a1, 0                # flag = aberto para leitura
-  li    $a2, 0                # modo ignorado
-  syscall                     # abre o arquivo
-  move  $s0, $v0              # salva o descriptor do arquivo em $v0
-
-  addi  $t1, $t1, 786432      # 512x512 6x16 = 256
-  la    $t2, 0x10040000       # heap
-
-  loop:
-    li    $v0, 14             # 14 é o syscall para ler o arquivo
-    la    $a0, 0($s0)         # descriptor do arquivo
-    la    $a1, 0($t2)         # endereco do buffer de input
-    li    $a2, 3              # numero maximo de caracteres para ler
-    syscall                   # $v0 contem o numero de characteres lidos
-
-    lw    $t3, 0($t2)         # coloca branco(ffffff) na posicao de memoria
-    andi  $t3, $t3, 0xffffff  # correspondente ao $t3 que contem a posicao
-    sw    $t3, 0($t2)         # de memoria do iterador
-
-    addi  $t2, $t2, 4         # soma 4 bytes (1 word) ao registrador $t2(heap)
-    addi  $s1, $s1, 3         # soma 3 bytes ao $s1
-    bne   $s1, $t1, loop      # if nao chegou ao final da imagem then continua
-
-  jr    $ra                   # volta para a main
+#
+#
+end_game:
+  li   $v0, 16       # system call para fechar o arquivo
+  move $a0, $s6      # fecha o descriptor do arquivo
+  syscall
