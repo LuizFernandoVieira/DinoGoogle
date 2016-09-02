@@ -7,7 +7,10 @@
   input:  .asciiz "Teve Input !!! \n"
   ninput: .asciiz "... \n"
 
-  .eqv  DINO_RAM            0x10010000
+  zzz:    .asciiz "... \n"
+  mime:  .asciiz "dorme \n"
+
+  .eqv  DINO_RAM            0x10010100
   .eqv  DINO_POS            0x10040000
   .eqv  DINO_WIDTH          16
   .eqv  DINO_HEIGHT         16
@@ -15,10 +18,15 @@
 
 .text
 main:
+  jal   checa_input
   jal   load_dino
   la    $a1, DINO_RAM
   la    $a2, DINO_POS
   jal   draw_sprite
+
+  jal   dorme
+  j     main
+
   j     end_game
 
 ################################################################################
@@ -41,7 +49,7 @@ load_dino:
   mult  $t1, $t2
 
   li    $v0, 14               # 14 é o syscall para leitura do arquivo
-  li    $a1, DINO_RAM         # $a1 = buffer, posição da memória que será lido
+  li    $a1, DINO_RAM         # $a1 = buffer, posição da memória que será colocado
   mflo  $a2                   # 32 least significant bits of multiplication # $a2 = cout (IMAGE_WIDTH X IMAGE_HEIGHT = 86x86 = 7396)
   syscall
 
@@ -104,17 +112,30 @@ draw_sprite_end:
 # Transmitter control - 0xffff0008
 # Transmitter data    - 0xffff000c
 
+# Atualizado
+# 0xff000000
+
   checa_input:
-    li	  $t0, 0xff100004	        # Carrega o conteúdo do receiver control para $t0
+    li	  $t0, 0xff100000	        # Carrega o conteúdo do receiver control para $t0
     pooling:                      # Waiting for the corresponding device
       lw    $t1, 0($t0)	          # To set its control "ready" bit (0xffff0000)
       andi	$t1, $t1, 0x0001      # Sei sim
       beq	  $t1, $0, pooling      # Se o "ready" bit não tiver pronto continua w8
       lw	  $v0, 4($t0)	          # Quando fica pronto $v0 recebe o data register
-      li    $t2, 20               # Coloca o keycode da tecla SPACE em $t2
-      beq   $v0, $t2, jump        # if SPACE then jump
-      aux:
-        jr    $ra                 # jump de volta para main em dorme
+      li    $t7, 0xff10000c
+
+      sw    $v0, 0($t7)
+      j     checa_input
+
+      # li    $t2, 20               # Coloca o keycode da tecla SPACE em $t2
+      # beq   $v0, $t2, checa_input        # if SPACE then jump
+    aux:
+      li    $v0, 4
+      la    $a0, zzz
+      # li    $t3, 0xff100004
+      # lw    $a0, 0($t3)
+      syscall
+      jr    $ra                 # jump de volta para main em dorme
 
   jump:
     li    $v0, 4                # 4 é o syscall para printar
@@ -130,6 +151,9 @@ draw_sprite_end:
   #
 
   dorme:
+    li    $v0, 4
+    la    $a0, mime
+    syscall
     ori    $v0, $zero, 32		     # 32 é o syscall para sleep
     ori    $a0, $zero, 60  		   # $a0 é a quantidade de miliseconds que dorme
     syscall                      # dorme por 60 milisegundos
@@ -143,4 +167,6 @@ draw_sprite_end:
 end_game:
   li   $v0, 16       # system call para fechar o arquivo
   move $a0, $s6      # fecha o descriptor do arquivo
+  syscall
+  li    $v0, 10      # $v0 =
   syscall
