@@ -12,22 +12,27 @@
 
   .eqv  DINO_RAM            0x10010100
   .eqv  DINO_POS            0x10040000
+  .eqv  BASE_DISPLAY        0x10040000
   .eqv  DINO_WIDTH          16
   .eqv  DINO_HEIGHT         16
   .eqv  DISPLAY_NEXT_LINE   0x200
 
 .text
 main:
-  jal   checa_input
-  jal   load_dino
-  la    $a1, DINO_RAM
-  la    $a2, DINO_POS
-  jal   draw_sprite
+  load:
+    jal   load_dino
+    la    $a1, DINO_RAM
+    la    $a2, DINO_POS
+  update:
+    jal   checa_input
+  render:
+    jal   limpa_tela
+    jal   draw_sprite
+  sleep:
+    jal   dorme
+    j     update
 
-  jal   dorme
-  j     main
-
-  j     end_game
+    j     end_game
 
 ################################################################################
 # Carregar Imagem do Dino
@@ -124,24 +129,29 @@ draw_sprite_end:
       lw	  $v0, 4($t0)	          # Quando fica pronto $v0 recebe o data register
       li    $t7, 0xff10000c
 
+      li    $t2, 20               # Coloca o keycode da tecla SPACE em $t2
+      beq   $v0, $t2, movimenta   # if SPACE then jump
+    bla:
       sw    $v0, 0($t7)
-      j     checa_input
+      jr    $ra
 
-      # li    $t2, 20               # Coloca o keycode da tecla SPACE em $t2
-      # beq   $v0, $t2, checa_input        # if SPACE then jump
-    aux:
-      li    $v0, 4
-      la    $a0, zzz
-      # li    $t3, 0xff100004
-      # lw    $a0, 0($t3)
-      syscall
-      jr    $ra                 # jump de volta para main em dorme
+  movimenta:
+    addi    $t1, $zero, DINO_POS
+    addi    $t1, $t1, 4
+    j bla
 
-  jump:
-    li    $v0, 4                # 4 é o syscall para printar
-    la    $t1, input            # $a0 é o endereço do que você deseja printar
-    syscall                     # else printa que nao teve
-    j     aux                   # jump to aux
+
+limpa_tela:
+  li $t4, 262144
+  li $t0, BASE_DISPLAY
+  li $t1, 0xFFFFFF
+lalala:
+  sw $t1, 0($t0)
+  addi $t4, $t4, -1
+  addi $t0, $t0, 1
+  bne $t4, $zero, lalala
+  jr $ra
+
 
 
   ################################################################################
