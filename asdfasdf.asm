@@ -1,0 +1,2 @@
+li $a0, 0x1234
+li $a0, 0xFFFF

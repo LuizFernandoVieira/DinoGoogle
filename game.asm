@@ -3,7 +3,7 @@
 # AUTOR - LUIZ FERNANDO VIEIRA DE CASTRO FERREIRA
 # https://xem.github.io/3DShomebrew/tools/image-to-bin.html
 .data
-  img:    .asciiz "pokemonHero.bin"
+  img:    .asciiz "imgTeste.bin"
   input:  .asciiz "Teve Input !!! \n"
   ninput: .asciiz "... \n"
 
@@ -13,9 +13,9 @@
   .eqv  DINO_RAM            0x10010100
   .eqv  DINO_POS            0x10040000
   .eqv  BASE_DISPLAY        0x10040000
-  .eqv  DINO_WIDTH          16
-  .eqv  DINO_HEIGHT         16
-  .eqv  DISPLAY_NEXT_LINE   0x200
+  .eqv  DINO_WIDTH          260
+  .eqv  DINO_HEIGHT         43
+  .eqv  DISPLAY_NEXT_LINE   0x140 #320 # 0x200 #512
 
 .text
 main:
@@ -23,16 +23,20 @@ main:
     jal   load_dino
     la    $a1, DINO_RAM
     la    $a2, DINO_POS
+
+  render:
+    jal   draw_sprite
+    j     end_game
+    
+    jal   limpa_tela
+    
   update:
     jal   checa_input
-  render:
-    jal   limpa_tela
-    jal   draw_sprite
   sleep:
     jal   dorme
     j     update
 
-    j     end_game
+    
 
 ################################################################################
 # Carregar Imagem do Dino
@@ -81,7 +85,7 @@ draw_sprite:
 draw_sprite_loop:
   beq   $t1, $zero, fim_loop_desenha_dino  # if ja passou por todos os pixels do width then fim_loop_desenha_dino
   lb    $t3, 0($a1)                        # Carrega em $t3 o endereco do dino na RAM ($t3 agora guarda um pixel)
-  addi  $t4, $zero, 0x77                   # Salva o valor da cor rosa no registrador $t4
+  addi  $t4, $zero, 0xFC54FC               # Salva o valor da cor rosa no registrador $t4
   beq   $t3, $t4, draw_sprite_jump_pixel   # Se o pixel for da cor rosa então pula aquele pixel (transparencia)
   sb    $t3, 0($a2)                        # "Desenha", no display, o pixel pego quando dado lb
 
