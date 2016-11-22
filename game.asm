@@ -3,7 +3,7 @@
 # AUTOR - LUIZ FERNANDO VIEIRA DE CASTRO FERREIRA
 # https://xem.github.io/3DShomebrew/tools/image-to-bin.html
 .data
-  img:    .asciiz "imgTeste.bin"
+  img:    .asciiz "pokemonHero.bin"
   input:  .asciiz "Teve Input !!! \n"
   ninput: .asciiz "... \n"
 
@@ -13,8 +13,8 @@
   .eqv  DINO_RAM            0x10010100
   .eqv  DINO_POS            0x10040000
   .eqv  BASE_DISPLAY        0x10040000
-  .eqv  DINO_WIDTH          260
-  .eqv  DINO_HEIGHT         43
+  .eqv  DINO_WIDTH          16
+  .eqv  DINO_HEIGHT         16
   .eqv  DISPLAY_NEXT_LINE   0x140 #320 # 0x200 #512
 
 .text
