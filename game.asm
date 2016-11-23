@@ -430,30 +430,19 @@ draw_sprite_end:
     lw    $t1, 0($t0)	            # Carrega o conteúdo do receiver control para $t1 # To set its control "ready" bit (0xffff0000)
     andi	$t1, $t1, 0x0001        # Salva em $t1 a resposta para se receiver control é 1
 
-
-
     beq	  $t1, $zero, volta      # Se o receiver control for zero ignora, se nao pega o valor
     lw	  $t5, 4($t0)	           # Quando fica pronto $v0 recebe o data register
-    # li    $t7, 0xff10000c
 
-    # debugando
-    li    $v0, 4
-    la    $a0, 0xff100004
-    syscall
-
-    li    $t2, 20               # space
+    li    $t2, 0x20               # space
     beq   $t5, $t2, click_space
-    li    $t2, 61               # a
+    li    $t2, 0x61               # a
     beq   $t5, $t2, click_a
-    li    $t2, 64               # d
+    li    $t2, 0x64               # d
     beq   $t5, $t2, click_d
-    li    $t2, 77               # w
+    li    $t2, 0x77               # w
     beq   $t5, $t2, click_w
-    li    $t2, 73               # s
+    li    $t2, 0x73               # s
     beq   $t5, $t2, click_s
-
-  # bla:
-  #   sw    $t5, 0($t7)
 
   volta:
     jr    $ra
