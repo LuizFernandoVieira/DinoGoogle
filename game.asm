@@ -64,22 +64,22 @@
   .eqv  GAME_BG_1_PLAYER_HEIGHT 240
 
   # GAME 2 PLAYER
-  .eqv  GAME_BG_2_PLAYER_RAM    0x100384EC
+  .eqv  GAME_BG_2_PLAYER_RAM    0x100258EC
   .eqv  GAME_BG_2_PLAYER_POS    0x10040000
-  .eqv  GAME_BG_2_PLAYER_WIDTH  8
-  .eqv  GAME_BG_2_PLAYER_HEIGHT 8
+  .eqv  GAME_BG_2_PLAYER_WIDTH  320
+  .eqv  GAME_BG_2_PLAYER_HEIGHT 240
 
   # GAME 3 PLAYER
-  .eqv  GAME_BG_3_PLAYER_RAM    0x10010000
+  .eqv  GAME_BG_3_PLAYER_RAM    0x100258EC
   .eqv  GAME_BG_3_PLAYER_POS    0x10040000
-  .eqv  GAME_BG_3_PLAYER_WIDTH  8
-  .eqv  GAME_BG_3_PLAYER_HEIGHT 8
+  .eqv  GAME_BG_3_PLAYER_WIDTH  320
+  .eqv  GAME_BG_3_PLAYER_HEIGHT 240
 
   # GAME 4 PLAYER
-  .eqv  GAME_BG_4_PLAYER_RAM     0x10010000
+  .eqv  GAME_BG_4_PLAYER_RAM     0x100258EC
   .eqv  GAME_BG_4_PLAYER_POS     0x10040000
-  .eqv  GAME_BG_4_PLAYER_WIDTH   8
-  .eqv  GAME_BG_4_PLAYER_HEIGHT  8
+  .eqv  GAME_BG_4_PLAYER_WIDTH   320
+  .eqv  GAME_BG_4_PLAYER_HEIGHT  240
 
   # PECA 1
   .eqv  PECA_1_RAM         0x10010000
@@ -144,30 +144,6 @@ main:
     la  $a3, SETA_HEIGHT
     jal load_image
 
-    la  $a0, bg_1_pl_img
-    la  $a1, GAME_BG_1_PLAYER_RAM
-    la  $a2, GAME_BG_1_PLAYER_WIDTH
-    la  $a3, GAME_BG_1_PLAYER_HEIGHT
-    jal load_image
-
-    # la  $a0, bg_2_pl_img
-    # la  $a1, GAME_BG_2_PLAYER_RAM
-    # la  $a2, GAME_BG_2_PLAYER_WIDTH
-    # la  $a3, GAME_BG_2_PLAYER_HEIGHT
-    # jal load_image
-    #
-    # la  $a0, bg_3_pl_img
-    # la  $a1, GAME_BG_3_PLAYER_RAM
-    # la  $a2, GAME_BG_3_PLAYER_WIDTH
-    # la  $a3, GAME_BG_3_PLAYER_HEIGHT
-    # jal load_image
-    #
-    # la  $a0, bg_4_pl_img
-    # la  $a1, GAME_BG_4_PLAYER_RAM
-    # la  $a2, GAME_BG_4_PLAYER_WIDTH
-    # la  $a3, GAME_BG_4_PLAYER_HEIGHT
-    # jal load_image
-    #
     # la  $a0, peca_1_img
     # la  $a1, PECA_1_RAM
     # la  $a2, PECA_1_WIDTH
@@ -298,20 +274,92 @@ main:
     li    $a0, SETA_WIDTH  # $a0 = width
     li    $a3, SETA_HEIGHT # $a3 = height
     jal   draw_sprite
-
     j     nenhum_state
+
+  chance_game_state_1:
+    la  $a0, bg_1_pl_img
+    la  $a1, GAME_BG_1_PLAYER_RAM
+    la  $a2, GAME_BG_1_PLAYER_WIDTH
+    la  $a3, GAME_BG_1_PLAYER_HEIGHT
+    jal load_image
+    li    $s7, 2
+    j game_state
+
+  chance_game_state_2:
+    la  $a0, bg_2_pl_img
+    la  $a1, GAME_BG_2_PLAYER_RAM
+    la  $a2, GAME_BG_2_PLAYER_WIDTH
+    la  $a3, GAME_BG_2_PLAYER_HEIGHT
+    jal load_image
+    li    $s7, 2
+    j game_state
+
+  chance_game_state_3:
+    la  $a0, bg_3_pl_img
+    la  $a1, GAME_BG_3_PLAYER_RAM
+    la  $a2, GAME_BG_3_PLAYER_WIDTH
+    la  $a3, GAME_BG_3_PLAYER_HEIGHT
+    jal load_image
+    li    $s7, 2
+    j game_state
+
+  chance_game_state_4:
+    la  $a0, bg_4_pl_img
+    la  $a1, GAME_BG_4_PLAYER_RAM
+    la  $a2, GAME_BG_4_PLAYER_WIDTH
+    la  $a3, GAME_BG_4_PLAYER_HEIGHT
+    jal load_image
+    li    $s7, 2
+    j game_state
 
 ###
 # GAME
 ###
   game_state:
+    li  $t0, 1
+    li  $t1, 2
+    li  $t2, 3
+    li  $t3, 4
+
+    beq $s6, $t0, game_state_1   # if 1 player
+    beq $s6, $t1, game_state_2   # if 2 player
+    beq $s6, $t2, game_state_3   # if 3 player
+    beq $s6, $t3, game_state_4   # if 3 player
+
+  volta_game_state:
+    j     nenhum_state
+
+  game_state_1:
     li    $a1, GAME_BG_1_PLAYER_RAM    # $a1 = endereco na RAM
     li    $a2, GAME_BG_1_PLAYER_POS    # $a2 = endereco no display (heap)
     li    $a0, GAME_BG_1_PLAYER_WIDTH  # $a0 = width
     li    $a3, GAME_BG_1_PLAYER_HEIGHT # $a3 = height
     jal   draw_sprite
+    j     volta_game_state
 
-    j     nenhum_state
+  game_state_2:
+    li    $a1, GAME_BG_2_PLAYER_RAM    # $a1 = endereco na RAM
+    li    $a2, GAME_BG_2_PLAYER_POS    # $a2 = endereco no display (heap)
+    li    $a0, GAME_BG_2_PLAYER_WIDTH  # $a0 = width
+    li    $a3, GAME_BG_2_PLAYER_HEIGHT # $a3 = height
+    jal   draw_sprite
+    j     volta_game_state
+
+  game_state_3:
+    li    $a1, GAME_BG_3_PLAYER_RAM    # $a1 = endereco na RAM
+    li    $a2, GAME_BG_3_PLAYER_POS    # $a2 = endereco no display (heap)
+    li    $a0, GAME_BG_3_PLAYER_WIDTH  # $a0 = width
+    li    $a3, GAME_BG_3_PLAYER_HEIGHT # $a3 = height
+    jal   draw_sprite
+    j     volta_game_state
+
+  game_state_4:
+    li    $a1, GAME_BG_4_PLAYER_RAM    # $a1 = endereco na RAM
+    li    $a2, GAME_BG_4_PLAYER_POS    # $a2 = endereco no display (heap)
+    li    $a0, GAME_BG_4_PLAYER_WIDTH  # $a0 = width
+    li    $a3, GAME_BG_4_PLAYER_HEIGHT # $a3 = height
+    jal   draw_sprite
+    j     volta_game_state
 
 ###
 # NENHUM
@@ -478,7 +526,7 @@ draw_sprite_end:
   click_d_seta_1:
     li    $s6, 2
     j volta
-    
+
   click_d_seta_3:
     li    $s6, 4
     j volta
@@ -493,7 +541,7 @@ draw_sprite_end:
   click_w_seta_3:
     li    $s6, 1
     j     volta
-    
+
   click_w_seta_4:
     li    $s6, 2
     j     volta
@@ -508,14 +556,20 @@ draw_sprite_end:
   click_s_seta_1:
     li    $s6, 3
     j     volta
-    
+
   click_s_seta_2:
     li    $s6, 4
     j     volta
 
   click_space:
-
-    li $s7, 2
+    li  $t0, 1
+    li  $t1, 2
+    li  $t2, 3
+    li  $t3, 4
+    beq $s6, $t0, chance_game_state_1
+    beq $s6, $t1, chance_game_state_2
+    beq $s6, $t2, chance_game_state_3
+    beq $s6, $t3, chance_game_state_4
     j  volta
 
   movimenta:
