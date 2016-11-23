@@ -6,17 +6,17 @@
   nintendo_img: .asciiz "nintendo.bin"
   menu_img:     .asciiz "menu.bin"
   seta_img:     .asciiz "seta.bin"
-  bg_1_pl_img:  .asciiz "bg_1_player"
-  bg_2_pl_img:  .asciiz "bg_2_player"
-  bg_3_pl_img:  .asciiz "bg_3_player"
-  bg_4_pl_img:  .asciiz "bg_4_player"
-  peca_1_img:   .asciiz "peca_1"
-  peca_2_img:   .asciiz "peca_2"
-  peca_3_img:   .asciiz "peca_3"
-  peca_4_img:   .asciiz "peca_4"
-  peca_5_img:   .asciiz "peca_5"
-  peca_6_img:   .asciiz "peca_6"
-  peca_7_img:   .asciiz "peca_7"
+  bg_1_pl_img:  .asciiz "bg_1_player.bin"
+  bg_2_pl_img:  .asciiz "bg_2_player.bin"
+  bg_3_pl_img:  .asciiz "bg_3_player.bin"
+  bg_4_pl_img:  .asciiz "bg_4_player.bin"
+  peca_1_img:   .asciiz "peca_1.bin"
+  peca_2_img:   .asciiz "peca_2.bin"
+  peca_3_img:   .asciiz "peca_3.bin"
+  peca_4_img:   .asciiz "peca_4.bin"
+  peca_5_img:   .asciiz "peca_5.bin"
+  peca_6_img:   .asciiz "peca_6.bin"
+  peca_7_img:   .asciiz "peca_7.bin"
   input:        .asciiz "Teve Input !!! \n"
   ninput:       .asciiz "... \n"
   zzz:          .asciiz "... \n"
@@ -144,11 +144,11 @@ main:
     la  $a3, SETA_HEIGHT
     jal load_image
 
-    # la  $a0, bg_1_pl_img
-    # la  $a1, GAME_BG_1_PLAYER_RAM
-    # la  $a2, GAME_BG_1_PLAYER_WIDTH
-    # la  $a3, GAME_BG_1_PLAYER_HEIGHT
-    # jal load_image
+    la  $a0, bg_1_pl_img
+    la  $a1, GAME_BG_1_PLAYER_RAM
+    la  $a2, GAME_BG_1_PLAYER_WIDTH
+    la  $a3, GAME_BG_1_PLAYER_HEIGHT
+    jal load_image
 
     # la  $a0, bg_2_pl_img
     # la  $a1, GAME_BG_2_PLAYER_RAM
@@ -216,7 +216,7 @@ main:
     la    $a2, NINTENDO_POS
     li    $s0, NINTENDO_POS
 
-    li    $s7, 1 # game state
+    li    $s7, 0 # game state
 
   update:
     jal   checa_input
@@ -305,6 +305,11 @@ main:
 # GAME
 ###
   game_state:
+    li    $a1, GAME_BG_1_PLAYER_RAM    # $a1 = endereco na RAM
+    li    $a2, GAME_BG_1_PLAYER_POS    # $a2 = endereco no display (heap)
+    li    $a0, GAME_BG_1_PLAYER_WIDTH  # $a0 = width
+    li    $a3, GAME_BG_1_PLAYER_HEIGHT # $a3 = height
+    jal   draw_sprite
 
     j     nenhum_state
 
@@ -444,39 +449,73 @@ draw_sprite_end:
     li    $t2, 0x73               # s
     beq   $t5, $t2, click_s
 
+    li    $t5, 0
   volta:
     jr    $ra
 
   click_a:
-    li    $v0, 4
-    la    $a0, inpt_a
-    syscall
-    li $s6 2
-    j  volta
+    li    $t0, 2
+    li    $t1, 4
+    beq   $s6, $t0, click_a_seta_2 # 1
+    beq   $s6, $t1, click_a_seta_4 # 3
+    j     volta
+
+  click_a_seta_2:
+    li    $s6, 1
+    j     volta
+
+  click_a_seta_4:
+    li    $s6, 3
+    j     volta
 
   click_d:
-    li    $v0, 4
-    la    $a0, inpt_d
-    syscall
+    li    $t0, 1
+    li    $t1, 3
+    beq   $s6, $t0, click_d_seta_1 # 2
+    beq   $s6, $t1, click_d_seta_3 # 4
+    j volta
+
+  click_d_seta_1:
+    li    $s6, 2
+    j volta
+    
+  click_d_seta_3:
+    li    $s6, 4
     j volta
 
   click_w:
-    li    $v0, 4
-    la    $a0, inpt_w
-    syscall
-    j volta
+    li    $t0, 3
+    li    $t1, 4
+    beq   $s6, $t0, click_w_seta_3 # 1
+    beq   $s6, $t1, click_w_seta_4 # 2
+    j     volta
+
+  click_w_seta_3:
+    li    $s6, 1
+    j     volta
+    
+  click_w_seta_4:
+    li    $s6, 2
+    j     volta
 
   click_s:
-    li    $v0, 4
-    la    $a0, inpt_s
-    syscall
-    j volta
+    li    $t0, 1
+    li    $t1, 2
+    beq   $s6, $t0, click_s_seta_1 # 3
+    beq   $s6, $t1, click_s_seta_2 # 4
+    j     volta
+
+  click_s_seta_1:
+    li    $s6, 3
+    j     volta
+    
+  click_s_seta_2:
+    li    $s6, 4
+    j     volta
 
   click_space:
-    li    $v0, 4
-    la    $a0, inpt_space
-    syscall
-    li $s7, 0
+
+    li $s7, 2
     j  volta
 
   movimenta:
@@ -509,7 +548,7 @@ limpa_tela_loop:
     # la    $a0, mime
     # syscall
     ori    $v0, $zero, 32		     # 32 é o syscall para sleep
-    ori    $a0, $zero, 60  		   # $a0 é a quantidade de miliseconds que dorme
+    ori    $a0, $zero, 0  		   # $a0 é a quantidade de miliseconds que dorme
     syscall                      # dorme por 60 milisegundos
     jr     $ra                   # volta para depois do jal dorme da main
 
