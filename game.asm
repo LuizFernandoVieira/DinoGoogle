@@ -22,6 +22,11 @@
   zzz:          .asciiz "... \n"
   mime:         .asciiz "dorme \n"
   change:       .asciiz "CHANGE STATE \n"
+  inpt_space:   .asciiz "*** CLICOU SPACE *** \n"
+  inpt_a:   .asciiz "*** CLICOU A *** \n"
+  inpt_s:   .asciiz "*** CLICOU S *** \n"
+  inpt_d:   .asciiz "*** CLICOU D *** \n"
+  inpt_w:   .asciiz "*** CLICOU W *** \n"
 
   .eqv  BASE_DISPLAY        0x10040000
   .eqv  DISPLAY_NEXT_LINE   0x140 #320 # 0x200 #512
@@ -40,7 +45,10 @@
 
   # SETA
   .eqv  SETA_RAM         0x100258AC
-  .eqv  SETA_POS         0x1004ce71
+  .eqv  SETA_POS_1       0x1004ce71
+  .eqv  SETA_POS_2       0x1004cee5
+  .eqv  SETA_POS_3       0x1004ec71
+  .eqv  SETA_POS_4       0x1004f0a5
   .eqv  SETA_WIDTH       8
   .eqv  SETA_HEIGHT      8
 
@@ -136,11 +144,11 @@ main:
     la  $a3, SETA_HEIGHT
     jal load_image
 
-    la  $a0, bg_1_pl_img
-    la  $a1, GAME_BG_1_PLAYER_RAM
-    la  $a2, GAME_BG_1_PLAYER_WIDTH
-    la  $a3, GAME_BG_1_PLAYER_HEIGHT
-    jal load_image
+    # la  $a0, bg_1_pl_img
+    # la  $a1, GAME_BG_1_PLAYER_RAM
+    # la  $a2, GAME_BG_1_PLAYER_WIDTH
+    # la  $a3, GAME_BG_1_PLAYER_HEIGHT
+    # jal load_image
 
     # la  $a0, bg_2_pl_img
     # la  $a1, GAME_BG_2_PLAYER_RAM
@@ -211,7 +219,7 @@ main:
     li    $s7, 1 # game state
 
   update:
-    jal   teste
+    jal   checa_input
 
   render:
     jal   limpa_tela
@@ -244,24 +252,49 @@ main:
     j nenhum_state
 
   change_to_menu_state:
-    li    $v0, 4
-    la    $a0, change
-    syscall
     li    $s7, 1
+    li    $s6, 1
     j nenhum_state
 
 ###
 # MENU
 ###
   menu_state:
+
+  menu_state_render:
     li    $a1, MENU_RAM    # $a1 = endereco na RAM
     li    $a2, MENU_POS    # $a2 = endereco no display (heap)
     li    $a0, MENU_WIDTH  # $a0 = width
     li    $a3, MENU_HEIGHT # $a3 = height
     jal   draw_sprite
 
+    # verificando o valor em $s0
+    # para escolher a pos da seta
+    li  $t0, 1
+    li  $t1, 2
+    li  $t2, 3
+    li  $t3, 4
+
+    beq $s6, $t0, case_1   # if 1 player
+    beq $s6, $t1, case_2   # if 2 player
+    beq $s6, $t2, case_3   # if 3 player
+    beq $s6, $t3, case_4   # if 3 player
+
+  case_1:
+    li  $a2, SETA_POS_1
+    j   temp
+  case_2:
+    li  $a2, SETA_POS_2
+    j   temp
+  case_3:
+    li  $a2, SETA_POS_3
+    j   temp
+  case_4:
+    li  $a2, SETA_POS_4
+    j   temp
+
+  temp:
     li    $a1, SETA_RAM    # $a1 = endereco na RAM
-    li    $a2, SETA_POS    # $a2 = endereco no display (heap)
     li    $a0, SETA_WIDTH  # $a0 = width
     li    $a3, SETA_HEIGHT # $a3 = height
     jal   draw_sprite
@@ -280,6 +313,10 @@ main:
 ###
   nenhum_state:
     # nao faz nada
+
+###
+# SLEEP
+###
   sleep:
     jal   dorme
     j     update
@@ -381,26 +418,84 @@ draw_sprite_end:
 # Atualizado
 # 0xff000000
 
-  checa_input:
-    li	  $t0, 0xff100000	        # Carrega o conteúdo do receiver control para $t0
-    pooling:                      # Waiting for the corresponding device
-      lw    $t1, 0($t0)	          # To set its control "ready" bit (0xffff0000)
-      andi	$t1, $t1, 0x0001      # Sei sim
-      beq	  $t1, $0, pooling      # Se o "ready" bit não tiver pronto continua w8
-      lw	  $v0, 4($t0)	          # Quando fica pronto $v0 recebe o data register
-      li    $t7, 0xff10000c
+# printa pra ver q ta sendo clicado
+# li    $v0, 4
+# add   $a0, $zero, $t1
+# syscall
 
-      li    $t2, 20               # Coloca o keycode da tecla SPACE em $t2
-      beq   $v0, $t2, movimenta   # if SPACE then jump
-    bla:
-      sw    $v0, 0($t7)
-      jr    $ra
+
+  checa_input:
+    li	  $t0, 0xff100000	        # Carrega a posicao do receiver control para $t0
+    li    $t5, 0
+    lw    $t1, 0($t0)	            # Carrega o conteúdo do receiver control para $t1 # To set its control "ready" bit (0xffff0000)
+    andi	$t1, $t1, 0x0001        # Salva em $t1 a resposta para se receiver control é 1
+
+
+
+    beq	  $t1, $zero, volta      # Se o receiver control for zero ignora, se nao pega o valor
+    lw	  $t5, 4($t0)	           # Quando fica pronto $v0 recebe o data register
+    # li    $t7, 0xff10000c
+
+    # debugando
+    li    $v0, 4
+    la    $a0, 0xff100004
+    syscall
+
+    li    $t2, 20               # space
+    beq   $t5, $t2, click_space
+    li    $t2, 61               # a
+    beq   $t5, $t2, click_a
+    li    $t2, 64               # d
+    beq   $t5, $t2, click_d
+    li    $t2, 77               # w
+    beq   $t5, $t2, click_w
+    li    $t2, 73               # s
+    beq   $t5, $t2, click_s
+
+  # bla:
+  #   sw    $t5, 0($t7)
+
+  volta:
+    jr    $ra
+
+  click_a:
+    li    $v0, 4
+    la    $a0, inpt_a
+    syscall
+    li $s6 2
+    j  volta
+
+  click_d:
+    li    $v0, 4
+    la    $a0, inpt_d
+    syscall
+    j volta
+
+  click_w:
+    li    $v0, 4
+    la    $a0, inpt_w
+    syscall
+    j volta
+
+  click_s:
+    li    $v0, 4
+    la    $a0, inpt_s
+    syscall
+    j volta
+
+  click_space:
+    li    $v0, 4
+    la    $a0, inpt_space
+    syscall
+    li $s7, 0
+    j  volta
 
   movimenta:
     addi    $t1, $zero, NINTENDO_POS
     addi    $t1, $t1, 4
-    j bla
+    j volta
 
+##########################################
 
 limpa_tela:
   li $t0, BASE_DISPLAY
@@ -414,8 +509,6 @@ limpa_tela_loop:
   bne $t2, $t3, limpa_tela_loop
   jr $ra
 
-
-
   ################################################################################
   # Dorme
   #
@@ -423,9 +516,9 @@ limpa_tela_loop:
   #
 
   dorme:
-    li    $v0, 4
-    la    $a0, mime
-    syscall
+    # li    $v0, 4
+    # la    $a0, mime
+    # syscall
     ori    $v0, $zero, 32		     # 32 é o syscall para sleep
     ori    $a0, $zero, 60  		   # $a0 é a quantidade de miliseconds que dorme
     syscall                      # dorme por 60 milisegundos
