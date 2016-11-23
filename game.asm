@@ -40,18 +40,14 @@
 
   # SETA
   .eqv  SETA_RAM         0x100258AC
-  .eqv  SETA_POS         0x1004ce71
+  .eqv  SETA_POS         0x1004ec71
   .eqv  SETA_WIDTH       8
   .eqv  SETA_HEIGHT      8
 
-  # 33250 -> 81E2 ... + 32
-  # 0x10040032 + 0x81E2
-
-  # 49875 -> C2D3
-  # 0x10040032 + 0xC2D3
-
-  # 66500  -> 103C4
-  # 0x10040032 + 0x103C4
+  # PLAYER 1 POS => 1004ce71
+  # PLAYER 2 POS =>
+  # PLAYER 3 POS => 1004ec71
+  # PLAYER 4 POS =>
 
   # GAME 1 PLAYER
   .eqv  GAME_BG_1_PLAYER_RAM    0x100258EC
