@@ -436,6 +436,11 @@ main:
     li   $t8, 8
     li   $t9, 9
     beq  $s5, $zero, end_anim_draw_1
+
+    li    $v0, 4
+    la    $a0, change
+    syscall
+
     beq  $s5, $t1, end_anim_draw_2
     beq  $s5, $t2, end_anim_draw_3
     beq  $s5, $t3, end_anim_draw_4
@@ -475,11 +480,6 @@ main:
     li  $a0, END_ANIM_WIDTH
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
-
-    li    $v0, 4
-    la    $a0, change
-    syscall
-
     j   end_anim_end
 
   end_anim_draw_2:
