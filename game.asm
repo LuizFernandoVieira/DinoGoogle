@@ -10,13 +10,20 @@
   bg_2_pl_img:  .asciiz "bg_2_player.bin"
   bg_3_pl_img:  .asciiz "bg_3_player.bin"
   bg_4_pl_img:  .asciiz "bg_4_player.bin"
-  peca_1_img:   .asciiz "peca_1.bin"
-  peca_2_img:   .asciiz "peca_2.bin"
-  peca_3_img:   .asciiz "peca_3.bin"
-  peca_4_img:   .asciiz "peca_4.bin"
-  peca_5_img:   .asciiz "peca_5.bin"
-  peca_6_img:   .asciiz "peca_6.bin"
-  peca_7_img:   .asciiz "peca_7.bin"
+  peca_1_img:   .asciiz "peca_1_one_point.bin"
+  peca_2_img:   .asciiz "peca_2_one_point.bin"
+  peca_3_img:   .asciiz "peca_3_one_point.bin"
+  peca_4_img:   .asciiz "peca_4_one_point.bin"
+  peca_5_img:   .asciiz "peca_5_one_point.bin"
+  peca_6_img:   .asciiz "peca_6_one_point.bin"
+  peca_7_img:   .asciiz "peca_7_one_point.bin"
+  peca_1_all:   .asciiz "peca_1.bin"
+  peca_2_all:   .asciiz "peca_2.bin"
+  peca_3_all:   .asciiz "peca_3.bin"
+  peca_4_all:   .asciiz "peca_4.bin"
+  peca_5_all:   .asciiz "peca_5.bin"
+  peca_6_all:   .asciiz "peca_6.bin"
+  peca_7_all:   .asciiz "peca_7.bin"
   anim_1_img:   .asciiz "bg_1_player.bin"
   anim_2_img:   .asciiz "bg_2_player.bin"
   anim_3_img:   .asciiz "bg_3_player.bin"
@@ -351,29 +358,131 @@ main:
     la  $a3, PECA_7_HEIGHT
     jal load_image
 
-    li  $s4, 0
-
-
+    li  $t0, 25610
+    li  $t1, 25618
+    li  $t2, 25626
+    li  $t3, 25634
+    li  $t4, 1
+    li  $t5, 0xff000000
+    sw  $t0, 128($t5)
+    sw  $t1, 160($t5)
+    sw  $t2, 192($t5)
+    sw  $t3, 224($t5)
+    sw  $t4, 256($t5)
 
     j game_state
 
   game_state:
+    # Começa na posição 0xff000000
+    # mapa 4 * 32 = 128 -> 80
+
+    # 0xff000000 - 0xff000080 => matrix 1
+    # 0xff000080 - 0xff0000a0 => $t0 -> pos bloco 1
+    # 0xff0000a0 - 0xff0000c0 => $t1 -> pos bloco 2
+    # 0xff0000c0 - 0xff0000e0 => $t2 -> pos bloco 3
+    # 0xff0000e0 - 0xff000100 => $t3 -> pos bloco 4
+    # 0xff000100 - 0xff000120 => $t4 -> qual bloco (7)
+
+    # 0xff001000 - 0xff001080 => matrix 2
+    # 0xff001080 - 0xff0010a0 => $t0 -> pos bloco 1
+    # 0xff0010a0 - 0xff0010c0 => $t1 -> pos bloco 2
+    # 0xff0010c0 - 0xff0010e0 => $t2 -> pos bloco 3
+    # 0xff0010e0 - 0xff001100 => $t3 -> pos bloco 4
+    # 0xff001100 - 0xff001120 => $t4 -> qual bloco (7)
+
+    # 0xff002000 - 0xff002080 => matrix 3
+    # 0xff002080 - 0xff0020a0 => $t0 -> pos bloco 1
+    # 0xff0020a0 - 0xff0020c0 => $t1 -> pos bloco 2
+    # 0xff0020c0 - 0xff0020e0 => $t2 -> pos bloco 3
+    # 0xff0020e0 - 0xff002100 => $t3 -> pos bloco 4
+    # 0xff002100 - 0xff002120 => $t4 -> qual bloco (7)
+
+    # 0xff003000 - 0xff003080 => matrix 4
+    # 0xff003080 - 0xff0030a0 => $t0 -> pos bloco 1
+    # 0xff0030a0 - 0xff0030c0 => $t1 -> pos bloco 2
+    # 0xff0030c0 - 0xff0030e0 => $t2 -> pos bloco 3
+    # 0xff0030e0 - 0xff003100 => $t3 -> pos bloco 4
+    # 0xff003100 - 0xff003120 => $t4 -> qual bloco (7)
+
     li  $t0, 1
     li  $t1, 2
     li  $t2, 3
     li  $t3, 4
 
-    addi $s4, $s4, 1
-
-    beq  $s4, $t3, nova_peca
-
   aux:
     beq $s6, $t0, game_state_1   # if 1 player
     beq $s6, $t1, game_state_2   # if 2 player
     beq $s6, $t2, game_state_3   # if 3 player
-    beq $s6, $t3, game_state_4   # if 3 player
+    beq $s6, $t3, game_state_4   # if 4 player
 
   volta_game_state:
+    li  $t5, 0xff000000
+    lw  $t0, 128($t5)
+    lw  $t1, 160($t5)
+    lw  $t2, 192($t5)
+    lw  $t3, 224($t5)
+    lw  $t4, 256($t5)
+
+    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
+    li    $a0, PECA_1_HEIGHT # $a0 = width
+    li    $a3, PECA_1_WIDTH  # $a3 = height
+
+    li  $t5, 0xff000000
+    lw  $t0, 128($t5)
+    move  $a2, $t0
+    li    $t6, 0x10040000
+    add   $a2, $a2, $t6
+    jal   draw_sprite
+
+    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
+    li    $a0, PECA_1_HEIGHT # $a0 = width
+    li    $a3, PECA_1_WIDTH  # $a3 = height
+    li  $t5, 0xff000000
+    lw  $t1, 160($t5)
+    move  $a2, $t1
+    li    $t6, 0x10040000
+    add   $a2, $a2, $t6
+    jal   draw_sprite
+
+    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
+    li    $a0, PECA_1_HEIGHT # $a0 = width
+    li    $a3, PECA_1_WIDTH  # $a3 = height
+    li  $t5, 0xff000000
+    lw  $t2, 192($t5)
+    move  $a2, $t2
+    li    $t6, 0x10040000
+    add   $a2, $a2, $t6
+    jal   draw_sprite
+
+    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
+    li    $a0, PECA_1_HEIGHT # $a0 = width
+    li    $a3, PECA_1_WIDTH  # $a3 = height
+    li  $t5, 0xff000000
+    lw  $t3, 224($t5)
+    move  $a2, $t3
+    li    $t6, 0x10040000
+    add   $a2, $a2, $t6
+    jal   draw_sprite
+
+    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
+    li    $a0, PECA_1_HEIGHT # $a0 = width
+    li    $a3, PECA_1_WIDTH  # $a3 = height
+    li  $t5, 0xff000000
+    lw  $t0, 128($t5)
+    lw  $t1, 160($t5)
+    lw  $t2, 192($t5)
+    lw  $t3, 224($t5)
+
+    addi  $t0, $t0, 2560
+    addi  $t1, $t1, 2560
+    addi  $t2, $t2, 2560
+    addi  $t3, $t3, 2560
+
+    sw    $t0, 128($t5)
+    sw    $t1, 160($t5)
+    sw    $t2, 192($t5)
+    sw    $t3, 224($t5)
+
     j   nenhum_state
 
   nova_peca:
@@ -464,7 +573,6 @@ main:
     j nenhum_state
 
   end_anim_draw_1:
-
     la  $a0, anim_1_img
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
