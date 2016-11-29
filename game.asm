@@ -99,47 +99,17 @@
   .eqv  GAME_BG_4_PLAYER_WIDTH   320
   .eqv  GAME_BG_4_PLAYER_HEIGHT  240
 
-  # PECA 1
-  .eqv  PECA_1_RAM         0x10010000
-  .eqv  PECA_1_POS         0x10040040
-  .eqv  PECA_1_WIDTH       8
-  .eqv  PECA_1_HEIGHT      8
-
-  # PECA 2
-  .eqv  PECA_2_RAM         0x10010000
-  .eqv  PECA_2_POS         0x10040080
-  .eqv  PECA_2_WIDTH       8
-  .eqv  PECA_2_HEIGHT      8
-
-  # PECA 3
-  .eqv  PECA_3_RAM         0x10010000
-  .eqv  PECA_3_POS         0x100400c0
-  .eqv  PECA_3_WIDTH       8
-  .eqv  PECA_3_HEIGHT      8
-
-  # PECA 4
-  .eqv  PECA_4_RAM         0x10010000
-  .eqv  PECA_4_POS         0x10040100
-  .eqv  PECA_4_WIDTH       8
-  .eqv  PECA_4_HEIGHT      8
-
-  # PECA 5
-  .eqv  PECA_5_RAM         0x10010000
-  .eqv  PECA_5_POS         0x10040140
-  .eqv  PECA_5_WIDTH       8
-  .eqv  PECA_5_HEIGHT      8
-
-  # PECA 6
-  .eqv  PECA_6_RAM         0x10010000
-  .eqv  PECA_6_POS         0x10040180
-  .eqv  PECA_6_WIDTH       8
-  .eqv  PECA_6_HEIGHT      8
-
-  # PECA 7
-  .eqv  PECA_7_RAM         0x10010000
-  .eqv  PECA_7_POS         0x100401c0
-  .eqv  PECA_7_WIDTH       8
-  .eqv  PECA_7_HEIGHT      8
+  # PECAS
+  .eqv  PECA_POS           0x10040040
+  .eqv  PECA_WIDTH         8
+  .eqv  PECA_HEIGHT        8
+  .eqv  PECA_1_RAM         0x10010000 # PECA 1
+  .eqv  PECA_2_RAM         0x10010000 # PECA 2
+  .eqv  PECA_3_RAM         0x10010000 # PECA 3
+  .eqv  PECA_4_RAM         0x10010000 # PECA 4
+  .eqv  PECA_5_RAM         0x10010000 # PECA 5
+  .eqv  PECA_6_RAM         0x10010000 # PECA 6
+  .eqv  PECA_7_RAM         0x10010000 # PECA 7
 
   # END ANIM
   .eqv  END_ANIM_RAM      0x10012cac
@@ -316,54 +286,47 @@ main:
 # GAME
 ###
   load_game_state:
+    la  $a2, PECA_WIDTH
+    la  $a3, PECA_HEIGHT
+
     la  $a0, peca_1_img
     la  $a1, PECA_1_RAM
-    la  $a2, PECA_1_WIDTH
-    la  $a3, PECA_1_HEIGHT
     jal load_image
 
     la  $a0, peca_2_img
     la  $a1, PECA_2_RAM
-    la  $a2, PECA_2_WIDTH
-    la  $a3, PECA_2_HEIGHT
     jal load_image
 
     la  $a0, peca_3_img
     la  $a1, PECA_3_RAM
-    la  $a2, PECA_3_WIDTH
-    la  $a3, PECA_3_HEIGHT
     jal load_image
 
     la  $a0, peca_4_img
     la  $a1, PECA_4_RAM
-    la  $a2, PECA_4_WIDTH
-    la  $a3, PECA_4_HEIGHT
     jal load_image
 
     la  $a0, peca_5_img
     la  $a1, PECA_5_RAM
-    la  $a2, PECA_5_WIDTH
-    la  $a3, PECA_5_HEIGHT
     jal load_image
 
     la  $a0, peca_6_img
     la  $a1, PECA_6_RAM
-    la  $a2, PECA_6_WIDTH
-    la  $a3, PECA_6_HEIGHT
     jal load_image
 
     la  $a0, peca_7_img
     la  $a1, PECA_7_RAM
-    la  $a2, PECA_7_WIDTH
-    la  $a3, PECA_7_HEIGHT
     jal load_image
 
-    li  $t0, 25610
-    li  $t1, 25618
-    li  $t2, 25626
-    li  $t3, 25634
-    li  $t4, 1
     li  $t5, 0xff000000
+
+    # depende do rand
+    li  $t0, 24968
+    li  $t1, 24976
+    li  $t2, 24984
+    li  $t3, 24992
+    li  $t4, 1
+    # -------
+
     sw  $t0, 128($t5)
     sw  $t1, 160($t5)
     sw  $t2, 192($t5)
@@ -417,71 +380,69 @@ main:
 
   volta_game_state:
     li  $t5, 0xff000000
-    lw  $t0, 128($t5)
-    lw  $t1, 160($t5)
-    lw  $t2, 192($t5)
-    lw  $t3, 224($t5)
-    lw  $t4, 256($t5)
+    lw  $s0, 128($t5)
+    lw  $s1, 160($t5)
+    lw  $s2, 192($t5)
+    lw  $s3, 224($t5)
+    lw  $s4, 256($t5)
 
+    li    $a0, PECA_HEIGHT # $a0 = width
+    li    $a3, PECA_WIDTH  # $a3 = height
     li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_1_HEIGHT # $a0 = width
-    li    $a3, PECA_1_WIDTH  # $a3 = height
 
-    li  $t5, 0xff000000
-    lw  $t0, 128($t5)
-    move  $a2, $t0
+    move  $a2, $s0
     li    $t6, 0x10040000
     add   $a2, $a2, $t6
     jal   draw_sprite
 
     li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_1_HEIGHT # $a0 = width
-    li    $a3, PECA_1_WIDTH  # $a3 = height
-    li  $t5, 0xff000000
-    lw  $t1, 160($t5)
-    move  $a2, $t1
+    li    $a0, PECA_HEIGHT # $a0 = width
+    li    $a3, PECA_WIDTH  # $a3 = height
+
+    move  $a2, $s1
     li    $t6, 0x10040000
     add   $a2, $a2, $t6
     jal   draw_sprite
 
     li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_1_HEIGHT # $a0 = width
-    li    $a3, PECA_1_WIDTH  # $a3 = height
-    li  $t5, 0xff000000
-    lw  $t2, 192($t5)
-    move  $a2, $t2
+    li    $a0, PECA_HEIGHT # $a0 = width
+    li    $a3, PECA_WIDTH  # $a3 = height
+
+    move  $a2, $s2
     li    $t6, 0x10040000
     add   $a2, $a2, $t6
     jal   draw_sprite
 
     li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_1_HEIGHT # $a0 = width
-    li    $a3, PECA_1_WIDTH  # $a3 = height
-    li  $t5, 0xff000000
-    lw  $t3, 224($t5)
-    move  $a2, $t3
+    li    $a0, PECA_HEIGHT # $a0 = width
+    li    $a3, PECA_WIDTH  # $a3 = height
+
+    move  $a2, $s3
     li    $t6, 0x10040000
     add   $a2, $a2, $t6
     jal   draw_sprite
 
     li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_1_HEIGHT # $a0 = width
-    li    $a3, PECA_1_WIDTH  # $a3 = height
+    li    $a0, PECA_HEIGHT # $a0 = width
+    li    $a3, PECA_WIDTH  # $a3 = height
+
     li  $t5, 0xff000000
-    lw  $t0, 128($t5)
-    lw  $t1, 160($t5)
-    lw  $t2, 192($t5)
-    lw  $t3, 224($t5)
 
-    addi  $t0, $t0, 2560
-    addi  $t1, $t1, 2560
-    addi  $t2, $t2, 2560
-    addi  $t3, $t3, 2560
+    # verifica se desce
+    li    $t4, 65928
+    slt   $t6, $s0, $t4
+    beq   $t6, $zero, preve_colisao
+    addi  $s0, $s0, 2560
+    addi  $s1, $s1, 2560
+    addi  $s2, $s2, 2560
+    addi  $s3, $s3, 2560
 
-    sw    $t0, 128($t5)
-    sw    $t1, 160($t5)
-    sw    $t2, 192($t5)
-    sw    $t3, 224($t5)
+preve_colisao:
+
+    sw    $s0, 128($t5)
+    sw    $s1, 160($t5)
+    sw    $s2, 192($t5)
+    sw    $s3, 224($t5)
 
     j   nenhum_state
 
@@ -860,33 +821,34 @@ load_image:
 # B = 88
 # HEX = FEBD58
 #
-
 draw_sprite:
-  move    $t1, $a0                   # Carrega em $t1 o width da imagem do dino
-  move    $t2, $a3                   # Carrega em $t2 o height da imagem do dino
+  move    $t0, $a0                   # Carrega em $t0 o width da imagem da imagem
+  move    $t1, $a1                   # Carrega em $t1 a RAM da imagem da imagem
+  move    $t6, $a2                   # Carrega em $t6 a RAM da imagem da imagem
+  move    $t2, $a3                   # Carrega em $t2 o height da imagem da imagem
 
   # fix pra nao perder width
   move    $t5, $a0
 
 draw_sprite_loop:
-  beq   $t1, $zero, fim_loop_desenha_dino  # if ja passou por todos os pixels do width then fim_loop_desenha_dino
-  lbu   $t3, 0($a1)                        # Carrega em $t3 o endereco do dino na RAM ($t3 agora guarda um pixel)
+  beq   $t0, $zero, fim_loop_desenha_dino  # if ja passou por todos os pixels do width then fim_loop_desenha_dino
+  lbu   $t3, 0($t1)                        # Carrega em $t3 o endereco do dino na RAM ($t3 agora guarda um pixel)
   addi  $t4, $zero, 0xEB                   # Salva o valor da cor rosa no registrador $t4
   beq   $t3, $t4, draw_sprite_jump_pixel   # Se o pixel for da cor rosa então pula aquele pixel (transparencia)
-  sb    $t3, 0($a2)                        # "Desenha", no display, o pixel pego quando dado lb
+  sb    $t3, 0($t6)                        # "Desenha", no display, o pixel pego quando dado lb
 
 draw_sprite_jump_pixel:
-	addi  $t1, $t1, -1                       # Agora falta width-1 para acabar de percorrer a imagem
-  addi  $a1, $a1, 1                        # O registrador $a1 terá o próximo pixel salvo na RAM
-  addi $a2, $a2, 1                         # Prepara o próximo pixel que será mostrado no display
+	addi  $t0, $t0, -1                       # Agora falta width-1 para acabar de percorrer a imagem
+  addi  $t1, $t1, 1                        # O registrador $a1 terá o próximo pixel salvo na RAM
+  addi  $t6, $t6, 1                        # Prepara o próximo pixel que será mostrado no display
   j draw_sprite_loop                       # Volta a desenhar os proximos pixels que faltam
 
 fim_loop_desenha_dino:
   addi  $t2, $t2, -1                       # Falta height-1 pixels para o fim do desenho
-  move    $t1, $t5                         # Vai para o primeiro column da row X
+  move  $t0, $t5                           # Vai para o primeiro column da row X
   beq   $t2, $zero, draw_sprite_end        # Se chegou ao height máximo da imagem termina o desenho
-  sub  $a2, $a2, $t5                       # Voltamos $a2 para a primeira colmun daquele row
-  addi  $a2, $a2, DISPLAY_NEXT_LINE        # Pulamos para o próximo row
+  sub   $t6, $t6, $t5                      # Voltamos $t6 para a primeira colmun daquele row
+  addi  $t6, $t6, DISPLAY_NEXT_LINE        # Pulamos para o próximo row
   j draw_sprite_loop                       # Volta a desenhar aquela row da imagem
 
 draw_sprite_end:
