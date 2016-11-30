@@ -3,13 +3,46 @@
 # AUTOR - LUIZ FERNANDO VIEIRA DE CASTRO FERREIRA
 # https://xem.github.io/3DShomebrew/tools/image-to-bin.html
 .data
+  a1:   .asciiz "i1.bin"
+  a2:   .asciiz "i1.bin"
+  a3:   .asciiz "i2.bin"
+  a4:   .asciiz "i3.bin"
+  a5:   .asciiz "i4.bin"
+  a6:   .asciiz "i5.bin"
+  a7:   .asciiz "i6.bin"
+  a8:   .asciiz "i7.bin"
+  a9:   .asciiz "i8.bin"
+
+  a10:   .asciiz "i9.bin"
+  a11:   .asciiz "i10.bin"
+  a12:   .asciiz "i11.bin"
+  a13:   .asciiz "i12.bin"
+  a14:   .asciiz "i13.bin"
+  a15:   .asciiz "i14.bin"
+  a16:   .asciiz "i15.bin"
+  a17:   .asciiz "i16.bin"
+  a18:   .asciiz "i17.bin"
+  a19:   .asciiz "i18.bin"
+  a20:   .asciiz "i19.bin"
+
+  a21:   .asciiz "i20.bin"
+  a22:   .asciiz "i21.bin"
+  a23:   .asciiz "i22.bin"
+  a24:   .asciiz "i23.bin"
+  a25:   .asciiz "i24.bin"
+  a26:   .asciiz "i25.bin"
+  a27:   .asciiz "i26.bin"
+  a28:   .asciiz "i27.bin"
+  a29:   .asciiz "i28.bin"
+  a30:   .asciiz "i29.bin"
+
   nintendo_img: .asciiz "nintendo.bin"
   menu_img:     .asciiz "menu.bin"
   seta_img:     .asciiz "seta.bin"
-  bg_1_pl_img:  .asciiz "bg_1_player.bin"
-  bg_2_pl_img:  .asciiz "bg_2_player.bin"
-  bg_3_pl_img:  .asciiz "bg_3_player.bin"
-  bg_4_pl_img:  .asciiz "bg_4_player.bin"
+  bg_1_pl_img:  .asciiz "bg1.bin"
+  bg_2_pl_img:  .asciiz "bg2.bin"
+  bg_3_pl_img:  .asciiz "bg3.bin"
+  bg_4_pl_img:  .asciiz "bg4.bin"
   peca_1_img:   .asciiz "peca_1_one_point.bin"
   peca_2_img:   .asciiz "peca_2_one_point.bin"
   peca_3_img:   .asciiz "peca_3_one_point.bin"
@@ -17,39 +50,6 @@
   peca_5_img:   .asciiz "peca_5_one_point.bin"
   peca_6_img:   .asciiz "peca_6_one_point.bin"
   peca_7_img:   .asciiz "peca_7_one_point.bin"
-  peca_1_all:   .asciiz "peca_1.bin"
-  peca_2_all:   .asciiz "peca_2.bin"
-  peca_3_all:   .asciiz "peca_3.bin"
-  peca_4_all:   .asciiz "peca_4.bin"
-  peca_5_all:   .asciiz "peca_5.bin"
-  peca_6_all:   .asciiz "peca_6.bin"
-  peca_7_all:   .asciiz "peca_7.bin"
-  anim_1_img:   .asciiz "bg_1_player.bin"
-  anim_2_img:   .asciiz "bg_2_player.bin"
-  anim_3_img:   .asciiz "bg_3_player.bin"
-  anim_4_img:   .asciiz "bg_4_player.bin"
-  anim_5_img:   .asciiz "bg_1_player.bin"
-  anim_6_img:   .asciiz "bg_2_player.bin"
-  anim_7_img:   .asciiz "bg_3_player.bin"
-  anim_8_img:   .asciiz "bg_4_player.bin"
-  anim_9_img:   .asciiz "bg_1_player.bin"
-  anim_10_img:  .asciiz "bg_2_player.bin"
-  anim_11_img:  .asciiz "bg_3_player.bin"
-  anim_12_img:  .asciiz "bg_4_player.bin"
-  anim_13_img:  .asciiz "bg_1_player.bin"
-  anim_14_img:  .asciiz "bg_2_player.bin"
-  anim_15_img:  .asciiz "bg_3_player.bin"
-  anim_16_img:  .asciiz "bg_4_player.bin"
-  input:        .asciiz "Teve Input !!! \n"
-  ninput:       .asciiz "... \n"
-  zzz:          .asciiz "... \n"
-  mime:         .asciiz "dorme \n"
-  change:       .asciiz "CHANGE STATE \n"
-  inpt_space:   .asciiz "*** CLICOU SPACE *** \n"
-  inpt_a:       .asciiz "*** CLICOU A *** \n"
-  inpt_s:       .asciiz "*** CLICOU S *** \n"
-  inpt_d:       .asciiz "*** CLICOU D *** \n"
-  inpt_w:       .asciiz "*** CLICOU W *** \n"
 
   .eqv  BASE_DISPLAY        0x10040000
   .eqv  DISPLAY_NEXT_LINE   0x140 #320 # 0x200 #512
@@ -112,7 +112,7 @@
   .eqv  PECA_7_RAM         0x10010000 # PECA 7
 
   # END ANIM
-  .eqv  END_ANIM_RAM      0x10012cac
+  .eqv  END_ANIM_RAM      0x10010100
   .eqv  END_ANIM_POS      0x10040000
   .eqv  END_ANIM_WIDTH    320
   .eqv  END_ANIM_HEIGHT   240
@@ -490,7 +490,7 @@ preve_colisao:
 
   change_end_state:
     li    $s5, 0
-    j     update
+    j     end_state
 
 #######
 # a0 = qual pos para aquele player
@@ -525,12 +525,23 @@ escreve_na_matrix:
 # END
 ###
   end_state:
+    li    $v0, 1
+    move    $a0, $s7
+    syscall
   end_anim:
+
+    li    $v0, 1
+    move    $a0, $s7
+    syscall
 
     li   $t0, 16
 
     beq  $s5, $t0, end_anim_end
     addi $s5, $s5, 1
+
+    # la  $a1, GAME_BG_1_PLAYER_RAM #END_ANIM_RAM
+    # la  $a2, END_ANIM_WIDTH
+    # la  $a3, END_ANIM_HEIGHT
 
     li   $t1, 1
     li   $t2, 2
@@ -551,26 +562,26 @@ escreve_na_matrix:
     beq  $s5, $t7, end_anim_draw_8
     beq  $s5, $t8, end_anim_draw_9
 
-    li   $t1, 10
-    li   $t2, 11
-    li   $t3, 12
-    li   $t4, 13
-    li   $t5, 14
-    li   $t6, 15
-    li   $t7, 16
-    beq  $s5, $t1, end_anim_draw_10
-    beq  $s5, $t2, end_anim_draw_11
-    beq  $s5, $t3, end_anim_draw_12
-    beq  $s5, $t4, end_anim_draw_13
-    beq  $s5, $t5, end_anim_draw_14
-    beq  $s5, $t6, end_anim_draw_15
-    beq  $s5, $t7, end_anim_draw_16
+    # li   $t1, 10
+    # li   $t2, 11
+    # li   $t3, 12
+    # li   $t4, 13
+    # li   $t5, 14
+    # li   $t6, 15
+    # li   $t7, 16
+    # beq  $s5, $t1, end_anim_draw_10
+    # beq  $s5, $t2, end_anim_draw_11
+    # beq  $s5, $t3, end_anim_draw_12
+    # beq  $s5, $t4, end_anim_draw_13
+    # beq  $s5, $t5, end_anim_draw_14
+    # beq  $s5, $t6, end_anim_draw_15
+    # beq  $s5, $t7, end_anim_draw_16
 
   end_anim_end:
     j nenhum_state
 
   end_anim_draw_1:
-    la  $a0, anim_1_img
+    la  $a0, a1
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -580,15 +591,10 @@ escreve_na_matrix:
     li  $a0, END_ANIM_WIDTH
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
-
-    li    $v0, 4
-    la    $a0, change
-    syscall
-
     j   end_anim_end
 
   end_anim_draw_2:
-    la  $a0, anim_2_img
+    la  $a0, a2
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -599,10 +605,9 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
   end_anim_draw_3:
-    la  $a0, anim_3_img
+    la  $a0, a3
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -613,10 +618,9 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
   end_anim_draw_4:
-    la  $a0, anim_4_img
+    la  $a0, a4
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -627,10 +631,9 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
   end_anim_draw_5:
-    la  $a0, anim_5_img
+    la  $a0, a5
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -641,10 +644,9 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
   end_anim_draw_6:
-    la  $a0, anim_6_img
+    la  $a0, a6
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -655,10 +657,9 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
   end_anim_draw_7:
-    la  $a0, anim_7_img
+    la  $a0, a7
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -669,10 +670,9 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
   end_anim_draw_8:
-    la  $a0, anim_8_img
+    la  $a0, a8
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -683,10 +683,9 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
   end_anim_draw_9:
-    la  $a0, anim_9_img
+    la  $a0, a9
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
@@ -697,111 +696,15 @@ escreve_na_matrix:
     li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
-    j end_anim_end
 
-  end_anim_draw_10:
-    la  $a0, anim_10_img
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    li  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j   end_anim_end
-    j end_anim_end
 
-  end_anim_draw_11:
-    la  $a0, anim_11_img
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    li  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j   end_anim_end
-    j end_anim_end
-
-    end_anim_draw_12:
-    la  $a0, anim_12_img
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    li  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j   end_anim_end
-    j end_anim_end
-
-    end_anim_draw_13:
-    la  $a0, anim_13_img
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    li  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j   end_anim_end
-    j end_anim_end
-
-    end_anim_draw_14:
-    la  $a0, anim_14_img
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    li  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j   end_anim_end
-    j end_anim_end
-
-    end_anim_draw_15:
-    la  $a0, anim_15_img
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    li  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j   end_anim_end
-    j end_anim_end
-
-    end_anim_draw_16:
-    la  $a0, anim_16_img
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    li  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j   end_anim_end
-    j end_anim_end
 
 ###
 # NENHUM
 ###
   nenhum_state:
     # nao faz nada
+    j update
 
 ###
 # SLEEP
@@ -923,6 +826,8 @@ draw_sprite_end:
     beq	  $t1, $zero, volta      # Se o receiver control for zero ignora, se nao pega o valor
     lw	  $t5, 4($t0)	           # Quando fica pronto $v0 recebe o data register
 
+    li    $t2, 0x6E               # n
+    beq   $t5, $t2, click_n
     li    $t2, 0x20               # space
     beq   $t5, $t2, click_space
     li    $t2, 0x61               # a
@@ -933,8 +838,6 @@ draw_sprite_end:
     beq   $t5, $t2, click_w
     li    $t2, 0x73               # s
     beq   $t5, $t2, click_s
-    li    $t2, 0x6E               # n
-    beq   $t5, $t2, click_n
 
     li    $t5, 0
   volta:
@@ -950,11 +853,11 @@ draw_sprite_end:
   click_a_seta_2:
     li    $s6, 1
 
-    li $a2, 0
-    li $a3, 200
-    li $v0, 31
-    li $a0, 60
-    li $a1, 100
+    li    $a2, 0
+    li    $a3, 200
+    li    $v0, 31
+    li    $a0, 60
+    li    $a1, 100
     syscall
 
     j     volta
@@ -1081,6 +984,11 @@ draw_sprite_end:
     j volta
 
   click_n:
+
+    li  $v0, 1
+    move  $a0, $s7
+    syscall
+
     li $s7, 3
     j change_end_state
 
