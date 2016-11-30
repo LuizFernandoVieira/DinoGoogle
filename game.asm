@@ -317,7 +317,7 @@ main:
     la  $a1, PECA_7_RAM
     jal load_image
 
-    li  $t5, 0xff000000
+    li  $t5, 0xff000020
 
     # depende do rand
     li  $t0, 24968
@@ -327,45 +327,46 @@ main:
     li  $t4, 1
     # -------
 
-    sw  $t0, 128($t5)
-    sw  $t1, 160($t5)
-    sw  $t2, 192($t5)
-    sw  $t3, 224($t5)
-    sw  $t4, 256($t5)
+    sw  $t0, 0($t5)
+    sw  $t1, 4($t5)
+    sw  $t2, 8($t5)
+    sw  $t3, 12($t5)
+    sw  $t4, 16($t5)
 
     j game_state
 
   game_state:
     # Começa na posição 0xff000000
-    # mapa 4 * 32 = 128 -> 80
+    # mapa 4 * 32 = 128bits = 16bytes -> 0x00000010
+    # peca 1 * 32 =  32bits =  4bytes -> 0x00000004
 
-    # 0xff000000 - 0xff000080 => matrix 1
-    # 0xff000080 - 0xff0000a0 => $t0 -> pos bloco 1
-    # 0xff0000a0 - 0xff0000c0 => $t1 -> pos bloco 2
-    # 0xff0000c0 - 0xff0000e0 => $t2 -> pos bloco 3
-    # 0xff0000e0 - 0xff000100 => $t3 -> pos bloco 4
-    # 0xff000100 - 0xff000120 => $t4 -> qual bloco (7)
+    # 0xff000000 - 0xff000020 => matrix 1
+    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
+    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
+    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
+    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
+    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
 
-    # 0xff001000 - 0xff001080 => matrix 2
-    # 0xff001080 - 0xff0010a0 => $t0 -> pos bloco 1
-    # 0xff0010a0 - 0xff0010c0 => $t1 -> pos bloco 2
-    # 0xff0010c0 - 0xff0010e0 => $t2 -> pos bloco 3
-    # 0xff0010e0 - 0xff001100 => $t3 -> pos bloco 4
-    # 0xff001100 - 0xff001120 => $t4 -> qual bloco (7)
+    # 0xff000000 - 0xff000020 => matrix 2
+    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
+    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
+    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
+    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
+    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
 
-    # 0xff002000 - 0xff002080 => matrix 3
-    # 0xff002080 - 0xff0020a0 => $t0 -> pos bloco 1
-    # 0xff0020a0 - 0xff0020c0 => $t1 -> pos bloco 2
-    # 0xff0020c0 - 0xff0020e0 => $t2 -> pos bloco 3
-    # 0xff0020e0 - 0xff002100 => $t3 -> pos bloco 4
-    # 0xff002100 - 0xff002120 => $t4 -> qual bloco (7)
+    # 0xff000000 - 0xff000020 => matrix 3
+    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
+    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
+    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
+    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
+    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
 
-    # 0xff003000 - 0xff003080 => matrix 4
-    # 0xff003080 - 0xff0030a0 => $t0 -> pos bloco 1
-    # 0xff0030a0 - 0xff0030c0 => $t1 -> pos bloco 2
-    # 0xff0030c0 - 0xff0030e0 => $t2 -> pos bloco 3
-    # 0xff0030e0 - 0xff003100 => $t3 -> pos bloco 4
-    # 0xff003100 - 0xff003120 => $t4 -> qual bloco (7)
+    # 0xff000000 - 0xff000020 => matrix 4
+    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
+    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
+    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
+    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
+    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
 
     li  $t0, 1
     li  $t1, 2
@@ -379,72 +380,78 @@ main:
     beq $s6, $t3, game_state_4   # if 4 player
 
   volta_game_state:
-    li  $t5, 0xff000000
-    lw  $s0, 128($t5)
-    lw  $s1, 160($t5)
-    lw  $s2, 192($t5)
-    lw  $s3, 224($t5)
-    lw  $s4, 256($t5)
+    li  $t7, 0x10040000
+    li  $t5, 0xff000020
+    lw  $s0, 0($t5)
+    lw  $s1, 4($t5)
+    lw  $s2, 8($t5)
+    lw  $s3, 12($t5)
+    lw  $s4, 16($t5)
 
     li    $a0, PECA_HEIGHT # $a0 = width
     li    $a3, PECA_WIDTH  # $a3 = height
-    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
+    li    $a1, PECA_1_RAM  # $a1 = endereco na RAM
 
-    move  $a2, $s0
-    li    $t6, 0x10040000
-    add   $a2, $a2, $t6
+    add   $a2, $s0, $t7
     jal   draw_sprite
 
-    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_HEIGHT # $a0 = width
-    li    $a3, PECA_WIDTH  # $a3 = height
-
-    move  $a2, $s1
-    li    $t6, 0x10040000
-    add   $a2, $a2, $t6
+    add   $a2, $s1, $t7
     jal   draw_sprite
 
-    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_HEIGHT # $a0 = width
-    li    $a3, PECA_WIDTH  # $a3 = height
-
-    move  $a2, $s2
-    li    $t6, 0x10040000
-    add   $a2, $a2, $t6
+    add   $a2, $s2, $t7
     jal   draw_sprite
 
-    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_HEIGHT # $a0 = width
-    li    $a3, PECA_WIDTH  # $a3 = height
-
-    move  $a2, $s3
-    li    $t6, 0x10040000
-    add   $a2, $a2, $t6
+    add   $a2, $s3, $t7
     jal   draw_sprite
 
-    li    $a1, PECA_1_RAM    # $a1 = endereco na RAM
-    li    $a0, PECA_HEIGHT # $a0 = width
-    li    $a3, PECA_WIDTH  # $a3 = height
+    li  $t5, 0xff000020
 
-    li  $t5, 0xff000000
-
-    # verifica se desce
-    li    $t4, 65928
+    li    $t4, 65928                # borders do mapa
     slt   $t6, $s0, $t4
+    beq   $t6, $zero, preve_colisao # PASSA QUANDO AINDA PODE DESCER
+    slt   $t6, $s1, $t4
     beq   $t6, $zero, preve_colisao
+    slt   $t6, $s2, $t4
+    beq   $t6, $zero, preve_colisao
+    slt   $t6, $s3, $t4
+    beq   $t6, $zero, preve_colisao
+
     addi  $s0, $s0, 2560
     addi  $s1, $s1, 2560
     addi  $s2, $s2, 2560
     addi  $s3, $s3, 2560
 
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+
+    j     nenhum_state
+
 preve_colisao:
+    addi  $sp, $sp, -4
+    sw    $ra, 0($sp)
 
-    sw    $s0, 128($t5)
-    sw    $s1, 160($t5)
-    sw    $s2, 192($t5)
-    sw    $s3, 224($t5)
+    li    $a0, 0xff000000
 
-    j   nenhum_state
+    move  $a1, $s0
+    jal   escreve_na_matrix
+
+    move  $a1, $s1
+    jal   escreve_na_matrix
+
+    move  $a1, $s2
+    jal   escreve_na_matrix
+
+    move  $a1, $s3
+    jal   escreve_na_matrix
+
+    move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
+
+    lw    $ra, 0($sp)
+    addi  $sp, $sp, 4
+
+    j     nenhum_state
 
   nova_peca:
     j   aux
@@ -484,6 +491,35 @@ preve_colisao:
   change_end_state:
     li    $s5, 0
     j     update
+
+#######
+# a0 = qual pos para aquele player
+# a1 = pos da peça
+# t3 = x
+# t4 = y
+# t6 = pos da memoria certa
+escreve_na_matrix:
+    li   $t0, 320
+    div  $a1, $t0
+    mfhi $t3
+    mflo $t4
+    addi $t3, $t3, -8
+
+    addi $t4, $t4, -70
+    li   $t0, 8
+    div  $t4, $t0
+    mflo $t4
+
+    move  $t5, $a0
+    addu $t5, $t5, $t4
+    lb   $t6, 0($t5)
+    li   $t7, 128
+    srlv $t7, $t7, $t3
+    or   $t6, $t6, $t7
+    sb   $t6, 0($t5)
+
+    jr $ra
+
 
 ###
 # END
