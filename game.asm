@@ -25,31 +25,64 @@
   a19:   .asciiz "i18.bin"
   a20:   .asciiz "i19.bin"
 
-  a21:   .asciiz "i20.bin"
-  a22:   .asciiz "i21.bin"
-  a23:   .asciiz "i22.bin"
-  a24:   .asciiz "i23.bin"
-  a25:   .asciiz "i24.bin"
-  a26:   .asciiz "i25.bin"
-  a27:   .asciiz "i26.bin"
-  a28:   .asciiz "i27.bin"
-  a29:   .asciiz "i28.bin"
-  a30:   .asciiz "i29.bin"
+  # a21:   .asciiz "i20.bin"
+  # a22:   .asciiz "i21.bin"
+  # a23:   .asciiz "i22.bin"
+  # a24:   .asciiz "i23.bin"
+  # a25:   .asciiz "i24.bin"
+  # a26:   .asciiz "i25.bin"
+  # a27:   .asciiz "i26.bin"
+  # a28:   .asciiz "i27.bin"
+  # a29:   .asciiz "i28.bin"
+  # a30:   .asciiz "i29.bin"
+
+  # a31:   .asciiz "i30.bin"
+  # a32:   .asciiz "i31.bin"
+  # a33:   .asciiz "i32.bin"
+  # a34:   .asciiz "i33.bin"
+  # a35:   .asciiz "i34.bin"
+  # a36:   .asciiz "i35.bin"
+  # a37:   .asciiz "i36.bin"
+  # a38:   .asciiz "i37.bin"
+  # a39:   .asciiz "i38.bin"
+
+  # a40:   .asciiz "i39.bin"
+  # a41:   .asciiz "i40.bin"
+  # a42:   .asciiz "i41.bin"
+  # a43:   .asciiz "i42.bin"
+  # a44:   .asciiz "i43.bin"
+  # a45:   .asciiz "i44.bin"
+  # a46:   .asciiz "i45.bin"
+  # a47:   .asciiz "i46.bin"
+  # a48:   .asciiz "i47.bin"
+  # a49:   .asciiz "i48.bin"
+  # a50:   .asciiz "i49.bin"
+  #
+  # a51:   .asciiz "i50.bin"
+  # a52:   .asciiz "i51.bin"
+  # a53:   .asciiz "i52.bin"
+  # a54:   .asciiz "i53.bin"
+  # a55:   .asciiz "i54.bin"
+  # a56:   .asciiz "i55.bin"
+  # a57:   .asciiz "i56.bin"
+  # a58:   .asciiz "i57.bin"
+  # a59:   .asciiz "i58.bin"
+  # a60:   .asciiz "i59.bin"
 
   nintendo_img: .asciiz "nintendo.bin"
   menu_img:     .asciiz "menu.bin"
   seta_img:     .asciiz "seta.bin"
-  bg_1_pl_img:  .asciiz "bg1.bin"
-  bg_2_pl_img:  .asciiz "bg2.bin"
-  bg_3_pl_img:  .asciiz "bg3.bin"
-  bg_4_pl_img:  .asciiz "bg4.bin"
-  peca_1_img:   .asciiz "peca_1_one_point.bin"
-  peca_2_img:   .asciiz "peca_2_one_point.bin"
-  peca_3_img:   .asciiz "peca_3_one_point.bin"
-  peca_4_img:   .asciiz "peca_4_one_point.bin"
-  peca_5_img:   .asciiz "peca_5_one_point.bin"
-  peca_6_img:   .asciiz "peca_6_one_point.bin"
-  peca_7_img:   .asciiz "peca_7_one_point.bin"
+  bg1_img:  .asciiz "bg1.bin"
+  bg2_img:  .asciiz "bg2.bin"
+  bg3_img:  .asciiz "bg3.bin"
+  bg4_img:  .asciiz "bg4.bin"
+  p1_img:   .asciiz "p1.bin"
+  p2_img:   .asciiz "p2.bin"
+  p3_img:   .asciiz "p3.bin"
+  p4_img:   .asciiz "p4.bin"
+  p5_img:   .asciiz "p5.bin"
+  p6_img:   .asciiz "p6.bin"
+  p7_img:   .asciiz "p7.bin"
 
   .eqv  BASE_DISPLAY        0x10040000
   .eqv  DISPLAY_NEXT_LINE   0x140 #320 # 0x200 #512
@@ -148,7 +181,15 @@ main:
     jal   checa_input
 
   render:
+    li    $t0, 0
+    bne   $s7, $zero, pula_limpa_tela
     jal   limpa_tela
+    move  $a0, $s0
+    la    $a1, NINTENDO_WIDTH
+    la    $a2, NINTENDO_HEIGHT
+    jal   limpa_area
+
+  pula_limpa_tela:
 
     # verificando o estado atual e chamando
     # o render para aquele estado
@@ -173,6 +214,8 @@ main:
     la    $a0, NINTENDO_WIDTH
     la    $a3, NINTENDO_HEIGHT
     jal   draw_sprite
+
+    jal dorme
 
     la    $t0, NINTENDO_POS
     addi  $t0, $t0, 33250 # 33250 # 950 x 35
@@ -247,7 +290,7 @@ main:
     j     nenhum_state
 
   chance_game_state_1:
-    la  $a0, bg_1_pl_img
+    la  $a0, bg1_img
     la  $a1, GAME_BG_1_PLAYER_RAM
     la  $a2, GAME_BG_1_PLAYER_WIDTH
     la  $a3, GAME_BG_1_PLAYER_HEIGHT
@@ -256,7 +299,7 @@ main:
     j load_game_state
 
   chance_game_state_2:
-    la  $a0, bg_2_pl_img
+    la  $a0, bg2_img
     la  $a1, GAME_BG_2_PLAYER_RAM
     la  $a2, GAME_BG_2_PLAYER_WIDTH
     la  $a3, GAME_BG_2_PLAYER_HEIGHT
@@ -265,7 +308,7 @@ main:
     j load_game_state
 
   chance_game_state_3:
-    la  $a0, bg_3_pl_img
+    la  $a0, bg3_img
     la  $a1, GAME_BG_3_PLAYER_RAM
     la  $a2, GAME_BG_3_PLAYER_WIDTH
     la  $a3, GAME_BG_3_PLAYER_HEIGHT
@@ -274,7 +317,7 @@ main:
     j load_game_state
 
   chance_game_state_4:
-    la  $a0, bg_4_pl_img
+    la  $a0, bg4_img
     la  $a1, GAME_BG_4_PLAYER_RAM
     la  $a2, GAME_BG_4_PLAYER_WIDTH
     la  $a3, GAME_BG_4_PLAYER_HEIGHT
@@ -289,31 +332,31 @@ main:
     la  $a2, PECA_WIDTH
     la  $a3, PECA_HEIGHT
 
-    la  $a0, peca_1_img
+    la  $a0, p1_img
     la  $a1, PECA_1_RAM
     jal load_image
 
-    la  $a0, peca_2_img
+    la  $a0, p2_img
     la  $a1, PECA_2_RAM
     jal load_image
 
-    la  $a0, peca_3_img
+    la  $a0, p3_img
     la  $a1, PECA_3_RAM
     jal load_image
 
-    la  $a0, peca_4_img
+    la  $a0, p4_img
     la  $a1, PECA_4_RAM
     jal load_image
 
-    la  $a0, peca_5_img
+    la  $a0, p5_img
     la  $a1, PECA_5_RAM
     jal load_image
 
-    la  $a0, peca_6_img
+    la  $a0, p6_img
     la  $a1, PECA_6_RAM
     jal load_image
 
-    la  $a0, peca_7_img
+    la  $a0, p7_img
     la  $a1, PECA_7_RAM
     jal load_image
 
@@ -539,9 +582,9 @@ escreve_na_matrix:
     beq  $s5, $t0, end_anim_end
     addi $s5, $s5, 1
 
-    # la  $a1, GAME_BG_1_PLAYER_RAM #END_ANIM_RAM
-    # la  $a2, END_ANIM_WIDTH
-    # la  $a3, END_ANIM_HEIGHT
+    la  $a1, END_ANIM_RAM
+    la  $a2, END_ANIM_WIDTH
+    la  $a3, END_ANIM_HEIGHT
 
     li   $t1, 1
     li   $t2, 2
@@ -562,142 +605,598 @@ escreve_na_matrix:
     beq  $s5, $t7, end_anim_draw_8
     beq  $s5, $t8, end_anim_draw_9
 
-    # li   $t1, 10
-    # li   $t2, 11
-    # li   $t3, 12
-    # li   $t4, 13
-    # li   $t5, 14
-    # li   $t6, 15
-    # li   $t7, 16
-    # beq  $s5, $t1, end_anim_draw_10
-    # beq  $s5, $t2, end_anim_draw_11
-    # beq  $s5, $t3, end_anim_draw_12
-    # beq  $s5, $t4, end_anim_draw_13
-    # beq  $s5, $t5, end_anim_draw_14
-    # beq  $s5, $t6, end_anim_draw_15
-    # beq  $s5, $t7, end_anim_draw_16
+    li   $t1, 10
+    li   $t2, 11
+    li   $t3, 12
+    li   $t4, 13
+    li   $t5, 14
+    li   $t6, 15
+    li   $t7, 16
+    beq  $s5, $t1, end_anim_draw_10
+    beq  $s5, $t2, end_anim_draw_11
+    beq  $s5, $t3, end_anim_draw_12
+    beq  $s5, $t4, end_anim_draw_13
+    beq  $s5, $t5, end_anim_draw_14
+    beq  $s5, $t6, end_anim_draw_15
+    beq  $s5, $t7, end_anim_draw_16
+
+    li   $t1, 17
+    li   $t2, 18
+    li   $t3, 19
+    # li   $t4, 20
+    # li   $t5, 21
+    # li   $t6, 22
+    # li   $t7, 23
+    beq  $s5, $t1, end_anim_draw_17
+    beq  $s5, $t2, end_anim_draw_18
+    beq  $s5, $t3, end_anim_draw_19
+    # beq  $s5, $t4, end_anim_draw_20
+    # beq  $s5, $t5, end_anim_draw_21
+    # beq  $s5, $t6, end_anim_draw_22
+    # beq  $s5, $t7, end_anim_draw_23
+    #
+    # li   $t1, 24
+    # li   $t2, 25
+    # li   $t3, 26
+    # li   $t4, 27
+    # li   $t5, 28
+    # li   $t6, 29
+    # li   $t7, 30
+    # beq  $s5, $t1, end_anim_draw_24
+    # beq  $s5, $t2, end_anim_draw_25
+    # beq  $s5, $t3, end_anim_draw_26
+    # beq  $s5, $t4, end_anim_draw_27
+    # beq  $s5, $t5, end_anim_draw_28
+    # beq  $s5, $t6, end_anim_draw_29
+    # beq  $s5, $t7, end_anim_draw_30
+
+    # li   $t1, 31
+    # li   $t2, 32
+    # li   $t3, 33
+    # li   $t4, 34
+    # li   $t5, 35
+    # li   $t6, 36
+    # li   $t7, 37
+    # beq  $s5, $t1, end_anim_draw_31
+    # beq  $s5, $t2, end_anim_draw_32
+    # beq  $s5, $t3, end_anim_draw_33
+    # beq  $s5, $t4, end_anim_draw_34
+    # beq  $s5, $t5, end_anim_draw_35
+    # beq  $s5, $t6, end_anim_draw_36
+    # beq  $s5, $t7, end_anim_draw_37
+    #
+    # li   $t1, 38
+    # li   $t2, 39
+    # li   $t3, 40
+    # li   $t4, 41
+    # li   $t5, 42
+    # li   $t6, 43
+    # li   $t7, 44
+    # beq  $s5, $t1, end_anim_draw_38
+    # beq  $s5, $t2, end_anim_draw_39
+    # beq  $s5, $t3, end_anim_draw_40
+    # beq  $s5, $t4, end_anim_draw_41
+    # beq  $s5, $t5, end_anim_draw_42
+    # beq  $s5, $t6, end_anim_draw_43
+    # beq  $s5, $t7, end_anim_draw_44
+    #
+    # li   $t1, 45
+    # li   $t2, 46
+    # li   $t3, 47
+    # li   $t4, 48
+    # li   $t5, 49
+    # li   $t6, 50
+    # li   $t7, 51
+    # beq  $s5, $t1, end_anim_draw_45
+    # beq  $s5, $t2, end_anim_draw_46
+    # beq  $s5, $t3, end_anim_draw_47
+    # beq  $s5, $t4, end_anim_draw_48
+    # beq  $s5, $t5, end_anim_draw_49
+    # beq  $s5, $t6, end_anim_draw_50
+    # beq  $s5, $t7, end_anim_draw_51
+    #
+    # li   $t1, 52
+    # li   $t2, 53
+    # li   $t3, 54
+    # li   $t4, 55
+    # li   $t5, 56
+    # li   $t6, 57
+    # li   $t7, 58
+    # beq  $s5, $t1, end_anim_draw_52
+    # beq  $s5, $t2, end_anim_draw_53
+    # beq  $s5, $t3, end_anim_draw_54
+    # beq  $s5, $t4, end_anim_draw_55
+    # beq  $s5, $t5, end_anim_draw_56
+    # beq  $s5, $t6, end_anim_draw_57
+    # beq  $s5, $t7, end_anim_draw_58
+    #
+    # li   $t1, 59
+    # li   $t2, 60
+    # beq  $s5, $t1, end_anim_draw_59
+    # beq  $s5, $t2, end_anim_draw_60
 
   end_anim_end:
     j nenhum_state
 
   end_anim_draw_1:
     la  $a0, a1
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_2:
     la  $a0, a2
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_3:
     la  $a0, a3
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_4:
     la  $a0, a4
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_5:
     la  $a0, a5
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_6:
     la  $a0, a6
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_7:
     la  $a0, a7
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_8:
     la  $a0, a8
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
   end_anim_draw_9:
     la  $a0, a9
-    la  $a1, END_ANIM_RAM
-    la  $a2, END_ANIM_WIDTH
-    la  $a3, END_ANIM_HEIGHT
     jal load_image
-    li  $a1, END_ANIM_RAM
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
-    li  $a3, END_ANIM_HEIGHT
     jal draw_sprite
     j   end_anim_end
 
+  end_anim_draw_10:
+    la  $a0, a10
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
 
+  end_anim_draw_11:
+    la  $a0, a11
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_12:
+    la  $a0, a12
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_13:
+    la  $a0, a13
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_14:
+    la  $a0, a14
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_15:
+    la  $a0, a15
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_16:
+    la  $a0, a16
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_17:
+    la  $a0, a17
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_18:
+    la  $a0, a18
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_19:
+    la  $a0, a19
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  # end_anim_draw_20:
+  #   la  $a0, a20
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_21:
+  #   la  $a0, a21
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_22:
+  #   la  $a0, a22
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_23:
+  #   la  $a0, a23
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_24:
+  #   la  $a0, a24
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_25:
+  #   la  $a0, a25
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_26:
+  #   la  $a0, a26
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_27:
+  #   la  $a0, a27
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_28:
+  #   la  $a0, a28
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_29:
+  #   la  $a0, a29
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_30:
+  #   la  $a0, a30
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+
+  # end_anim_draw_31:
+  #   la  $a0, a31
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_32:
+  #   la  $a0, a32
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_33:
+  #   la  $a0, a33
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_34:
+  #   la  $a0, a34
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_35:
+  #   la  $a0, a35
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_36:
+  #   la  $a0, a36
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_37:
+  #   la  $a0, a37
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_38:
+  #   la  $a0, a38
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_39:
+  #   la  $a0, a39
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_40:
+  #   la  $a0, a40
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_41:
+  #   la  $a0, a41
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_42:
+  #   la  $a0, a42
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_43:
+  #   la  $a0, a43
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_44:
+  #   la  $a0, a44
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_45:
+  #   la  $a0, a45
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_46:
+  #   la  $a0, a46
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_47:
+  #   la  $a0, a47
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_48:
+  #   la  $a0, a48
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_49:
+  #   la  $a0, a49
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_50:
+  #   la  $a0, a50
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_51:
+  #   la  $a0, a51
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_52:
+  #   la  $a0, a52
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_53:
+  #   la  $a0, a53
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_54:
+  #   la  $a0, a54
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_55:
+  #   la  $a0, a55
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_56:
+  #   la  $a0, a56
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_57:
+  #   la  $a0, a57
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_58:
+  #   la  $a0, a58
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_59:
+  #   la  $a0, a59
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
+  #
+  # end_anim_draw_60:
+  #   la  $a0, a60
+  #   jal load_image
+  #   li  $a2, END_ANIM_POS
+  #   li  $a0, END_ANIM_WIDTH
+  #   jal draw_sprite
+  #   j   end_anim_end
 
 ###
 # NENHUM
@@ -730,6 +1229,10 @@ load_image:
   move $t1, $a2     # $t1 width
   move $t2, $a3     # $t2 height
 
+  addi $sp, $sp, -8
+  sw $a0, 0($sp)
+  sw $a1, 4($sp)
+
   li    $v0, 13     # 13 é o syscall para abrir arquivos
   li    $a1, 0      # flag = aberto para leitura
   li    $a2, 0      # modo ignorado
@@ -742,6 +1245,10 @@ load_image:
   move  $a1, $t3    # $a1 = buffer, posição da memória que será colocado
   mflo  $a2         # 32 least significant bits of multiplication # $a2 = cout (IMAGE_WIDTH X IMAGE_HEIGHT = 86x86 = 7396)
   syscall
+
+  lw $a0, 0($sp)
+  lw $a1, 4($sp)
+  addi $sp, $sp, 8
 
   jr    $ra         # Termina o carregamento da imagem para a memória
 
@@ -759,7 +1266,7 @@ load_image:
 # G = 189
 # B = 88
 # HEX = FEBD58
-#
+# Desenha Sprite $a0 = width $a1 = endereco na RAM $a2 = endereco no display $a3 = height
 draw_sprite:
   move    $t0, $a0                   # Carrega em $t0 o width da imagem da imagem
   move    $t1, $a1                   # Carrega em $t1 a RAM da imagem da imagem
@@ -1006,6 +1513,37 @@ limpa_tela_loop:
   bne $t2, $t3, limpa_tela_loop
   jr $ra
 
+##########################################
+# a0 = ponto inicial
+# a1 = width
+# a2 = height
+limpa_area:
+  move $t0, $a0
+  li   $t1, 0xFFFFFFFF
+  li   $t2, 0
+  li   $t3, 0
+limpa_area_loop:
+  sb   $t1, 0($t0)
+  beq  $t2, $a1, pula_linha
+  addi $t2, $t2, 1
+  addi $t0, $t0, 1
+  j    limpa_area_loop
+
+pula_linha:
+  li   $t4, 320
+  sub  $t4, $t4, $a1 # $t4 = 320 - width
+  add  $t0, $t0, $t4
+  li   $t2, 0
+  addi $t3, $t3, 1
+  beq  $t3, $a2, fim_limpa_area
+  j    limpa_area_loop
+
+fim_limpa_area:
+  li  $v0, 1
+  move $a0, $t1
+  syscall
+  jr $ra
+
   ################################################################################
   # Dorme
   #
@@ -1013,11 +1551,8 @@ limpa_tela_loop:
   #
 
   dorme:
-    # li    $v0, 4
-    # la    $a0, mime
-    # syscall
     ori    $v0, $zero, 32		     # 32 é o syscall para sleep
-    ori    $a0, $zero, 0  		   # $a0 é a quantidade de miliseconds que dorme
+    ori    $a0, $zero, 60  		   # $a0 é a quantidade de miliseconds que dorme
     syscall                      # dorme por 60 milisegundos
     jr     $ra                   # volta para depois do jal dorme da main
 
