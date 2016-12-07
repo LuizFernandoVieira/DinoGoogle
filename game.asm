@@ -137,12 +137,12 @@
   .eqv  PECA_WIDTH         8
   .eqv  PECA_HEIGHT        8
   .eqv  PECA_1_RAM         0x10010000 # PECA 1
-  .eqv  PECA_2_RAM         0x10010000 # PECA 2
-  .eqv  PECA_3_RAM         0x10010000 # PECA 3
-  .eqv  PECA_4_RAM         0x10010000 # PECA 4
-  .eqv  PECA_5_RAM         0x10010000 # PECA 5
-  .eqv  PECA_6_RAM         0x10010000 # PECA 6
-  .eqv  PECA_7_RAM         0x10010000 # PECA 7
+  .eqv  PECA_2_RAM         0x10010040 # PECA 2
+  .eqv  PECA_3_RAM         0x10010080 # PECA 3
+  .eqv  PECA_4_RAM         0x100100c0 # PECA 4
+  .eqv  PECA_5_RAM         0x10010100 # PECA 5
+  .eqv  PECA_6_RAM         0x10010140 # PECA 6
+  .eqv  PECA_7_RAM         0x10010180 # PECA 7
 
   # END ANIM
   .eqv  END_ANIM_RAM      0x10010100
@@ -360,14 +360,32 @@ main:
     la  $a1, PECA_7_RAM
     jal load_image
 
+  cria_peca:
     li  $t5, 0xff000020
+    li  $t7, 0xff000038
 
     # depende do rand
     li  $t0, 24968
     li  $t1, 24976
     li  $t2, 24984
     li  $t3, 24992
-    li  $t4, 1
+
+    addi $s0, $s0, 1
+
+    li $a1, 7
+    lw $t6, 0($t7)
+    lw $a0, 0($t7)  # seed aleatoria
+    addi $t6, $t6, 1
+    sw $t6, 0($t7)
+
+    bne $t6, 8, nao_reseta_seed
+    add $t6, $zero, $zero
+    sw  $t6, 0($t7)
+  nao_reseta_seed:
+    li $v0, 1   # 1 is the system call code to show an int number
+    syscall
+
+    move  $t4, $a0
     # -------
 
     sw  $t0, 0($t5)
@@ -390,26 +408,26 @@ main:
     # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
     # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
 
-    # 0xff000000 - 0xff000020 => matrix 2
-    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
-    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
-    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
-    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
-    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
+    # 0xff000100 - 0xff000120 => matrix 2
+    # 0xff000120 - 0xff000124 => $s0 -> pos bloco 1
+    # 0xff000124 - 0xff000128 => $s1 -> pos bloco 2
+    # 0xff000128 - 0xff00012b => $s2 -> pos bloco 3
+    # 0xff00012b - 0xff000130 => $s3 -> pos bloco 4
+    # 0xff000130 - 0xff000134 => $s4 -> qual bloco (7)
 
-    # 0xff000000 - 0xff000020 => matrix 3
-    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
-    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
-    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
-    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
-    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
+    # 0xff000200 - 0xff000220 => matrix 3
+    # 0xff000220 - 0xff000224 => $s0 -> pos bloco 1
+    # 0xff000224 - 0xff000228 => $s1 -> pos bloco 2
+    # 0xff000228 - 0xff00022b => $s2 -> pos bloco 3
+    # 0xff00022b - 0xff000230 => $s3 -> pos bloco 4
+    # 0xff000230 - 0xff000234 => $s4 -> qual bloco (7)
 
-    # 0xff000000 - 0xff000020 => matrix 4
-    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
-    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
-    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
-    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
-    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
+    # 0xff000300 - 0xff000320 => matrix 4
+    # 0xff000320 - 0xff000324 => $s0 -> pos bloco 1
+    # 0xff000324 - 0xff000328 => $s1 -> pos bloco 2
+    # 0xff000328 - 0xff00032b => $s2 -> pos bloco 3
+    # 0xff00032b - 0xff000330 => $s3 -> pos bloco 4
+    # 0xff000330 - 0xff000334 => $s4 -> qual bloco (7)
 
     li  $t0, 1
     li  $t1, 2
@@ -433,8 +451,43 @@ main:
 
     li    $a0, PECA_HEIGHT # $a0 = width
     li    $a3, PECA_WIDTH  # $a3 = height
-    li    $a1, PECA_1_RAM  # $a1 = endereco na RAM
 
+  pula_0:
+    li    $t0, 1
+    bne   $s4, $t0, pula_1
+    li    $a1, PECA_1_RAM
+    j     pula_tudo
+  pula_1:
+    li    $t0, 2
+    beq   $s4, $t0, pula_2
+    li    $a1, PECA_2_RAM
+    j     pula_tudo
+  pula_2:
+    li    $t0, 3
+    beq   $s4, $t0, pula_3
+    li    $a1, PECA_3_RAM
+    j     pula_tudo
+  pula_3:
+    li    $t0, 4
+    beq   $s4, $t0, pula_4
+    li    $a1, PECA_4_RAM
+    j     pula_tudo
+  pula_4:
+    li    $t0, 5
+    beq   $s4, $t0, pula_5
+    li    $a1, PECA_5_RAM
+    j     pula_tudo
+  pula_5:
+    li    $t0, 6
+    beq   $s4, $t0, pula_6
+    li    $a1, PECA_6_RAM
+    j     pula_tudo
+  pula_6:
+    li    $t0, 7
+    beq   $s4, $t0, pula_tudo
+    li    $a1, PECA_7_RAM
+
+  pula_tudo:
     add   $a2, $s0, $t7
     jal   draw_sprite
 
@@ -447,7 +500,7 @@ main:
     add   $a2, $s3, $t7
     jal   draw_sprite
 
-    li  $t5, 0xff000020
+    li    $t5, 0xff000020
 
     li    $t4, 65928                # borders do mapa
     slt   $t6, $s0, $t4
@@ -477,6 +530,13 @@ preve_colisao:
 
     li    $a0, 0xff000000
 
+    #######
+    # a0 = qual pos para aquele player
+    # a1 = pos da peça
+    # t3 = x
+    # t4 = y
+    # t6 = pos da memoria certa
+
     move  $a1, $s0
     jal   escreve_na_matrix
 
@@ -488,8 +548,6 @@ preve_colisao:
 
     move  $a1, $s3
     jal   escreve_na_matrix
-
-    move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
 
     lw    $ra, 0($sp)
     addi  $sp, $sp, 4
@@ -544,16 +602,21 @@ preve_colisao:
 escreve_na_matrix:
     li   $t0, 320
     div  $a1, $t0
-    mfhi $t3
-    mflo $t4
+    mfhi $t3              # t3 = x
+    mflo $t4              # t4 = y
     addi $t3, $t3, -8
 
-    addi $t4, $t4, -70
     li   $t0, 8
-    div  $t4, $t0
-    mflo $t4
+    div  $t3, $t0
+    mflo $t3
 
+    addi $t4, $t4, -70
+    # li   $t0, 8
+    # div  $t4, $t0
+    # mflo $t4
+    #
     move  $t5, $a0
+    # sll  $t4, $t4, 2
     addu $t5, $t5, $t4
     lb   $t6, 0($t5)
     li   $t7, 128
@@ -1352,41 +1415,73 @@ draw_sprite_end:
 
   click_a:
     li    $t0, 2
+    beq   $s7, $t0, click_a_game_state
+    li    $t0, 2
     li    $t1, 4
     beq   $s6, $t0, click_a_seta_2 # 1
     beq   $s6, $t1, click_a_seta_4 # 3
     j     volta
 
+  click_a_game_state:
+    li    $t5, 0xff000020
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+    addi  $s0, $s0, -8
+    addi  $s1, $s1, -8
+    addi  $s2, $s2, -8
+    addi  $s3, $s3, -8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+    j     volta
+
   click_a_seta_2:
     li    $s6, 1
-
     li    $a2, 0
     li    $a3, 200
     li    $v0, 31
     li    $a0, 60
     li    $a1, 100
     syscall
-
     j     volta
 
   click_a_seta_4:
     li    $s6, 3
-
     li $a2, 0
     li $a3, 200
     li $v0, 31
     li $a0, 60
     li $a1, 100
     syscall
-
     j     volta
 
   click_d:
+    li    $t0, 2
+    beq   $s7, $t0, click_d_game_state
     li    $t0, 1
     li    $t1, 3
     beq   $s6, $t0, click_d_seta_1 # 2
     beq   $s6, $t1, click_d_seta_3 # 4
     j volta
+
+  click_d_game_state:
+    li    $t5, 0xff000020
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+    addi  $s0, $s0, 8
+    addi  $s1, $s1, 8
+    addi  $s2, $s2, 8
+    addi  $s3, $s3, 8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+    j     volta
 
   click_d_seta_1:
     li    $s6, 2
