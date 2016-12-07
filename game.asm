@@ -537,17 +537,24 @@ preve_colisao:
     # t4 = y
     # t6 = pos da memoria certa
 
+    li    $a0, 0xff000000
     move  $a1, $s0
     jal   escreve_na_matrix
 
+    li    $a0, 0xff000000
     move  $a1, $s1
     jal   escreve_na_matrix
 
+    li    $a0, 0xff000000
     move  $a1, $s2
     jal   escreve_na_matrix
 
+    li    $a0, 0xff000000
     move  $a1, $s3
     jal   escreve_na_matrix
+
+    move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
+    j cria_peca
 
     lw    $ra, 0($sp)
     addi  $sp, $sp, 4
@@ -611,13 +618,31 @@ escreve_na_matrix:
     mflo $t3
 
     addi $t4, $t4, -70
-    # li   $t0, 8
-    # div  $t4, $t0
-    # mflo $t4
+    li   $t0, 8
+    div  $t4, $t0
+    mflo $t4
     #
     move  $t5, $a0
+
     # sll  $t4, $t4, 2
-    addu $t5, $t5, $t4
+    addu  $t5, $t5, $t4
+
+    li  $v0, 1
+    addi $a0, $zero, 0
+    syscall
+
+    li  $v0, 1
+    move $a0, $t4
+    syscall
+
+    li  $v0, 1
+    addi $a0, $zero, 0
+    syscall
+
+    li  $v0, 1
+    move $a0, $t3
+    syscall
+
     lb   $t6, 0($t5)
     li   $t7, 128
     srlv $t7, $t7, $t3
