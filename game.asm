@@ -530,26 +530,15 @@ preve_colisao:
 
     li    $a0, 0xff000000
 
-    #######
-    # a0 = qual pos para aquele player
-    # a1 = pos da peça
-    # t3 = x
-    # t4 = y
-    # t6 = pos da memoria certa
-
-    li    $a0, 0xff000000
     move  $a1, $s0
     jal   escreve_na_matrix
 
-    li    $a0, 0xff000000
     move  $a1, $s1
     jal   escreve_na_matrix
 
-    li    $a0, 0xff000000
     move  $a1, $s2
     jal   escreve_na_matrix
 
-    li    $a0, 0xff000000
     move  $a1, $s3
     jal   escreve_na_matrix
 
@@ -601,16 +590,15 @@ preve_colisao:
     j     end_state
 
 #######
-# a0 = qual pos para aquele player
+# a0 = pos inicial da matriz
 # a1 = pos da peça
 # t3 = x
 # t4 = y
-# t6 = pos da memoria certa
 escreve_na_matrix:
     li   $t0, 320
     div  $a1, $t0
-    mfhi $t3              # t3 = x
-    mflo $t4              # t4 = y
+    mfhi $t3
+    mflo $t4
     addi $t3, $t3, -8
 
     li   $t0, 8
@@ -621,28 +609,9 @@ escreve_na_matrix:
     li   $t0, 8
     div  $t4, $t0
     mflo $t4
-    #
     move  $t5, $a0
 
-    # sll  $t4, $t4, 2
     addu  $t5, $t5, $t4
-
-    li  $v0, 1
-    addi $a0, $zero, 0
-    syscall
-
-    li  $v0, 1
-    move $a0, $t4
-    syscall
-
-    li  $v0, 1
-    addi $a0, $zero, 0
-    syscall
-
-    li  $v0, 1
-    move $a0, $t3
-    syscall
-
     lb   $t6, 0($t5)
     li   $t7, 128
     srlv $t7, $t7, $t3
@@ -650,7 +619,6 @@ escreve_na_matrix:
     sb   $t6, 0($t5)
 
     jr $ra
-
 
 ###
 # END
