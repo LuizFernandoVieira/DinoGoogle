@@ -25,53 +25,53 @@
   a19:   .asciiz "i18.bin"
   a20:   .asciiz "i19.bin"
 
-  # a21:   .asciiz "i20.bin"
-  # a22:   .asciiz "i21.bin"
-  # a23:   .asciiz "i22.bin"
-  # a24:   .asciiz "i23.bin"
-  # a25:   .asciiz "i24.bin"
-  # a26:   .asciiz "i25.bin"
-  # a27:   .asciiz "i26.bin"
-  # a28:   .asciiz "i27.bin"
-  # a29:   .asciiz "i28.bin"
-  # a30:   .asciiz "i29.bin"
+  a21:   .asciiz "i20.bin"
+  a22:   .asciiz "i21.bin"
+  a23:   .asciiz "i22.bin"
+  a24:   .asciiz "i23.bin"
+  a25:   .asciiz "i24.bin"
+  a26:   .asciiz "i25.bin"
+  a27:   .asciiz "i26.bin"
+  a28:   .asciiz "i27.bin"
+  a29:   .asciiz "i28.bin"
+  a30:   .asciiz "i29.bin"
 
-  # a31:   .asciiz "i30.bin"
-  # a32:   .asciiz "i31.bin"
-  # a33:   .asciiz "i32.bin"
-  # a34:   .asciiz "i33.bin"
-  # a35:   .asciiz "i34.bin"
-  # a36:   .asciiz "i35.bin"
-  # a37:   .asciiz "i36.bin"
-  # a38:   .asciiz "i37.bin"
-  # a39:   .asciiz "i38.bin"
+  a31:   .asciiz "i30.bin"
+  a32:   .asciiz "i31.bin"
+  a33:   .asciiz "i32.bin"
+  a34:   .asciiz "i33.bin"
+  a35:   .asciiz "i34.bin"
+  a36:   .asciiz "i35.bin"
+  a37:   .asciiz "i36.bin"
+  a38:   .asciiz "i37.bin"
+  a39:   .asciiz "i38.bin"
 
-  # a40:   .asciiz "i39.bin"
-  # a41:   .asciiz "i40.bin"
-  # a42:   .asciiz "i41.bin"
-  # a43:   .asciiz "i42.bin"
-  # a44:   .asciiz "i43.bin"
-  # a45:   .asciiz "i44.bin"
-  # a46:   .asciiz "i45.bin"
-  # a47:   .asciiz "i46.bin"
-  # a48:   .asciiz "i47.bin"
-  # a49:   .asciiz "i48.bin"
-  # a50:   .asciiz "i49.bin"
-  #
-  # a51:   .asciiz "i50.bin"
-  # a52:   .asciiz "i51.bin"
-  # a53:   .asciiz "i52.bin"
-  # a54:   .asciiz "i53.bin"
-  # a55:   .asciiz "i54.bin"
-  # a56:   .asciiz "i55.bin"
-  # a57:   .asciiz "i56.bin"
-  # a58:   .asciiz "i57.bin"
-  # a59:   .asciiz "i58.bin"
-  # a60:   .asciiz "i59.bin"
+  a40:   .asciiz "i39.bin"
+  a41:   .asciiz "i40.bin"
+  a42:   .asciiz "i41.bin"
+  a43:   .asciiz "i42.bin"
+  a44:   .asciiz "i43.bin"
+  a45:   .asciiz "i44.bin"
+  a46:   .asciiz "i45.bin"
+  a47:   .asciiz "i46.bin"
+  a48:   .asciiz "i47.bin"
+  a49:   .asciiz "i48.bin"
+  a50:   .asciiz "i49.bin"
+
+  a51:   .asciiz "i50.bin"
+  a52:   .asciiz "i51.bin"
+  a53:   .asciiz "i52.bin"
+  a54:   .asciiz "i53.bin"
+  a55:   .asciiz "i54.bin"
+  a56:   .asciiz "i55.bin"
+  a57:   .asciiz "i56.bin"
+  a58:   .asciiz "i57.bin"
+  a59:   .asciiz "i58.bin"
+  a60:   .asciiz "i59.bin"
 
   nintendo_img: .asciiz "nintendo.bin"
-  menu_img:     .asciiz "menu.bin"
-  seta_img:     .asciiz "seta.bin"
+  menu_img: .asciiz "menu.bin"
+  seta_img: .asciiz "seta.bin"
   bg1_img:  .asciiz "bg1.bin"
   bg2_img:  .asciiz "bg2.bin"
   bg3_img:  .asciiz "bg3.bin"
@@ -83,24 +83,49 @@
   p5_img:   .asciiz "p5.bin"
   p6_img:   .asciiz "p6.bin"
   p7_img:   .asciiz "p7.bin"
+  pp_img:   .asciiz "pp.bin"
 
   .eqv  BASE_DISPLAY        0x10040000
   .eqv  DISPLAY_NEXT_LINE   0x140 #320 # 0x200 #512
 
   # NINTENDO
-  .eqv  NINTENDO_RAM     0x10010100
+  .eqv  NINTENDO_RAM     0x10010500
   .eqv  NINTENDO_POS     0x10040024
   .eqv  NINTENDO_WIDTH   260
   .eqv  NINTENDO_HEIGHT  43
 
   # MENU
-  .eqv  MENU_RAM         0x10012cac
+  .eqv  MENU_RAM         0x100130AC
   .eqv  MENU_POS         0x10040000
   .eqv  MENU_WIDTH       320
   .eqv  MENU_HEIGHT      240
 
+  # GAME 1 PLAYER
+  .eqv  GAME_BG_1_PLAYER_RAM    0x10025CAC
+  .eqv  GAME_BG_1_PLAYER_POS    0x10040000
+  .eqv  GAME_BG_1_PLAYER_WIDTH  320
+  .eqv  GAME_BG_1_PLAYER_HEIGHT 240
+
+  # GAME 2 PLAYER
+  .eqv  GAME_BG_2_PLAYER_RAM    0x10025CAC
+  .eqv  GAME_BG_2_PLAYER_POS    0x10040000
+  .eqv  GAME_BG_2_PLAYER_WIDTH  320
+  .eqv  GAME_BG_2_PLAYER_HEIGHT 240
+
+  # GAME 3 PLAYER
+  .eqv  GAME_BG_3_PLAYER_RAM    0x10025CAC
+  .eqv  GAME_BG_3_PLAYER_POS    0x10040000
+  .eqv  GAME_BG_3_PLAYER_WIDTH  320
+  .eqv  GAME_BG_3_PLAYER_HEIGHT 240
+
+  # GAME 4 PLAYER
+  .eqv  GAME_BG_4_PLAYER_RAM     0x10025CAC
+  .eqv  GAME_BG_4_PLAYER_POS     0x10040000
+  .eqv  GAME_BG_4_PLAYER_WIDTH   320
+  .eqv  GAME_BG_4_PLAYER_HEIGHT  240
+
   # SETA
-  .eqv  SETA_RAM         0x100258AC
+  .eqv  SETA_RAM         0x100388AC
   .eqv  SETA_POS_1       0x1004ce71
   .eqv  SETA_POS_2       0x1004cee5
   .eqv  SETA_POS_3       0x1004ec71
@@ -108,44 +133,21 @@
   .eqv  SETA_WIDTH       8
   .eqv  SETA_HEIGHT      8
 
-  # GAME 1 PLAYER
-  .eqv  GAME_BG_1_PLAYER_RAM    0x100258EC
-  .eqv  GAME_BG_1_PLAYER_POS    0x10040000
-  .eqv  GAME_BG_1_PLAYER_WIDTH  320
-  .eqv  GAME_BG_1_PLAYER_HEIGHT 240
-
-  # GAME 2 PLAYER
-  .eqv  GAME_BG_2_PLAYER_RAM    0x100258EC
-  .eqv  GAME_BG_2_PLAYER_POS    0x10040000
-  .eqv  GAME_BG_2_PLAYER_WIDTH  320
-  .eqv  GAME_BG_2_PLAYER_HEIGHT 240
-
-  # GAME 3 PLAYER
-  .eqv  GAME_BG_3_PLAYER_RAM    0x100258EC
-  .eqv  GAME_BG_3_PLAYER_POS    0x10040000
-  .eqv  GAME_BG_3_PLAYER_WIDTH  320
-  .eqv  GAME_BG_3_PLAYER_HEIGHT 240
-
-  # GAME 4 PLAYER
-  .eqv  GAME_BG_4_PLAYER_RAM     0x100258EC
-  .eqv  GAME_BG_4_PLAYER_POS     0x10040000
-  .eqv  GAME_BG_4_PLAYER_WIDTH   320
-  .eqv  GAME_BG_4_PLAYER_HEIGHT  240
-
   # PECAS
   .eqv  PECA_POS           0x10040040
   .eqv  PECA_WIDTH         8
   .eqv  PECA_HEIGHT        8
-  .eqv  PECA_1_RAM         0x10010000 # PECA 1
-  .eqv  PECA_2_RAM         0x10010040 # PECA 2
-  .eqv  PECA_3_RAM         0x10010080 # PECA 3
-  .eqv  PECA_4_RAM         0x100100c0 # PECA 4
-  .eqv  PECA_5_RAM         0x10010100 # PECA 5
-  .eqv  PECA_6_RAM         0x10010140 # PECA 6
-  .eqv  PECA_7_RAM         0x10010180 # PECA 7
+  .eqv  PECA_1_RAM         0x100388EC # PECA 1
+  .eqv  PECA_2_RAM         0x1003892C # PECA 2
+  .eqv  PECA_3_RAM         0x1003896C # PECA 3
+  .eqv  PECA_4_RAM         0x100389AC # PECA 4
+  .eqv  PECA_5_RAM         0x100389EC # PECA 5
+  .eqv  PECA_6_RAM         0x10038A2C # PECA 6
+  .eqv  PECA_7_RAM         0x10038A6C # PECA 7
+  .eqv  PECA_PRETA_RAM     0x10038AAC # PECA X
 
   # END ANIM
-  .eqv  END_ANIM_RAM      0x10010100
+  .eqv  END_ANIM_RAM      0x10025CAC
   .eqv  END_ANIM_POS      0x10040000
   .eqv  END_ANIM_WIDTH    320
   .eqv  END_ANIM_HEIGHT   240
@@ -382,8 +384,8 @@ main:
     add $t6, $zero, $zero
     sw  $t6, 0($t7)
   nao_reseta_seed:
-    li $v0, 1   # 1 is the system call code to show an int number
-    syscall
+    # li $v0, 1   # 1 is the system call code to show an int number
+    # syscall
 
     move  $t4, $a0
 
@@ -408,6 +410,12 @@ main:
     beq $s6, $t3, game_state_4   # if 4 player
 
   volta_game_state:
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal  desenha_pecas_antigas
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
     li  $t7, 0x10040000
     li  $t5, 0xff000020
     lw  $s0, 0($t5)
@@ -455,13 +463,6 @@ main:
     li    $a1, PECA_7_RAM
 
   pula_tudo:
-    # AQUI!
-    addi $sp, $sp, -4
-    sw   $ra, 0($sp)
-    jal  desenha_pecas_antigas
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
-
     addi $sp, $sp, -4
     sw   $ra, 0($sp)
     jal  desenha_pecas_atuais
@@ -493,7 +494,84 @@ main:
     j     nenhum_state
 
   desenha_pecas_antigas:
-    jr   $ra
+    li   $t1, 18		# inicializa y
+    la   $t5, 0xff000012
+
+  FOR1:
+    lb   $t0, 0($t5)	# le o byte a ser avaliado
+    addi $t5, $t5, -1       # proximo byte !!!!!!!!!!!!!!!!!!!!!!!
+    addi $t1, $t1, -1	# decrementa y
+
+    li   $t2, 8 		# inicializa x \
+    beq  $t1, $zero, CLOSE
+
+  FOR2:
+    addi $t2, $t2, -1	# decrementa x
+    li   $t3, 1		# inicializa comparador
+    and  $t3, $t3, $t0	# pega primeiro bit do byte
+
+    # verificar se t2 é igual a zero, pq se for nao
+    # pode ficar nesse loop para o resto da vida
+    # beq $t2, $zero, tem q decrementar $t1 e voltar t2 para 8
+    # acho q se faz isso dando beq pra for1
+    beq  $t2, $zero, FOR1
+
+    srl  $t0, $t0, 1	# coloca o segundo bit como primeiro
+
+    # !!! isso entra em loop infinito !!!
+    beq  $t3, $zero, FOR2
+    # !!! se todos os bits forem zero entra em loop !!!
+
+    move $t4 $t2		# operações do x feitas no $t4
+    move $t6, $t1		# operações do y feitas no $t6
+
+    # fix pra y (a ideia aqui é que a colisao é prevista, ou seja,
+    # se vamos preve-la o bloco deve ser colocado no lugar que ele
+    # estaria quando colide e nao no lugar que ele realmente esta)
+    addi $t6, $t6, 1
+
+    addi $t4, $t4, 1       	# x+1
+    li   $t7, 8
+    mul  $t4, $t4, $t7	# (x+1)*8
+    mul  $t6, $t6, $t7	# y*8
+    li   $t7, 70
+    add  $t6, $t6, $t7	# (y*8)+70
+    li   $t7, 320
+    mul  $t6, $t6, $t7	# ((y*8)+70)*320
+    add  $t6, $t6, $t4	# ((y*8)+70)*320 + (x+1)*8
+    la   $t7, BASE_DISPLAY
+    add  $t6, $t6, $t7	# ((y*8)+70)*320 + (x+1)*8 + POS_DISPLAY
+
+    # luiz! faça sua magica
+
+    # LOAD
+    la   $a0, pp_img
+    la   $a1, PECA_PRETA_RAM
+    la   $a2, PECA_WIDTH
+    la   $a3, PECA_HEIGHT
+    jal  load_image
+
+    li $v0, 1
+    syscall
+
+    move $a2, $t6
+    la   $a0, PECA_WIDTH
+    la   $a1, PECA_PRETA_RAM
+    la   $a3, PECA_HEIGHT
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal  draw_sprite
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
+    # comentei isso pq ele volta independente se os
+    # bits sao zero ou um
+    # beq $t2, $zero, FOR1    # finaliza o FOR
+    j FOR2
+
+  CLOSE:
+    jr $ra
 
   desenha_pecas_atuais:
     add   $a2, $s0, $t7
@@ -626,18 +704,10 @@ escreve_na_matrix:
 # END
 ###
   end_state:
-    li    $v0, 1
-    move    $a0, $s7
-    syscall
   end_anim:
+    li   $t0, 25
 
-    li    $v0, 1
-    move    $a0, $s7
-    syscall
-
-    li   $t0, 16
-
-    beq  $s5, $t0, end_anim_end
+    beq  $s5, $t0, end_game
     addi $s5, $s5, 1
 
     la  $a1, END_ANIM_RAM
@@ -681,97 +751,97 @@ escreve_na_matrix:
     li   $t1, 17
     li   $t2, 18
     li   $t3, 19
-    # li   $t4, 20
-    # li   $t5, 21
-    # li   $t6, 22
-    # li   $t7, 23
+    li   $t4, 20
+    li   $t5, 21
+    li   $t6, 22
+    li   $t7, 23
     beq  $s5, $t1, end_anim_draw_17
     beq  $s5, $t2, end_anim_draw_18
     beq  $s5, $t3, end_anim_draw_19
-    # beq  $s5, $t4, end_anim_draw_20
-    # beq  $s5, $t5, end_anim_draw_21
-    # beq  $s5, $t6, end_anim_draw_22
-    # beq  $s5, $t7, end_anim_draw_23
-    #
-    # li   $t1, 24
-    # li   $t2, 25
-    # li   $t3, 26
-    # li   $t4, 27
-    # li   $t5, 28
-    # li   $t6, 29
-    # li   $t7, 30
-    # beq  $s5, $t1, end_anim_draw_24
-    # beq  $s5, $t2, end_anim_draw_25
-    # beq  $s5, $t3, end_anim_draw_26
-    # beq  $s5, $t4, end_anim_draw_27
-    # beq  $s5, $t5, end_anim_draw_28
-    # beq  $s5, $t6, end_anim_draw_29
-    # beq  $s5, $t7, end_anim_draw_30
+    beq  $s5, $t4, end_anim_draw_20
+    beq  $s5, $t5, end_anim_draw_21
+    beq  $s5, $t6, end_anim_draw_22
+    beq  $s5, $t7, end_anim_draw_23
 
-    # li   $t1, 31
-    # li   $t2, 32
-    # li   $t3, 33
-    # li   $t4, 34
-    # li   $t5, 35
-    # li   $t6, 36
-    # li   $t7, 37
-    # beq  $s5, $t1, end_anim_draw_31
-    # beq  $s5, $t2, end_anim_draw_32
-    # beq  $s5, $t3, end_anim_draw_33
-    # beq  $s5, $t4, end_anim_draw_34
-    # beq  $s5, $t5, end_anim_draw_35
-    # beq  $s5, $t6, end_anim_draw_36
-    # beq  $s5, $t7, end_anim_draw_37
-    #
-    # li   $t1, 38
-    # li   $t2, 39
-    # li   $t3, 40
-    # li   $t4, 41
-    # li   $t5, 42
-    # li   $t6, 43
-    # li   $t7, 44
-    # beq  $s5, $t1, end_anim_draw_38
-    # beq  $s5, $t2, end_anim_draw_39
-    # beq  $s5, $t3, end_anim_draw_40
-    # beq  $s5, $t4, end_anim_draw_41
-    # beq  $s5, $t5, end_anim_draw_42
-    # beq  $s5, $t6, end_anim_draw_43
-    # beq  $s5, $t7, end_anim_draw_44
-    #
-    # li   $t1, 45
-    # li   $t2, 46
-    # li   $t3, 47
-    # li   $t4, 48
-    # li   $t5, 49
-    # li   $t6, 50
-    # li   $t7, 51
-    # beq  $s5, $t1, end_anim_draw_45
-    # beq  $s5, $t2, end_anim_draw_46
-    # beq  $s5, $t3, end_anim_draw_47
-    # beq  $s5, $t4, end_anim_draw_48
-    # beq  $s5, $t5, end_anim_draw_49
-    # beq  $s5, $t6, end_anim_draw_50
-    # beq  $s5, $t7, end_anim_draw_51
-    #
-    # li   $t1, 52
-    # li   $t2, 53
-    # li   $t3, 54
-    # li   $t4, 55
-    # li   $t5, 56
-    # li   $t6, 57
-    # li   $t7, 58
-    # beq  $s5, $t1, end_anim_draw_52
-    # beq  $s5, $t2, end_anim_draw_53
-    # beq  $s5, $t3, end_anim_draw_54
-    # beq  $s5, $t4, end_anim_draw_55
-    # beq  $s5, $t5, end_anim_draw_56
-    # beq  $s5, $t6, end_anim_draw_57
-    # beq  $s5, $t7, end_anim_draw_58
-    #
-    # li   $t1, 59
-    # li   $t2, 60
-    # beq  $s5, $t1, end_anim_draw_59
-    # beq  $s5, $t2, end_anim_draw_60
+    li   $t1, 24
+    li   $t2, 25
+    li   $t3, 26
+    li   $t4, 27
+    li   $t5, 28
+    li   $t6, 29
+    li   $t7, 30
+    beq  $s5, $t1, end_anim_draw_24
+    beq  $s5, $t2, end_anim_draw_25
+    beq  $s5, $t3, end_anim_draw_26
+    beq  $s5, $t4, end_anim_draw_27
+    beq  $s5, $t5, end_anim_draw_28
+    beq  $s5, $t6, end_anim_draw_29
+    beq  $s5, $t7, end_anim_draw_30
+
+    li   $t1, 31
+    li   $t2, 32
+    li   $t3, 33
+    li   $t4, 34
+    li   $t5, 35
+    li   $t6, 36
+    li   $t7, 37
+    beq  $s5, $t1, end_anim_draw_31
+    beq  $s5, $t2, end_anim_draw_32
+    beq  $s5, $t3, end_anim_draw_33
+    beq  $s5, $t4, end_anim_draw_34
+    beq  $s5, $t5, end_anim_draw_35
+    beq  $s5, $t6, end_anim_draw_36
+    beq  $s5, $t7, end_anim_draw_37
+
+    li   $t1, 38
+    li   $t2, 39
+    li   $t3, 40
+    li   $t4, 41
+    li   $t5, 42
+    li   $t6, 43
+    li   $t7, 44
+    beq  $s5, $t1, end_anim_draw_38
+    beq  $s5, $t2, end_anim_draw_39
+    beq  $s5, $t3, end_anim_draw_40
+    beq  $s5, $t4, end_anim_draw_41
+    beq  $s5, $t5, end_anim_draw_42
+    beq  $s5, $t6, end_anim_draw_43
+    beq  $s5, $t7, end_anim_draw_44
+
+    li   $t1, 45
+    li   $t2, 46
+    li   $t3, 47
+    li   $t4, 48
+    li   $t5, 49
+    li   $t6, 50
+    li   $t7, 51
+    beq  $s5, $t1, end_anim_draw_45
+    beq  $s5, $t2, end_anim_draw_46
+    beq  $s5, $t3, end_anim_draw_47
+    beq  $s5, $t4, end_anim_draw_48
+    beq  $s5, $t5, end_anim_draw_49
+    beq  $s5, $t6, end_anim_draw_50
+    beq  $s5, $t7, end_anim_draw_51
+
+    li   $t1, 52
+    li   $t2, 53
+    li   $t3, 54
+    li   $t4, 55
+    li   $t5, 56
+    li   $t6, 57
+    li   $t7, 58
+    beq  $s5, $t1, end_anim_draw_52
+    beq  $s5, $t2, end_anim_draw_53
+    beq  $s5, $t3, end_anim_draw_54
+    beq  $s5, $t4, end_anim_draw_55
+    beq  $s5, $t5, end_anim_draw_56
+    beq  $s5, $t6, end_anim_draw_57
+    beq  $s5, $t7, end_anim_draw_58
+
+    li   $t1, 59
+    li   $t2, 60
+    beq  $s5, $t1, end_anim_draw_59
+    beq  $s5, $t2, end_anim_draw_60
 
   end_anim_end:
     j nenhum_state
@@ -928,333 +998,333 @@ escreve_na_matrix:
     jal draw_sprite
     j   end_anim_end
 
-  # end_anim_draw_20:
-  #   la  $a0, a20
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_21:
-  #   la  $a0, a21
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_22:
-  #   la  $a0, a22
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_23:
-  #   la  $a0, a23
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_24:
-  #   la  $a0, a24
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_25:
-  #   la  $a0, a25
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_26:
-  #   la  $a0, a26
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_27:
-  #   la  $a0, a27
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_28:
-  #   la  $a0, a28
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_29:
-  #   la  $a0, a29
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_30:
-  #   la  $a0, a30
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
+  end_anim_draw_20:
+    la  $a0, a20
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
 
-  # end_anim_draw_31:
-  #   la  $a0, a31
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_32:
-  #   la  $a0, a32
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_33:
-  #   la  $a0, a33
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_34:
-  #   la  $a0, a34
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_35:
-  #   la  $a0, a35
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_36:
-  #   la  $a0, a36
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_37:
-  #   la  $a0, a37
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_38:
-  #   la  $a0, a38
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_39:
-  #   la  $a0, a39
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_40:
-  #   la  $a0, a40
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_41:
-  #   la  $a0, a41
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_42:
-  #   la  $a0, a42
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_43:
-  #   la  $a0, a43
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_44:
-  #   la  $a0, a44
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_45:
-  #   la  $a0, a45
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_46:
-  #   la  $a0, a46
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_47:
-  #   la  $a0, a47
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_48:
-  #   la  $a0, a48
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_49:
-  #   la  $a0, a49
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_50:
-  #   la  $a0, a50
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_51:
-  #   la  $a0, a51
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_52:
-  #   la  $a0, a52
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_53:
-  #   la  $a0, a53
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_54:
-  #   la  $a0, a54
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_55:
-  #   la  $a0, a55
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_56:
-  #   la  $a0, a56
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_57:
-  #   la  $a0, a57
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_58:
-  #   la  $a0, a58
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_59:
-  #   la  $a0, a59
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
-  #
-  # end_anim_draw_60:
-  #   la  $a0, a60
-  #   jal load_image
-  #   li  $a2, END_ANIM_POS
-  #   li  $a0, END_ANIM_WIDTH
-  #   jal draw_sprite
-  #   j   end_anim_end
+  end_anim_draw_21:
+    la  $a0, a21
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_22:
+    la  $a0, a22
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_23:
+    la  $a0, a23
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_24:
+    la  $a0, a24
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_25:
+    la  $a0, a25
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_26:
+    la  $a0, a26
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_27:
+    la  $a0, a27
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_28:
+    la  $a0, a28
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_29:
+    la  $a0, a29
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_30:
+    la  $a0, a30
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_31:
+    la  $a0, a31
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_32:
+    la  $a0, a32
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_33:
+    la  $a0, a33
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_34:
+    la  $a0, a34
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_35:
+    la  $a0, a35
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_36:
+    la  $a0, a36
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_37:
+    la  $a0, a37
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_38:
+    la  $a0, a38
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_39:
+    la  $a0, a39
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_40:
+    la  $a0, a40
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_41:
+    la  $a0, a41
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_42:
+    la  $a0, a42
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_43:
+    la  $a0, a43
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_44:
+    la  $a0, a44
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_45:
+    la  $a0, a45
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_46:
+    la  $a0, a46
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_47:
+    la  $a0, a47
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_48:
+    la  $a0, a48
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_49:
+    la  $a0, a49
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_50:
+    la  $a0, a50
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_51:
+    la  $a0, a51
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_52:
+    la  $a0, a52
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_53:
+    la  $a0, a53
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_54:
+    la  $a0, a54
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_55:
+    la  $a0, a55
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_56:
+    la  $a0, a56
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_57:
+    la  $a0, a57
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_58:
+    la  $a0, a58
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_59:
+    la  $a0, a59
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
+
+  end_anim_draw_60:
+    la  $a0, a60
+    jal load_image
+    li  $a2, END_ANIM_POS
+    li  $a0, END_ANIM_WIDTH
+    jal draw_sprite
+    j   end_anim_end
 
 ###
 # NENHUM
@@ -1580,11 +1650,6 @@ draw_sprite_end:
     j volta
 
   click_n:
-
-    li  $v0, 1
-    move  $a0, $s7
-    syscall
-
     li $s7, 3
     j change_end_state
 
@@ -1628,9 +1693,6 @@ pula_linha:
   j    limpa_area_loop
 
 fim_limpa_area:
-  li  $v0, 1
-  move $a0, $t1
-  syscall
   jr $ra
 
   ################################################################################
@@ -1641,7 +1703,7 @@ fim_limpa_area:
 
   dorme:
     ori    $v0, $zero, 32		     # 32 é o syscall para sleep
-    ori    $a0, $zero, 60  		   # $a0 é a quantidade de miliseconds que dorme
+    ori    $a0, $zero, 30  		   # $a0 é a quantidade de miliseconds que dorme
     syscall                      # dorme por 60 milisegundos
     jr     $ra                   # volta para depois do jal dorme da main
 
@@ -1651,9 +1713,9 @@ fim_limpa_area:
 #
 #
 end_game:
-  li   $v0, 16       # system call para fechar o arquivo
-  move $a0, $s6      # fecha o descriptor do arquivo
-  syscall
+  # li   $v0, 16       # system call para fechar o arquivo
+  # move $a0, $s6      # fecha o descriptor do arquivo
+  # syscall
   li    $v0, 10      # $v0 =
   syscall
 
