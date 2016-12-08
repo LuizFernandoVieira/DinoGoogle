@@ -372,11 +372,11 @@ main:
 
     addi $s0, $s0, 1
 
-    li $a1, 7
-    lw $t6, 0($t7)
-    lw $a0, 0($t7)  # seed aleatoria
+    li   $a1, 7
+    lw   $t6, 0($t7)
+    lw   $a0, 0($t7)  # seed aleatoria
     addi $t6, $t6, 1
-    sw $t6, 0($t7)
+    sw   $t6, 0($t7)
 
     bne $t6, 8, nao_reseta_seed
     add $t6, $zero, $zero
@@ -386,7 +386,6 @@ main:
     syscall
 
     move  $t4, $a0
-    # -------
 
     sw  $t0, 0($t5)
     sw  $t1, 4($t5)
@@ -397,38 +396,6 @@ main:
     j game_state
 
   game_state:
-    # Começa na posição 0xff000000
-    # mapa 4 * 32 = 128bits = 16bytes -> 0x00000010
-    # peca 1 * 32 =  32bits =  4bytes -> 0x00000004
-
-    # 0xff000000 - 0xff000020 => matrix 1
-    # 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
-    # 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
-    # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
-    # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
-    # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
-
-    # 0xff000100 - 0xff000120 => matrix 2
-    # 0xff000120 - 0xff000124 => $s0 -> pos bloco 1
-    # 0xff000124 - 0xff000128 => $s1 -> pos bloco 2
-    # 0xff000128 - 0xff00012b => $s2 -> pos bloco 3
-    # 0xff00012b - 0xff000130 => $s3 -> pos bloco 4
-    # 0xff000130 - 0xff000134 => $s4 -> qual bloco (7)
-
-    # 0xff000200 - 0xff000220 => matrix 3
-    # 0xff000220 - 0xff000224 => $s0 -> pos bloco 1
-    # 0xff000224 - 0xff000228 => $s1 -> pos bloco 2
-    # 0xff000228 - 0xff00022b => $s2 -> pos bloco 3
-    # 0xff00022b - 0xff000230 => $s3 -> pos bloco 4
-    # 0xff000230 - 0xff000234 => $s4 -> qual bloco (7)
-
-    # 0xff000300 - 0xff000320 => matrix 4
-    # 0xff000320 - 0xff000324 => $s0 -> pos bloco 1
-    # 0xff000324 - 0xff000328 => $s1 -> pos bloco 2
-    # 0xff000328 - 0xff00032b => $s2 -> pos bloco 3
-    # 0xff00032b - 0xff000330 => $s3 -> pos bloco 4
-    # 0xff000330 - 0xff000334 => $s4 -> qual bloco (7)
-
     li  $t0, 1
     li  $t1, 2
     li  $t2, 3
@@ -488,17 +455,18 @@ main:
     li    $a1, PECA_7_RAM
 
   pula_tudo:
-    add   $a2, $s0, $t7
-    jal   draw_sprite
+    # AQUI!
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal  desenha_pecas_antigas
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
 
-    add   $a2, $s1, $t7
-    jal   draw_sprite
-
-    add   $a2, $s2, $t7
-    jal   draw_sprite
-
-    add   $a2, $s3, $t7
-    jal   draw_sprite
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal  desenha_pecas_atuais
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
 
     li    $t5, 0xff000020
 
@@ -524,7 +492,41 @@ main:
 
     j     nenhum_state
 
-preve_colisao:
+  desenha_pecas_antigas:
+    jr   $ra
+
+  desenha_pecas_atuais:
+    add   $a2, $s0, $t7
+    addi  $sp, $sp, -4
+    sw    $ra, 0($sp)
+    jal   draw_sprite
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
+    add   $a2, $s1, $t7
+    addi  $sp, $sp, -4
+    sw    $ra, 0($sp)
+    jal   draw_sprite
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
+    add   $a2, $s2, $t7
+    addi  $sp, $sp, -4
+    sw    $ra, 0($sp)
+    jal   draw_sprite
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
+    add   $a2, $s3, $t7
+    addi  $sp, $sp, -4
+    sw    $ra, 0($sp)
+    jal   draw_sprite
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
+    jr   $ra
+
+  preve_colisao:
     addi  $sp, $sp, -4
     sw    $ra, 0($sp)
 
@@ -1279,7 +1281,6 @@ teste:
 # $a1 = endereco na RAM
 # $a2 = width
 # $a3 = height
-
 load_image:
   move $t3, $a1     # $t3 endereco na RAM
   move $t1, $a2     # $t1 width
@@ -1655,3 +1656,35 @@ end_game:
   syscall
   li    $v0, 10      # $v0 =
   syscall
+
+# Começa na posição 0xff000000
+# mapa 4 * 32 = 128bits = 16bytes -> 0x00000010
+# peca 1 * 32 =  32bits =  4bytes -> 0x00000004
+
+# 0xff000000 - 0xff000020 => matrix 1
+# 0xff000020 - 0xff000024 => $s0 -> pos bloco 1
+# 0xff000024 - 0xff000028 => $s1 -> pos bloco 2
+# 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
+# 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
+# 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
+
+# 0xff000100 - 0xff000120 => matrix 2
+# 0xff000120 - 0xff000124 => $s0 -> pos bloco 1
+# 0xff000124 - 0xff000128 => $s1 -> pos bloco 2
+# 0xff000128 - 0xff00012b => $s2 -> pos bloco 3
+# 0xff00012b - 0xff000130 => $s3 -> pos bloco 4
+# 0xff000130 - 0xff000134 => $s4 -> qual bloco (7)
+
+# 0xff000200 - 0xff000220 => matrix 3
+# 0xff000220 - 0xff000224 => $s0 -> pos bloco 1
+# 0xff000224 - 0xff000228 => $s1 -> pos bloco 2
+# 0xff000228 - 0xff00022b => $s2 -> pos bloco 3
+# 0xff00022b - 0xff000230 => $s3 -> pos bloco 4
+# 0xff000230 - 0xff000234 => $s4 -> qual bloco (7)
+
+# 0xff000300 - 0xff000320 => matrix 4
+# 0xff000320 - 0xff000324 => $s0 -> pos bloco 1
+# 0xff000324 - 0xff000328 => $s1 -> pos bloco 2
+# 0xff000328 - 0xff00032b => $s2 -> pos bloco 3
+# 0xff00032b - 0xff000330 => $s3 -> pos bloco 4
+# 0xff000330 - 0xff000334 => $s4 -> qual bloco (7)
