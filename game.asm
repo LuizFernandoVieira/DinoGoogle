@@ -68,6 +68,7 @@
   nintendo_img: .asciiz "nintendo.bin"
   menu_img: .asciiz "menu.bin"
   seta_img: .asciiz "seta.bin"
+  music_img: .asciiz "m.bin"
   bg1_img:  .asciiz "bg1.bin"
   bg2_img:  .asciiz "bg2.bin"
   bg3_img:  .asciiz "bg3.bin"
@@ -120,6 +121,12 @@
   .eqv  GAME_BG_4_PLAYER_POS     0x10040000
   .eqv  GAME_BG_4_PLAYER_WIDTH   320
   .eqv  GAME_BG_4_PLAYER_HEIGHT  240
+
+  # MUSIC
+  .eqv  MUSIC_RAM     0x10025CAC
+  .eqv  MUSIC_POS     0x10040000
+  .eqv  MUSIC_WIDTH   320
+  .eqv  MUSIC_HEIGHT  240
 
   # SETA
   .eqv  SETA_RAM         0x100388AC
@@ -195,11 +202,13 @@ main:
     li  $t0, 1
     li  $t1, 2
     li  $t2, 3
+    li  $t3, 4
 
     beq $s7, $zero, intro_state # if game state 0
     beq $s7, $t0, menu_state    # if game state 1
     beq $s7, $t1, game_state    # if game state 2
     beq $s7, $t2, end_state     # if game state 3
+    beq $s7, $t3, music_state   # if game state 4
     j nenhum_state              # else
 
 ###
@@ -1325,6 +1334,63 @@ escreve_na_matrix:
     j   end_anim_end
 
 ###
+# MUSIC STATE
+###
+  load_music_state:
+    la  $a0, music_img
+    li  $a1, MUSIC_RAM
+    li  $a2, MUSIC_WIDTH
+    li  $a3, MUSIC_HEIGHT
+    jal load_image
+
+    li  $t0, 4      # pos da seta na tela
+    li  $t1, 0xff000400 # pos que guarda dados da seta na memoria
+    sw  $t0, 0($t1)
+
+  music_state:
+    li    $a1, MUSIC_RAM
+    li    $a2, MUSIC_POS
+    li    $a0, MUSIC_WIDTH
+    li    $a3, MUSIC_HEIGHT
+    jal   draw_sprite
+
+    # verificando o valor em $s0
+    # para escolher a pos da seta
+    li  $t0, 1
+    li  $t1, 2
+    li  $t2, 3
+    li  $t3, 4
+
+    li  $t4, 0xff000400
+    lw  $t5, 0($t4)
+
+    beq $t5, $t0, music_case_1   # if 1 -> A
+    beq $t5, $t1, music_case_2   # if 2 -> B
+    beq $t5, $t2, music_case_3   # if 3 -> C
+    beq $t5, $t3, music_case_4   # if 3 -> BACK
+
+  music_case_1:
+    li  $a2, 0x100489c2 #35266 dec => 89C2 hex
+    j   music_case_end
+  music_case_2:
+    li  $a2, 0x10048a2f #35375 dec => 8A2F hex
+    j   music_case_end
+  music_case_3:
+    li  $a2, 0x1004b1c2 #45506 dec => B1C2 hex
+    j   music_case_end
+  music_case_4:
+    li  $a2, 0x1004b22f #45615 dec => B22F hex
+    j   music_case_end
+
+  music_case_end:
+    li    $a1, SETA_RAM    # $a1 = endereco na RAM
+    li    $a0, SETA_WIDTH  # $a0 = width
+    li    $a3, SETA_HEIGHT # $a3 = height
+    jal   draw_sprite
+
+    j nenhum_state
+
+###
 # NENHUM
 ###
   nenhum_state:
@@ -1451,8 +1517,6 @@ draw_sprite_end:
 # li    $v0, 4
 # add   $a0, $zero, $t1
 # syscall
-
-
   checa_input:
     li	  $t0, 0xff100000	        # Carrega a posicao do receiver control para $t0
     li    $t5, 0
@@ -1462,6 +1526,8 @@ draw_sprite_end:
     beq	  $t1, $zero, volta      # Se o receiver control for zero ignora, se nao pega o valor
     lw	  $t5, 4($t0)	           # Quando fica pronto $v0 recebe o data register
 
+    li    $t2, 0x6D
+    beq   $t5, $t2, click_m
     li    $t2, 0x6E               # n
     beq   $t5, $t2, click_n
     li    $t2, 0x20               # space
@@ -1480,13 +1546,34 @@ draw_sprite_end:
     jr    $ra
 
   click_a:
+    li    $t0, 4
+    beq   $s7, $t0, click_a_music_state # music state
     li    $t0, 2
-    beq   $s7, $t0, click_a_game_state
+    beq   $s7, $t0, click_a_game_state  # game state
     li    $t0, 2
     li    $t1, 4
     beq   $s6, $t0, click_a_seta_2 # 1
     beq   $s6, $t1, click_a_seta_4 # 3
     j     volta
+
+  click_a_music_state:
+    li    $t0, 2
+    li    $t1, 4
+    li    $t2, 0xff000400
+    lw    $t3, 0($t2)
+    beq   $t3, $t0, click_a_seta_music_a # 2
+    beq   $t3, $t1, click_a_seta_music_c # 4
+    j     volta
+
+  click_a_seta_music_a:
+    li   $t0, 1
+    sw   $t0, 0($t2)
+    j volta
+
+  click_a_seta_music_c:
+    li   $t0, 3
+    sw   $t0, 0($t2)
+    j volta
 
   click_a_game_state:
     li    $t5, 0xff000020
@@ -1540,7 +1627,7 @@ draw_sprite_end:
     sw    $s2, 8($t5)
     sw    $s3, 12($t5)
 
-NAO_A:
+  NAO_A:
     j     volta
 
   click_a_seta_2:
@@ -1564,12 +1651,33 @@ NAO_A:
     j     volta
 
   click_d:
+    li    $t0, 4
+    beq   $s7, $t0, click_d_music_state # music state
     li    $t0, 2
     beq   $s7, $t0, click_d_game_state
     li    $t0, 1
     li    $t1, 3
     beq   $s6, $t0, click_d_seta_1 # 2
     beq   $s6, $t1, click_d_seta_3 # 4
+    j volta
+
+  click_d_music_state:
+    li    $t0, 1
+    li    $t1, 3
+    li    $t2, 0xff000400
+    lw    $t3, 0($t2)
+    beq   $t3, $t0, click_a_seta_music_b # 1
+    beq   $t3, $t1, click_a_seta_music_back # 3
+    j     volta
+
+  click_a_seta_music_b:
+    li   $t0, 2
+    sw   $t0, 0($t2)
+    j volta
+
+  click_a_seta_music_back:
+    li   $t0, 4
+    sw   $t0, 0($t2)
     j volta
 
   click_d_game_state:
@@ -1648,11 +1756,32 @@ NAO_D:
     j volta
 
   click_w:
+    li    $t0, 4
+    beq   $s7, $t0, click_w_music_state # music state
     li    $t0, 3
     li    $t1, 4
     beq   $s6, $t0, click_w_seta_3 # 1
     beq   $s6, $t1, click_w_seta_4 # 2
     j     volta
+
+  click_w_music_state:
+    li    $t0, 3
+    li    $t1, 4
+    li    $t2, 0xff000400
+    lw    $t3, 0($t2)
+    beq   $t3, $t0, click_w_seta_music_a # 3
+    beq   $t3, $t1, click_w_seta_music_b # 4
+    j     volta
+
+  click_w_seta_music_a:
+    li   $t0, 1
+    sw   $t0, 0($t2)
+    j volta
+
+  click_w_seta_music_b:
+    li   $t0, 2
+    sw   $t0, 0($t2)
+    j volta
 
   click_w_seta_3:
     li    $s6, 1
@@ -1679,11 +1808,32 @@ NAO_D:
     j     volta
 
   click_s:
+    li    $t0, 4
+    beq   $s7, $t0, click_s_music_state # music state
     li    $t0, 1
     li    $t1, 2
     beq   $s6, $t0, click_s_seta_1 # 3
     beq   $s6, $t1, click_s_seta_2 # 4
     j     volta
+
+  click_s_music_state:
+    li    $t0, 1
+    li    $t1, 2
+    li    $t2, 0xff000400
+    lw    $t3, 0($t2)
+    beq   $t3, $t0, click_s_seta_music_c # 1
+    beq   $t3, $t1, click_s_seta_music_back # 2
+    j     volta
+
+  click_s_seta_music_c:
+    li   $t0, 3
+    sw   $t0, 0($t2)
+    j volta
+
+  click_s_seta_music_back:
+    li   $t0, 4
+    sw   $t0, 0($t2)
+    j volta
 
   click_s_seta_1:
     li    $s6, 3
@@ -1728,6 +1878,10 @@ NAO_D:
   click_n:
     li $s7, 3
     j change_end_state
+
+  click_m:
+    li $s7, 4
+    j load_music_state
 
 ##########################################
 
@@ -1826,3 +1980,5 @@ end_game:
 # 0xff000328 - 0xff00032b => $s2 -> pos bloco 3
 # 0xff00032b - 0xff000330 => $s3 -> pos bloco 4
 # 0xff000330 - 0xff000334 => $s4 -> qual bloco (7)
+
+# 0xff000400 => 1 byte para indicar seta da tela musica
