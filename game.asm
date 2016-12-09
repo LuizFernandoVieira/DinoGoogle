@@ -2,17 +2,17 @@
 # JOGO - ORGANIZACAO E ARQUITETURA DE COMPUTADORES
 # AUTOR - LUIZ FERNANDO VIEIRA DE CASTRO FERREIRA
 # https://xem.github.io/3DShomebrew/tools/image-to-bin.html
-.data
-  a1:   .asciiz "i1.bin"
-  a2:   .asciiz "i1.bin"
-  a3:   .asciiz "i2.bin"
-  a4:   .asciiz "i3.bin"
-  a5:   .asciiz "i4.bin"
-  a6:   .asciiz "i5.bin"
-  a7:   .asciiz "i6.bin"
-  a8:   .asciiz "i7.bin"
-  a9:   .asciiz "i8.bin"
 
+.data
+  a1:    .asciiz "i1.bin"
+  a2:    .asciiz "i1.bin"
+  a3:    .asciiz "i2.bin"
+  a4:    .asciiz "i3.bin"
+  a5:    .asciiz "i4.bin"
+  a6:    .asciiz "i5.bin"
+  a7:    .asciiz "i6.bin"
+  a8:    .asciiz "i7.bin"
+  a9:    .asciiz "i8.bin"
   a10:   .asciiz "i9.bin"
   a11:   .asciiz "i10.bin"
   a12:   .asciiz "i11.bin"
@@ -24,7 +24,6 @@
   a18:   .asciiz "i17.bin"
   a19:   .asciiz "i18.bin"
   a20:   .asciiz "i19.bin"
-
   a21:   .asciiz "i20.bin"
   a22:   .asciiz "i21.bin"
   a23:   .asciiz "i22.bin"
@@ -35,7 +34,6 @@
   a28:   .asciiz "i27.bin"
   a29:   .asciiz "i28.bin"
   a30:   .asciiz "i29.bin"
-
   a31:   .asciiz "i30.bin"
   a32:   .asciiz "i31.bin"
   a33:   .asciiz "i32.bin"
@@ -45,7 +43,6 @@
   a37:   .asciiz "i36.bin"
   a38:   .asciiz "i37.bin"
   a39:   .asciiz "i38.bin"
-
   a40:   .asciiz "i39.bin"
   a41:   .asciiz "i40.bin"
   a42:   .asciiz "i41.bin"
@@ -57,7 +54,6 @@
   a48:   .asciiz "i47.bin"
   a49:   .asciiz "i48.bin"
   a50:   .asciiz "i49.bin"
-
   a51:   .asciiz "i50.bin"
   a52:   .asciiz "i51.bin"
   a53:   .asciiz "i52.bin"
@@ -85,6 +81,7 @@
   p7_img:   .asciiz "p7.bin"
   pp_img:   .asciiz "pp.bin"
 
+  # DISPLAY
   .eqv  BASE_DISPLAY        0x10040000
   .eqv  DISPLAY_NEXT_LINE   0x140 #320 # 0x200 #512
 
@@ -494,55 +491,53 @@ main:
     j     nenhum_state
 
   desenha_pecas_antigas:
-    li   $t1, 18		# inicializa y
-    la   $t5, 0xff000012
+    li   $t1, 18		            # inicializa y = 17
+    la   $t5, 0xff000012        # último byte
 
   FOR1:
-    lb   $t0, 0($t5)	# le o byte a ser avaliado
-    addi $t5, $t5, -1       # proximo byte !!!!!!!!!!!!!!!!!!!!!!!
-    addi $t1, $t1, -1	# decrementa y
+    lb   $t0, 0($t5)	          # le o byte a ser avaliado
+    addi $t5, $t5, -1           # byte anterior
+    addi $t1, $t1, -1	          # decrementa y
 
-    li   $t2, 8 		# inicializa x \
+    li   $t2, 8 	 	            # inicializa x
     beq  $t1, $zero, CLOSE
 
   FOR2:
-    addi $t2, $t2, -1	# decrementa x
-    li   $t3, 1		# inicializa comparador
-    and  $t3, $t3, $t0	# pega primeiro bit do byte
+    addi $t2, $t2, -1	          # decrementa x
+    li   $t3, 1		              # inicializa comparador
+    and  $t3, $t3, $t0	        # pega primeiro bit do byte
+    srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
 
-    # verificar se t2 é igual a zero, pq se for nao
-    # pode ficar nesse loop para o resto da vida
-    # beq $t2, $zero, tem q decrementar $t1 e voltar t2 para 8
-    # acho q se faz isso dando beq pra for1
-    beq  $t2, $zero, FOR1
+    beq  $t3, $zero, END_FOR2
 
-    srl  $t0, $t0, 1	# coloca o segundo bit como primeiro
-
-    # !!! isso entra em loop infinito !!!
-    beq  $t3, $zero, FOR2
-    # !!! se todos os bits forem zero entra em loop !!!
-
-    move $t4 $t2		# operações do x feitas no $t4
-    move $t6, $t1		# operações do y feitas no $t6
+    move $t4 $t2		            # operações do x feitas no $t4
+    move $t6, $t1		            # operações do y feitas no $t6
 
     # fix pra y (a ideia aqui é que a colisao é prevista, ou seja,
     # se vamos preve-la o bloco deve ser colocado no lugar que ele
     # estaria quando colide e nao no lugar que ele realmente esta)
-    addi $t6, $t6, 1
+    # addi $t6, $t6, 1
 
-    addi $t4, $t4, 1       	# x+1
+    addi $t6, $t6, 1       	    # y+1
+    addi $t4, $t4, 1       	    # x+1
     li   $t7, 8
-    mul  $t4, $t4, $t7	# (x+1)*8
-    mul  $t6, $t6, $t7	# y*8
+    mul  $t4, $t4, $t7          # (x+1)*8
+    mul  $t6, $t6, $t7	        # y*8
     li   $t7, 70
-    add  $t6, $t6, $t7	# (y*8)+70
+    add  $t6, $t6, $t7	        # (y*8)+70
     li   $t7, 320
-    mul  $t6, $t6, $t7	# ((y*8)+70)*320
-    add  $t6, $t6, $t4	# ((y*8)+70)*320 + (x+1)*8
+    mul  $t6, $t6, $t7	        # ((y*8)+70)*320
+    add  $t6, $t6, $t4	        # ((y*8)+70)*320 + (x+1)*8
     la   $t7, BASE_DISPLAY
-    add  $t6, $t6, $t7	# ((y*8)+70)*320 + (x+1)*8 + POS_DISPLAY
+    add  $t6, $t6, $t7	        # ((y*8)+70)*320 + (x+1)*8 + POS_DISPLAY
 
-    # luiz! faça sua magica
+    # BACKUP DE REGISTRADORES IMPORTANTES
+    addi $sp, $sp, -20          # salva registradores importantes antes de enviar
+    sw   $ra, 0($sp)
+    sw   $t0, 4($sp)            # salva o byte que estou usando atualmente
+    sw   $t1, 8($sp)            # salva o meu y atual
+    sw   $t2, 12($sp)           # salva o meu x atual
+    sw   $t5, 16($sp)           # salva o endereço do byte do próximo loop
 
     # LOAD
     la   $a0, pp_img
@@ -554,20 +549,23 @@ main:
     li $v0, 1
     syscall
 
+    # PRINTA
     move $a2, $t6
     la   $a0, PECA_WIDTH
-    la   $a1, PECA_PRETA_RAM
-    la   $a3, PECA_HEIGHT
-
-    addi $sp, $sp, -4
-    sw   $ra, 0($sp)
+    la   $a1, PECA_PRETA_RAM    # TODO: como agr eu salvo na pilha do load_image, essa linha pode ser apagada
+    la   $a3, PECA_HEIGHT       # TODO: como agr eu salvo na pilha do load_image, essa linha pode ser apagada
     jal  draw_sprite
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
 
-    # comentei isso pq ele volta independente se os
-    # bits sao zero ou um
-    # beq $t2, $zero, FOR1    # finaliza o FOR
+    # RESTAURA REGISTRADORES IMPORTANTES
+    lw   $t5, 16($sp)           # salva o endereço do byte do próximo loop
+    lw   $t2, 12($sp)           # salva o meu x atual
+    lw   $t1, 8($sp)            # salva o meu y atual
+    lw   $t0, 4($sp)            # salva o byte que estou usando atualmente
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 20
+
+END_FOR2:
+    beq $t2, $zero, FOR1        # finaliza o FOR
     j FOR2
 
   CLOSE:
@@ -1356,9 +1354,11 @@ load_image:
   move $t1, $a2     # $t1 width
   move $t2, $a3     # $t2 height
 
-  addi $sp, $sp, -8
-  sw $a0, 0($sp)
-  sw $a1, 4($sp)
+  addi $sp, $sp, -16
+  sw $a0,  0($sp)
+  sw $a1,  4($sp)
+  sw $a2,  8($sp)
+  sw $a3, 12($sp)
 
   li    $v0, 13     # 13 é o syscall para abrir arquivos
   li    $a1, 0      # flag = aberto para leitura
@@ -1373,9 +1373,11 @@ load_image:
   mflo  $a2         # 32 least significant bits of multiplication # $a2 = cout (IMAGE_WIDTH X IMAGE_HEIGHT = 86x86 = 7396)
   syscall
 
-  lw $a0, 0($sp)
-  lw $a1, 4($sp)
-  addi $sp, $sp, 8
+  sw $a3, 12($sp)
+  sw $a2,  8($sp)
+  lw $a1,  4($sp)
+  lw $a0,  0($sp)
+  addi $sp, $sp, 16
 
   jr    $ra         # Termina o carregamento da imagem para a memória
 
@@ -1492,6 +1494,43 @@ draw_sprite_end:
     lw    $s1, 4($t5)
     lw    $s2, 8($t5)
     lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_A
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_A
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_A
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_A
+
     addi  $s0, $s0, -8
     addi  $s1, $s1, -8
     addi  $s2, $s2, -8
@@ -1500,6 +1539,8 @@ draw_sprite_end:
     sw    $s1, 4($t5)
     sw    $s2, 8($t5)
     sw    $s3, 12($t5)
+
+NAO_A:
     j     volta
 
   click_a_seta_2:
@@ -1537,6 +1578,39 @@ draw_sprite_end:
     lw    $s1, 4($t5)
     lw    $s2, 8($t5)
     lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_D
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_D
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_D
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_D
+
     addi  $s0, $s0, 8
     addi  $s1, $s1, 8
     addi  $s2, $s2, 8
@@ -1545,6 +1619,8 @@ draw_sprite_end:
     sw    $s1, 4($t5)
     sw    $s2, 8($t5)
     sw    $s3, 12($t5)
+
+NAO_D:
     j     volta
 
   click_d_seta_1:
