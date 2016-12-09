@@ -372,12 +372,86 @@ main:
     li  $t5, 0xff000020
     li  $t7, 0xff000038
 
-    # depende do rand
     li  $t0, 24968
     li  $t1, 24976
     li  $t2, 24984
     li  $t3, 24992
 
+    lw  $t4, 16($t5)
+
+    li  $t8, 1
+    beq $t4, $t8, pula_para_peca_1
+    li  $t8, 2
+    beq $t4, $t8, pula_para_peca_2
+    li  $t8, 3
+    beq $t4, $t8, pula_para_peca_3
+    li  $t8, 4
+    beq $t4, $t8, pula_para_peca_4
+    li  $t8, 5
+    beq $t4, $t8, pula_para_peca_5
+    li  $t8, 6
+    beq $t4, $t8, pula_para_peca_6
+    li  $t8, 7
+    beq $t4, $t8, pula_para_peca_7
+    j   pula_todas_pecas
+
+    # !!! peca um !!!
+  pula_para_peca_1:
+    li  $t0, 24968
+    li  $t1, 24976
+    li  $t2, 24984
+    li  $t3, 24992
+    j   pula_todas_pecas
+
+    # !!! peca dois !!!
+  pula_para_peca_2:
+    li  $t0, 24968
+    li  $t1, 24976
+    li  $t2, 24984
+    li  $t3, 27536
+    j   pula_todas_pecas
+
+    # !!! peca tres !!!
+  pula_para_peca_3:
+    li  $t0, 24968
+    li  $t1, 24976
+    li  $t2, 24984
+    li  $t3, 27528
+    j   pula_todas_pecas
+
+    # !!! peca quatro !!!
+  pula_para_peca_4:
+    li  $t0, 24976
+    li  $t1, 24984
+    li  $t2, 27528
+    li  $t3, 27536
+    j   pula_todas_pecas
+
+    # !!! peca cinco !!!
+  pula_para_peca_5:
+    li  $t0, 27528
+    li  $t1, 24984
+    li  $t2, 27528
+    li  $t3, 27536
+    j   pula_todas_pecas
+
+    # !!! peca seis !!!
+  pula_para_peca_6:
+    li  $t0, 24968
+    li  $t1, 24976
+    li  $t2, 27536
+    li  $t3, 27544
+    j   pula_todas_pecas
+
+    # !!! peca sete !!!
+  pula_para_peca_7:
+    li  $t0, 24968
+    li  $t1, 24976
+    li  $t2, 27528
+    li  $t3, 27536
+    j   pula_todas_pecas
+
+  pula_todas_pecas:
     addi $s0, $s0, 1
 
     li   $a1, 7
@@ -477,6 +551,29 @@ main:
 
     li    $t5, 0xff000020
 
+    addi $sp, $sp, -20
+    sw   $ra, 0($sp)
+    sw   $s0, 4($sp)
+    sw   $s1, 8($sp)
+    sw   $s2, 12($sp)
+    sw   $s3, 16($sp)
+    addi  $s0, $s0, 2560
+    addi  $s1, $s1, 2560
+    addi  $s2, $s2, 2560
+    addi  $s3, $s3, 2560
+    jal  preve_colisao_matriz
+    lw   $ra, 0($sp)
+    lw   $s0, 4($sp)
+    lw   $s1, 8($sp)
+    lw   $s2, 12($sp)
+    lw   $s3, 16($sp)
+    addi $sp, $sp, 20
+
+    # AQUI !
+    bne  $v0, $zero, viu_que_colidiu
+
+    li    $t5, 0xff000020
+
     li    $t4, 65928                # borders do mapa
     slt   $t6, $s0, $t4
     beq   $t6, $zero, preve_colisao # PASSA QUANDO AINDA PODE DESCER
@@ -487,17 +584,45 @@ main:
     slt   $t6, $s3, $t4
     beq   $t6, $zero, preve_colisao
 
+    li    $t0, 0xff000410
+    li    $t1, 1
+    lw    $t2, 0($t0)
+
+    beq   $t2, $t1, cai_normal
+    li    $t1, 3
+    addi  $s0, $s0, 2560 #5120
+    addi  $s1, $s1, 2560 #5120
+    addi  $s2, $s2, 2560 #5120
+    addi  $s3, $s3, 2560 #5120
+    j fim_cai
+
+  cai_normal:
     addi  $s0, $s0, 2560
     addi  $s1, $s1, 2560
     addi  $s2, $s2, 2560
     addi  $s3, $s3, 2560
 
+  fim_cai:
     sw    $s0, 0($t5)
     sw    $s1, 4($t5)
     sw    $s2, 8($t5)
     sw    $s3, 12($t5)
-
     j     nenhum_state
+
+  viu_que_colidiu:
+    # a0 = pos inicial da matriz
+    # a1 = pos da peça
+    li    $a0, 0xff000000
+    move  $a1, $s0
+    jal   escreve_na_matrix
+    move  $a1, $s1
+    jal   escreve_na_matrix
+    move  $a1, $s2
+    jal   escreve_na_matrix
+    move  $a1, $s3
+    jal   escreve_na_matrix
+    j   cria_peca
+    j   nenhum_state
 
   desenha_pecas_antigas:
     li   $t1, 18		            # inicializa y = 17
@@ -549,8 +674,8 @@ main:
     sw   $t5, 16($sp)           # salva o endereço do byte do próximo loop
 
     # LOAD
-    la   $a0, pp_img
-    la   $a1, PECA_PRETA_RAM
+    la   $a0, p7_img
+    la   $a1, PECA_7_RAM
     la   $a2, PECA_WIDTH
     la   $a3, PECA_HEIGHT
     jal  load_image
@@ -561,7 +686,7 @@ main:
     # PRINTA
     move $a2, $t6
     la   $a0, PECA_WIDTH
-    la   $a1, PECA_PRETA_RAM    # TODO: como agr eu salvo na pilha do load_image, essa linha pode ser apagada
+    la   $a1, PECA_7_RAM    # TODO: como agr eu salvo na pilha do load_image, essa linha pode ser apagada
     la   $a3, PECA_HEIGHT       # TODO: como agr eu salvo na pilha do load_image, essa linha pode ser apagada
     jal  draw_sprite
 
@@ -636,6 +761,58 @@ END_FOR2:
     addi  $sp, $sp, 4
 
     j     nenhum_state
+
+  preve_colisao_matriz:
+    li   $v0, 0                 # inicializa o retorno como um
+    li   $t1, 18		            # inicializa y = 18
+    la   $t5, 0xff000012        # último byte
+
+  colisionFOR1:
+    lb   $t0, 0($t5)	          # le o byte a ser avaliado
+    addi $t5, $t5, -1           # byte anterior
+    addi $t1, $t1, -1	          # decrementa y
+
+    li   $t2, 8 	 	            # inicializa x
+    beq  $t1, $zero, CLOSE
+
+  colisionFOR2:
+    addi $t2, $t2, -1	          # decrementa x
+    li   $t3, 1		              # inicializa comparador
+    and  $t3, $t3, $t0	        # pega primeiro bit do byte
+    srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
+
+    beq  $t3, $zero, colisionEND_FOR2
+
+    move $t4 $t2		            # operações do x feitas no $t4
+    move $t6, $t1		            # operações do y feitas no $t6
+
+    addi $t6, $t6, 1       	    # y+1
+    addi $t4, $t4, 1       	    # x+1
+    li   $t7, 8
+    mul  $t4, $t4, $t7          # (x+1)*8
+    mul  $t6, $t6, $t7	        # y*8
+    li   $t7, 70
+    add  $t6, $t6, $t7	        # (y*8)+70
+    li   $t7, 320
+    mul  $t6, $t6, $t7	        # ((y*8)+70)*320
+    add  $t6, $t6, $t4	        # ((y*8)+70)*320 + (x+1)*8
+
+    # VERIFICA COLISAO COM A MATRIZ
+    beq  $s0, $t6, COLIDIU
+    beq  $s1, $t6, COLIDIU
+    beq  $s2, $t6, COLIDIU
+    beq  $s3, $t6, COLIDIU
+
+  colisionEND_FOR2:
+    beq  $t2, $zero, colisionFOR1        # finaliza o FOR
+    j colisionFOR2
+
+  COLIDIU:
+    li   $v0, 1
+    jr   $ra
+
+  colisionCLOSE:
+    jr   $ra
 
   nova_peca:
     j   aux
@@ -1523,7 +1700,7 @@ draw_sprite_end:
     lw    $t1, 0($t0)	            # Carrega o conteúdo do receiver control para $t1 # To set its control "ready" bit (0xffff0000)
     andi	$t1, $t1, 0x0001        # Salva em $t1 a resposta para se receiver control é 1
 
-    beq	  $t1, $zero, volta      # Se o receiver control for zero ignora, se nao pega o valor
+    beq	  $t1, $zero, nao_clicou      # Se o receiver control for zero ignora, se nao pega o valor
     lw	  $t5, 4($t0)	           # Quando fica pronto $v0 recebe o data register
 
     li    $t2, 0x6D
@@ -1544,6 +1721,12 @@ draw_sprite_end:
     li    $t5, 0
   volta:
     jr    $ra
+
+  nao_clicou:
+    li    $t0, 0xff000410
+    li    $t1, 0
+    sw    $t1, 0($t0)
+    j volta
 
   click_a:
     li    $t0, 4
@@ -1810,10 +1993,18 @@ NAO_D:
   click_s:
     li    $t0, 4
     beq   $s7, $t0, click_s_music_state # music state
+    li    $t0, 3
+    beq   $s7, $t0, peca_cai_rapido
     li    $t0, 1
     li    $t1, 2
     beq   $s6, $t0, click_s_seta_1 # 3
     beq   $s6, $t1, click_s_seta_2 # 4
+    j     volta
+
+  peca_cai_rapido:
+    li    $t0, 0xff000410
+    li    $t1, 1
+    sw    $t1, 0($t0)
     j     volta
 
   click_s_music_state:
@@ -1860,6 +2051,8 @@ NAO_D:
     j     volta
 
   click_space:
+    li    $t0, 4
+    beq   $s7, $t0, click_space_music
     li  $t0, 1
     li  $t1, 2
     li  $t2, 3
@@ -1869,6 +2062,99 @@ NAO_D:
     beq $s6, $t2, chance_game_state_3
     beq $s6, $t3, chance_game_state_4
     j  volta
+
+  click_space_music:
+    li  $t0, 0xff000400
+    lw  $t1, 0($t0)
+    li  $t2, 1
+    li  $t3, 2
+    li  $t4, 3
+    li  $t5, 4
+    beq $t1, $t2, click_space_music_a
+    beq $t1, $t3, click_space_music_b
+    beq $t1, $t4, click_space_music_c
+    beq $t1, $t5, click_space_music_back
+    j   volta
+
+  click_space_music_a:
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal  timeToLoad
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal minuetAudioChorus
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal minuetAudioChorus
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal minuetAudioChorus
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal minuetAudioBridge
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal minuetAudioBridge
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    j volta
+
+  click_space_music_b:
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal suitAudio
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    j volta
+
+  click_space_music_c:
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal koroAudioChorus
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal koroAudioChorus
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal koroAudioBridge
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+    jal koroAudioChorus
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+
+    j volta
+
+  click_space_music_back:
+    li $s7, 1
+    j volta
+
 
   movimenta:
     addi    $t1, $zero, NINTENDO_POS
@@ -1883,8 +2169,9 @@ NAO_D:
     li $s7, 4
     j load_music_state
 
-##########################################
-
+###
+#  LIMPA TELA
+###
 limpa_tela:
   li $t0, BASE_DISPLAY
   li $t1, 0xFFFFFFFF
@@ -1897,10 +2184,12 @@ limpa_tela_loop:
   bne $t2, $t3, limpa_tela_loop
   jr $ra
 
-##########################################
+###
+#  LIMPA AREA
 # a0 = ponto inicial
 # a1 = width
 # a2 = height
+###
 limpa_area:
   move $t0, $a0
   li   $t1, 0xFFFFFFFF
@@ -1925,17 +2214,1973 @@ pula_linha:
 fim_limpa_area:
   jr $ra
 
-  ################################################################################
-  # Dorme
-  #
-  #
-  #
-
+###
+# Dorme
+###
   dorme:
-    ori    $v0, $zero, 32		     # 32 é o syscall para sleep
-    ori    $a0, $zero, 30  		   # $a0 é a quantidade de miliseconds que dorme
-    syscall                      # dorme por 60 milisegundos
-    jr     $ra                   # volta para depois do jal dorme da main
+    ori    $v0, $zero, 32
+    ori    $a0, $zero, 30
+    syscall
+    jr     $ra
+
+###
+# MUSICA
+###
+  timeToLoad:
+    li $a0, 0
+    li $a1, 200
+    li $a2, 0
+    li $a3, 100
+    li $v0, 33
+    syscall
+
+    jr $ra
+
+  suitAudio:
+    li $a2, 0
+    li $a3, 100
+    li $v0, 33
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 100
+    syscall
+
+    li $a0, 58
+    li $a1, 100
+    syscall
+
+    li $a0, 59
+    li $a1, 400
+    syscall
+
+    li $a0, 51
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 400
+    syscall
+
+    li $a0, 59
+    li $a1, 600
+    syscall
+
+    li $a0, 0
+    li $a1, 100
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 70
+    li $a1, 200
+    syscall
+
+    li $a0, 71
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 400
+    syscall
+
+    li $a0, 71
+    li $a1, 800
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 400
+    syscall
+
+    li $a0, 69
+    li $a1, 800
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 600
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 600
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 71
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 100
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 800
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 800
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 68
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 68
+    li $a1, 800
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 65
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 200
+    syscall
+
+    li $a0, 68
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 65
+    li $a1, 400
+    syscall
+
+    li $a0, 61
+    li $a1, 400
+    syscall
+
+    li $a0, 66
+    li $a1, 600
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 800
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 53
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 53
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 100
+    syscall
+
+    li $a0, 57
+    li $a1, 100
+    syscall
+
+    li $a0, 59
+    li $a1, 100
+    syscall
+
+    li $a0, 57
+    li $a1, 100
+    syscall
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 400
+    syscall
+
+    li $a0, 54
+    li $a1, 1400
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 400
+    syscall
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 800
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 100
+    syscall
+
+    li $a0, 53
+    li $a1, 100
+    syscall
+
+    li $a0, 54
+    li $a1, 100
+    syscall
+
+    li $a0, 53
+    li $a1, 400
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 53
+    li $a1, 1400
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 600
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 600
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 71
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 63
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 100
+    syscall
+
+    li $a0, 66
+    li $a1, 100
+    syscall
+
+    li $a0, 67
+    li $a1, 100
+    syscall
+
+    li $a0, 66
+    li $a1, 100
+    syscall
+
+    li $a0, 67
+    li $a1, 100
+    syscall
+
+    li $a0, 66
+    li $a1, 100
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 600
+    syscall
+
+    li $a0, 0
+    li $a1, 400
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 600
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 800
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 800
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 600
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 800
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 400
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 50
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 49
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 50
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 47
+    li $a1, 200
+    syscall
+
+    li $a0, 50
+    li $a1, 200
+    syscall
+
+    li $a0, 49
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 100
+    syscall
+
+    li $a0, 61
+    li $a1, 100
+    syscall
+
+    li $a0, 62
+    li $a1, 100
+    syscall
+
+    li $a0, 61
+    li $a1, 100
+    syscall
+
+    li $a0, 62
+    li $a1, 100
+    syscall
+
+    li $a0, 61
+    li $a1, 100
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 63
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 800
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 68
+    li $a1, 200
+    syscall
+
+    li $a0, 65
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 600
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 100
+    syscall
+
+    li $a0, 58
+    li $a1, 100
+    syscall
+
+    li $a0, 59
+    li $a1, 100
+    syscall
+
+    li $a0, 58
+    li $a1, 100
+    syscall
+
+    li $a0, 59
+    li $a1, 100
+    syscall
+
+    li $a0, 58
+    li $a1, 100
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 2000
+    syscall
+
+    jr $ra
+
+  minuetAudioChorus:
+    li $a2, 0
+    li $a3, 100
+    li $v0, 33
+
+    li $a0, 62
+    li $a1, 400
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 400
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 400
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 0
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 400
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 400
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 800
+    syscall
+
+    jr $ra
+
+  minuetAudioBridge:
+    li $a2, 0
+    li $a3, 100
+    li $v0, 33
+
+    li $a0, 71
+    li $a1, 400
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 200
+    syscall
+
+    li $a0, 71
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 400
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 400
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 400
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 66
+    li $a1, 200
+    syscall
+
+    li $a0, 67
+    li $a1, 400
+    syscall
+
+    li $a0, 66
+    li $a1, 400
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 66
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    li $a0, 61
+    li $a1, 400
+    syscall
+
+    li $a0, 62
+    li $a1, 1000
+    syscall
+
+    li $a0, 62
+    li $a1, 400
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 400
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 400
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 60
+    li $a1, 400
+    syscall
+
+    li $a0, 59
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    li $a0, 50
+    li $a1, 200
+    syscall
+
+    li $a0, 52
+    li $a1, 200
+    syscall
+
+    li $a0, 54
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 400
+    syscall
+
+    li $a0, 60
+    li $a1, 50
+    syscall
+
+    li $a0, 59
+    li $a1, 50
+    syscall
+
+    li $a0, 60
+    li $a1, 50
+    syscall
+
+    li $a0, 59
+    li $a1, 50
+    syscall
+
+    li $a0, 60
+    li $a1, 50
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 400
+    syscall
+
+    li $a0, 54
+    li $a1, 400
+    syscall
+
+    li $a0, 55
+    li $a1, 1000
+    syscall
+
+    jr $ra
+
+  koroAudioChorus:
+    li $a2, 0
+    li $a3, 100
+    li $v0, 33
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 800
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 400
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 60
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 600
+    syscall
+
+    li $a0, 62
+    li $a1, 400
+    syscall
+
+    li $a0, 65
+    li $a1, 200
+    syscall
+
+    li $a0, 69
+    li $a1, 400
+    syscall
+
+    li $a0, 67
+    li $a1, 200
+    syscall
+
+    li $a0, 65
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 600
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 62
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 59
+    li $a1, 400
+    syscall
+
+    li $a0, 59
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 62
+    li $a1, 400
+    syscall
+
+    li $a0, 64
+    li $a1, 400
+    syscall
+
+    li $a0, 60
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    li $a0, 57
+    li $a1, 400
+    syscall
+
+    jr $ra
+
+  koroAudioBridge:
+    li $a2, 0
+    li $a3, 100
+    li $v0, 33
+
+    li $a0, 52
+    li $a1, 500
+    syscall
+
+    li $a0, 48
+    li $a1, 500
+    syscall
+
+    li $a0, 50
+    li $a1, 500
+    syscall
+
+    li $a0, 50
+    li $a1, 500
+    syscall
+
+    li $a0, 47
+    li $a1, 500
+    syscall
+
+    li $a0, 48
+    li $a1, 500
+    syscall
+
+    li $a0, 45
+    li $a1, 500
+    syscall
+
+    li $a0, 44
+    li $a1, 500
+    syscall
+
+    li $a0, 47
+    li $a1, 500
+    syscall
+
+    li $a0, 52
+    li $a1, 500
+    syscall
+
+    li $a0, 48
+    li $a1, 500
+    syscall
+
+    li $a0, 50
+    li $a1, 500
+    syscall
+
+    li $a0, 47
+    li $a1, 500
+    syscall
+
+    li $a0, 48
+    li $a1, 500
+    syscall
+
+    li $a0, 52
+    li $a1, 500
+    syscall
+
+    li $a0, 57
+    li $a1, 500
+    syscall
+
+    li $a0, 56
+    li $a1, 500
+    syscall
+
+    jr $ra
+
+  endAudio:
+    li $a2, 0
+    li $a3, 100
+    li $v0, 33
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 51
+    li $a1, 200
+    syscall
+
+    li $a0, 55
+    li $a1, 200
+    syscall
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 51
+    li $a1, 200
+    syscall
+
+    li $a0, 56
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 51
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 51
+    li $a1, 200
+    syscall
+
+    li $a0, 61
+    li $a1, 200
+    syscall
+
+    li $a0, 60
+    li $a1, 200
+    syscall
+
+    li $a0, 58
+    li $a1, 200
+    syscall
+
+    jr $ra
 
 ################################################################################
 # Termina o Jogo
@@ -1982,3 +4227,4 @@ end_game:
 # 0xff000330 - 0xff000334 => $s4 -> qual bloco (7)
 
 # 0xff000400 => 1 byte para indicar seta da tela musica
+# 0xff000410 => indica se o player ta apertando pra baixo
