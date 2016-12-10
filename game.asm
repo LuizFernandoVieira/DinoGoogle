@@ -469,11 +469,13 @@ main:
 
     move  $t4, $a0
 
+    li  $t6, 1
     sw  $t0, 0($t5)
     sw  $t1, 4($t5)
     sw  $t2, 8($t5)
     sw  $t3, 12($t5)
     sw  $t4, 16($t5)
+    sw  $t6, 20($t5)
 
     j game_state
 
@@ -679,9 +681,6 @@ main:
     la   $a2, PECA_WIDTH
     la   $a3, PECA_HEIGHT
     jal  load_image
-
-    li $v0, 1
-    syscall
 
     # PRINTA
     move $a2, $t6
@@ -1703,6 +1702,10 @@ draw_sprite_end:
     beq	  $t1, $zero, nao_clicou      # Se o receiver control for zero ignora, se nao pega o valor
     lw	  $t5, 4($t0)	           # Quando fica pronto $v0 recebe o data register
 
+    li    $t2, 0x66
+    beq   $t5, $t2, click_f
+    li    $t2, 0x67
+    beq   $t5, $t2, click_g
     li    $t2, 0x6D
     beq   $t5, $t2, click_m
     li    $t2, 0x6E               # n
@@ -2155,7 +2158,6 @@ NAO_D:
     li $s7, 1
     j volta
 
-
   movimenta:
     addi    $t1, $zero, NINTENDO_POS
     addi    $t1, $t1, 4
@@ -2168,6 +2170,235 @@ NAO_D:
   click_m:
     li $s7, 4
     j load_music_state
+
+  click_f:
+    li    $t0, 2
+    bne   $s7, $t0, volta
+    # verifica peca atual e dependendo dela
+    # transforma a pos de memoria pra outra coisa
+    li    $t0, 0xff000020
+    lw    $t1, 16($t0)
+    li    $t2, 1
+
+    li $v0, 1
+    move $a0, $t1
+    syscall
+
+    beq   $t1, $t2, click_f_peca_1
+    li    $t2, 2
+    beq   $t1, $t2, click_f_peca_2
+    li    $t2, 3
+    beq   $t1, $t2, click_f_peca_3
+    li    $t2, 4
+    beq   $t1, $t2, click_f_peca_4
+    li    $t2, 5
+    beq   $t1, $t2, click_f_peca_5
+    li    $t2, 6
+    beq   $t1, $t2, click_f_peca_6
+    li    $t2, 7
+    beq   $t1, $t2, click_f_peca_7
+    j volta
+
+  # http://gamedev.stackexchange.com/questions/
+  # 17974/how-to-rotate-blocks-in-tetris
+  ###
+  # PECA 1
+  ###
+  click_f_peca_1:
+    lw    $t1, 0($t0)
+    lw    $t2, 4($t0)
+    lw    $t3, 8($t0)
+    lw    $t4, 12($t0)
+    lw    $t5, 20($t0)
+  peca_1_state_1:
+    li    $t6, 1
+    bne   $t5, $t6, peca_1_state_2
+    addi  $t1, $t1, -2552
+    addi  $t3, $t3, 2552
+    addi  $t4, $t4, 5104
+    li    $t6, 4
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  peca_1_state_2:
+    li    $t6, 2
+    bne   $t5, $t6, peca_1_state_3
+    addi  $t1, $t1, 2544
+    addi  $t2, $t2, -8
+    addi  $t3, $t3, -2560
+    addi  $t4, $t4, -5112
+    li    $t6, 1
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  peca_1_state_3:
+    li    $t6, 3
+    bne   $t5, $t6, peca_1_state_4
+    addi  $t1, $t1, -5104
+    addi  $t2, $t2, -2552
+    addi  $t4, $t4, 2552
+    li    $t6, 2
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  peca_1_state_4:
+    li    $t6, 4
+    bne   $t5, $t6, end_peca_state
+    addi  $t1, $t1, 5112
+    addi  $t2, $t2, 2560
+    addi  $t3, $t3, 8
+    addi  $t4, $t4, -2544
+    li    $t6, 3
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  end_peca_state:
+    sw    $t1, 0($t0)
+    sw    $t2, 4($t0)
+    sw    $t3, 8($t0)
+    sw    $t4, 12($t0)
+    j volta
+
+  ###
+  # PECA 2
+  ###
+  click_f_peca_2:
+    lw    $t1, 0($t0)
+    lw    $t2, 4($t0)
+    lw    $t3, 8($t0)
+    lw    $t4, 12($t0)
+    lw    $t5, 20($t0)
+  peca_2_state_1:
+    li    $t6, 1
+    bne   $t5, $t6, peca_2_state_2
+    addi  $t1, $t1, -2552
+    addi  $t3, $t3, 2552
+    addi  $t4, $t4, 5104
+    li    $t6, 4
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  peca_2_state_2:
+    li    $t6, 2
+    bne   $t5, $t6, peca_2_state_3
+    addi  $t1, $t1, 2544
+    addi  $t2, $t2, -8
+    addi  $t3, $t3, -2560
+    addi  $t4, $t4, -5112
+    li    $t6, 1
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  peca_2_state_3:
+    li    $t6, 3
+    bne   $t5, $t6, peca_2_state_4
+    addi  $t1, $t1, -5104
+    addi  $t2, $t2, -2552
+    addi  $t4, $t4, 2552
+    li    $t6, 2
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  peca_2_state_4:
+    li    $t6, 4
+    bne   $t5, $t6, end_peca_state
+    addi  $t1, $t1, 5112
+    addi  $t2, $t2, 2560
+    addi  $t3, $t3, 8
+    addi  $t4, $t4, -2544
+    li    $t6, 3
+    sw    $t6, 20($t0)
+    j     end_peca_state
+  end_peca_state:
+    sw    $t1, 0($t0)
+    sw    $t2, 4($t0)
+    sw    $t3, 8($t0)
+    sw    $t4, 12($t0)
+    j volta
+    # lw    $t1, 0($t0)
+    # lw    $t2, 4($t0)
+    # lw    $t3, 8($t0)
+    # lw    $t4, 12($t0)
+    #
+    # addi  $t1, $t1, -2552
+    # addi  $t3, $t3, 2552
+    # addi  $t4, $t4, 5104
+    #
+    # sw    $t1, 0($t0)
+    # sw    $t2, 4($t0)
+    # sw    $t3, 8($t0)
+    # sw    $t4, 12($t0)
+    # j volta
+
+  ###
+  # PECA 3
+  ###
+  click_f_peca_3:
+    lw    $t1, 0($t0)
+    lw    $t2, 4($t0)
+    lw    $t3, 8($t0)
+    lw    $t4, 12($t0)
+
+    # addi  $t1, $t1, -2552
+    # addi  $t2, $t2, -8
+    # addi  $t3, $t3, -8
+
+    # addi  $t1, $t1, -2552
+    # addi  $t2, $t2, -8
+    # addi  $t3, $t3, -8
+    # addi  $t4, $t4, -2552
+
+    addi  $t1, $t1, -2552
+
+    sw    $t1, 0($t0)
+    sw    $t2, 4($t0)
+    sw    $t3, 8($t0)
+    sw    $t4, 12($t0)
+    j volta
+
+  ###
+  # PECA 4
+  ###
+  click_f_peca_4:
+    lw    $t1, 0($t0)
+    lw    $t2, 4($t0)
+    lw    $t3, 8($t0)
+    lw    $t4, 12($t0)
+
+    # addi  $t1, $t1, -2560
+    # addi  $t2, $t2, -2560
+    # addi  $t3, $t3, -8
+    # addi  $t3, $t3, 8
+
+    # addi  $t1, $t1, -2552
+    # addi  $t2, $t2, -8
+    # addi  $t3, $t3, -8
+    # addi  $t4, $t4, -2552
+
+    # addi  $t1, $t1, -2552
+
+    sw    $t1, 0($t0)
+    sw    $t2, 4($t0)
+    sw    $t3, 8($t0)
+    sw    $t4, 12($t0)
+    j volta
+
+  ###
+  # PECA 5
+  ###
+  click_f_peca_5:
+
+    j volta
+
+  ###
+  # PECA 6
+  ###
+  click_f_peca_6:
+
+    j volta
+
+  ###
+  # PECA 7
+  ###
+  click_f_peca_7:
+
+    j volta
+
+  click_g:
+    j volta
 
 ###
 #  LIMPA TELA
@@ -4204,6 +4435,7 @@ end_game:
 # 0xff000028 - 0xff00002b => $s2 -> pos bloco 3
 # 0xff00002b - 0xff000030 => $s3 -> pos bloco 4
 # 0xff000030 - 0xff000034 => $s4 -> qual bloco (7)
+# 0xff000034 - 0xff000038 => qual o estado do bloco
 
 # 0xff000100 - 0xff000120 => matrix 2
 # 0xff000120 - 0xff000124 => $s0 -> pos bloco 1
