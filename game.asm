@@ -663,12 +663,16 @@ escreve_na_matriz:
   #   jal draw_sprite
   #   j    for_animation
 
-    li   $t0, 25
+    li   $t0, 60
     beq  $s5, $t0, end_game
     addi $s5, $s5, 1
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
+
+    li $v0, 1
+    move $a0, $s5
+    syscall
 
     beq  $s5, $zero, end_anim_draw_1
     li   $t1, 1
@@ -687,7 +691,7 @@ escreve_na_matriz:
     beq  $s5, $t1, end_anim_draw_8
     li   $t1, 8
     beq  $s5, $t1, end_anim_draw_9
-    li   $t9, 9
+    li   $t1, 9
     beq  $s5, $t1, end_anim_draw_10
     li   $t1, 10
     beq  $s5, $t1, end_anim_draw_11
@@ -701,37 +705,36 @@ escreve_na_matriz:
     beq  $s5, $t1, end_anim_draw_15
     li   $t1, 15
     beq  $s5, $t1, end_anim_draw_16
-    li   $t7, 16
-
-    li   $t1, 17
-    li   $t2, 18
-    li   $t3, 19
-    li   $t4, 20
-    li   $t5, 21
-    li   $t6, 22
-    li   $t7, 23
+    li   $t1, 16
     beq  $s5, $t1, end_anim_draw_17
-    beq  $s5, $t2, end_anim_draw_18
-    beq  $s5, $t3, end_anim_draw_19
-    beq  $s5, $t4, end_anim_draw_20
-    beq  $s5, $t5, end_anim_draw_21
-    beq  $s5, $t6, end_anim_draw_22
-    beq  $s5, $t7, end_anim_draw_23
-
+    li   $t1, 17
+    beq  $s5, $t1, end_anim_draw_17
+    li   $t1, 18
+    beq  $s5, $t1, end_anim_draw_18
+    li   $t1, 19
+    beq  $s5, $t1, end_anim_draw_19
+    li   $t1, 20
+    beq  $s5, $t1, end_anim_draw_20
+    li   $t1, 21
+    beq  $s5, $t1, end_anim_draw_21
+    li   $t1, 22
+    beq  $s5, $t1, end_anim_draw_22
+    li   $t1, 23
+    beq  $s5, $t1, end_anim_draw_23
     li   $t1, 24
-    li   $t2, 25
-    li   $t3, 26
-    li   $t4, 27
-    li   $t5, 28
-    li   $t6, 29
-    li   $t7, 30
     beq  $s5, $t1, end_anim_draw_24
-    beq  $s5, $t2, end_anim_draw_25
-    beq  $s5, $t3, end_anim_draw_26
-    beq  $s5, $t4, end_anim_draw_27
-    beq  $s5, $t5, end_anim_draw_28
-    beq  $s5, $t6, end_anim_draw_29
-    beq  $s5, $t7, end_anim_draw_30
+    li   $t1, 25
+    beq  $s5, $t1, end_anim_draw_25
+    li   $t1, 26
+    beq  $s5, $t1, end_anim_draw_26
+    li   $t1, 27
+    beq  $s5, $t1, end_anim_draw_27
+    li   $t1, 28
+    beq  $s5, $t1, end_anim_draw_28
+    li   $t1, 29
+    beq  $s5, $t1, end_anim_draw_20  #
+    li   $t1, 30
+    beq  $s5, $t1, end_anim_draw_20  #
 
     li   $t1, 31
     li   $t2, 32
@@ -740,12 +743,12 @@ escreve_na_matriz:
     li   $t5, 35
     li   $t6, 36
     li   $t7, 37
-    beq  $s5, $t1, end_anim_draw_31
-    beq  $s5, $t2, end_anim_draw_32
-    beq  $s5, $t3, end_anim_draw_33
-    beq  $s5, $t4, end_anim_draw_34
-    beq  $s5, $t5, end_anim_draw_35
-    beq  $s5, $t6, end_anim_draw_36
+    beq  $s5, $t1, end_anim_draw_20 #
+    beq  $s5, $t2, end_anim_draw_20 #
+    beq  $s5, $t3, end_anim_draw_20 #
+    beq  $s5, $t4, end_anim_draw_20 #
+    beq  $s5, $t5, end_anim_draw_20 #
+    beq  $s5, $t6, end_anim_draw_20 #
     beq  $s5, $t7, end_anim_draw_37
 
     li   $t1, 38
@@ -799,7 +802,7 @@ escreve_na_matriz:
     beq  $s5, $t2, end_anim_draw_60
 
   end_anim_end:
-    j nenhum_state
+    j end_anim
 
   end_anim_draw_1:
     la  $a0, a1
