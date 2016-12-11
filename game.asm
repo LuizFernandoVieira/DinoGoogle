@@ -367,7 +367,17 @@ main:
     li  $t0, 0
     sw  $t0, 16($t5)
 
-    j   cria_peca
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+
+    jal   cria_peca_player_1
+    # jal   cria_peca_player_2
+    # jal   cria_peca_player_3
+    # jal   cria_peca_player_4
+
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
     j   game_state
 
   game_state:
@@ -418,60 +428,12 @@ main:
   desenha_pecas_game_state:
     addi $sp, $sp, -4
     sw   $ra, 0($sp)
+
+    la   $a0, 0xff000012
     jal  desenha_pecas_antigas
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
-
-    li  $t7, 0x10040000
-    li  $t5, 0xff000020
-    lw  $s0, 0($t5)
-    lw  $s1, 4($t5)
-    lw  $s2, 8($t5)
-    lw  $s3, 12($t5)
-    lw  $s4, 16($t5)
-
-    li    $a0, PECA_HEIGHT
-    li    $a3, PECA_WIDTH
-
-  case_desenha_peca_1:
-    li    $t0, 1
-    bne   $s4, $t0, case_desenha_peca_2
-    li    $a1, PECA_1_RAM
-    j     break_desenha_peca
-  case_desenha_peca_2:
-    li    $t0, 2
-    beq   $s4, $t0, case_desenha_peca_3
-    li    $a1, PECA_2_RAM
-    j     break_desenha_peca
-  case_desenha_peca_3:
-    li    $t0, 3
-    beq   $s4, $t0, case_desenha_peca_4
-    li    $a1, PECA_3_RAM
-    j     break_desenha_peca
-  case_desenha_peca_4:
-    li    $t0, 4
-    beq   $s4, $t0, case_desenha_peca_5
-    li    $a1, PECA_4_RAM
-    j     break_desenha_peca
-  case_desenha_peca_5:
-    li    $t0, 5
-    beq   $s4, $t0, case_desenha_peca_6
-    li    $a1, PECA_5_RAM
-    j     break_desenha_peca
-  case_desenha_peca_6:
-    li    $t0, 6
-    beq   $s4, $t0, case_desenha_peca_7
-    li    $a1, PECA_6_RAM
-    j     break_desenha_peca
-  case_desenha_peca_7:
-    li    $t0, 7
-    beq   $s4, $t0, break_desenha_peca
-    li    $a1, PECA_7_RAM
-  break_desenha_peca:
-
-    addi $sp, $sp, -4
-    sw   $ra, 0($sp)
+    la   $a0, 0xff000020
     jal  desenha_pecas_atuais
+
     lw   $ra, 0($sp)
     addi $sp, $sp, 4
 
@@ -545,117 +507,8 @@ main:
     jal   escreve_na_matriz
     move  $a1, $s3
     jal   escreve_na_matriz
-    j   cria_peca
+    j   cria_peca_player_1
     j   nenhum_state
-
-  desenha_pecas_antigas:
-    li   $t1, 18		            # inicializa y = 17
-    la   $t5, 0xff000012        # último byte
-
-  FOR1:
-    lb   $t0, 0($t5)	          # le o byte a ser avaliado
-    addi $t5, $t5, -1           # byte anterior
-    addi $t1, $t1, -1	          # decrementa y
-
-    li   $t2, 8 	 	            # inicializa x
-    beq  $t1, $zero, CLOSE
-
-  FOR2:
-    addi $t2, $t2, -1	          # decrementa x
-    li   $t3, 1		              # inicializa comparador
-    and  $t3, $t3, $t0	        # pega primeiro bit do byte
-    srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
-
-    beq  $t3, $zero, END_FOR2
-
-    move $t4 $t2		            # operações do x feitas no $t4
-    move $t6, $t1		            # operações do y feitas no $t6
-
-    # fix pra y (a ideia aqui é que a colisao é prevista, ou seja,
-    # se vamos preve-la o bloco deve ser colocado no lugar que ele
-    # estaria quando colide e nao no lugar que ele realmente esta)
-    # addi $t6, $t6, 1
-
-    addi $t6, $t6, 1       # y+1
-    addi $t4, $t4, 1       # x+1
-    li   $t7, 8
-    mul  $t4, $t4, $t7     # (x+1)*8
-    mul  $t6, $t6, $t7	   # y*8
-    li   $t7, 70
-    add  $t6, $t6, $t7	   # (y*8)+70
-    li   $t7, 320
-    mul  $t6, $t6, $t7	   # ((y*8)+70)*320
-    add  $t6, $t6, $t4	   # ((y*8)+70)*320 + (x+1)*8
-    la   $t7, BASE_DISPLAY
-    add  $t6, $t6, $t7	   # ((y*8)+70)*320 + (x+1)*8 + POS_DISPLAY
-
-    # BACKUP DE REGISTRADORES IMPORTANTES
-    addi $sp, $sp, -20     # salva registradores importantes antes de enviar
-    sw   $ra, 0($sp)
-    sw   $t0, 4($sp)       # salva o byte que estou usando atualmente
-    sw   $t1, 8($sp)       # salva o meu y atual
-    sw   $t2, 12($sp)      # salva o meu x atual
-    sw   $t5, 16($sp)      # salva o endereço do byte do próximo loop
-
-    # LOAD
-    la   $a0, p7_img
-    la   $a1, PECA_7_RAM
-    la   $a2, PECA_WIDTH
-    la   $a3, PECA_HEIGHT
-    jal  load_image
-
-    # PRINTA
-    move $a2, $t6
-    la   $a0, PECA_WIDTH
-    la   $a1, PECA_7_RAM
-    la   $a3, PECA_HEIGHT
-    jal  draw_sprite
-
-    # RESTAURA REGISTRADORES IMPORTANTES
-    lw   $t5, 16($sp)      # salva o endereço do byte do próximo loop
-    lw   $t2, 12($sp)      # salva o meu x atual
-    lw   $t1, 8($sp)       # salva o meu y atual
-    lw   $t0, 4($sp)       # salva o byte que estou usando atualmente
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 20
-
-  END_FOR2:
-    beq $t2, $zero, FOR1
-    j FOR2
-
-  CLOSE:
-    jr $ra
-
-  desenha_pecas_atuais:
-    add   $a2, $s0, $t7
-    addi  $sp, $sp, -4
-    sw    $ra, 0($sp)
-    jal   draw_sprite
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
-
-    add   $a2, $s1, $t7
-    addi  $sp, $sp, -4
-    sw    $ra, 0($sp)
-    jal   draw_sprite
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
-
-    add   $a2, $s2, $t7
-    addi  $sp, $sp, -4
-    sw    $ra, 0($sp)
-    jal   draw_sprite
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
-
-    add   $a2, $s3, $t7
-    addi  $sp, $sp, -4
-    sw    $ra, 0($sp)
-    jal   draw_sprite
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
-
-    jr   $ra
 
   preve_colisao:
     addi  $sp, $sp, -4
@@ -676,7 +529,7 @@ main:
     jal   escreve_na_matriz
 
     move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
-    j cria_peca
+    j cria_peca_player_1
 
     lw    $ra, 0($sp)
     addi  $sp, $sp, 4
@@ -779,160 +632,160 @@ escreve_na_matriz:
 ###
   end_state:
   end_anim:
-    li   $t0, 1
-    li   $t1, 50
+    # li   $t0, 1
+    # li   $t1, 50
+  #
+  # for_animation:
+  #   addi $t0, $t0, 1
+  #   bgt  $t0, $t1, end_game
+  #   # load
+  #   la  $a0, a1 # aX
+  #   la  $a1, END_ANIM_RAM
+  #   la  $a2, END_ANIM_WIDTH
+  #   la  $a3, END_ANIM_HEIGHT
+  #   jal load_image
+  #   # desenha
+  #   li  $a0, END_ANIM_WIDTH
+  #   la  $a1, END_ANIM_RAM
+  #   li  $a2, END_ANIM_POS
+  #   li  $a3, END_ANIM_HEIGHT
+  #   jal draw_sprite
+  #   j    for_animation
 
-  for_animation:
-    addi $t0, $t0, 1
-    bgt  $t0, $t1, end_game
-    # load
-    la  $a0, a1 # aX
+    li   $t0, 25
+    beq  $s5, $t0, end_game
+    addi $s5, $s5, 1
     la  $a1, END_ANIM_RAM
     la  $a2, END_ANIM_WIDTH
     la  $a3, END_ANIM_HEIGHT
-    jal load_image
-    # desenha
-    li  $a0, END_ANIM_WIDTH
-    la  $a1, END_ANIM_RAM
-    li  $a2, END_ANIM_POS
-    li  $a3, END_ANIM_HEIGHT
-    jal draw_sprite
-    j    for_animation
 
-    # li   $t0, 25
-    # beq  $s5, $t0, end_game
-    # addi $s5, $s5, 1
-    # la  $a1, END_ANIM_RAM
-    # la  $a2, END_ANIM_WIDTH
-    # la  $a3, END_ANIM_HEIGHT
+    beq  $s5, $zero, end_anim_draw_1
+    li   $t1, 1
+    beq  $s5, $t1, end_anim_draw_2
+    li   $t1, 2
+    beq  $s5, $t1, end_anim_draw_3
+    li   $t1, 3
+    beq  $s5, $t1, end_anim_draw_4
+    li   $t1, 4
+    beq  $s5, $t1, end_anim_draw_5
+    li   $t1, 5
+    beq  $s5, $t1, end_anim_draw_6
+    li   $t1, 6
+    beq  $s5, $t1, end_anim_draw_7
+    li   $t1, 7
+    beq  $s5, $t1, end_anim_draw_8
+    li   $t1, 8
+    beq  $s5, $t1, end_anim_draw_9
+    li   $t9, 9
+    beq  $s5, $t1, end_anim_draw_10
+    li   $t1, 10
+    beq  $s5, $t1, end_anim_draw_11
+    li   $t1, 11
+    beq  $s5, $t1, end_anim_draw_12
+    li   $t1, 12
+    beq  $s5, $t1, end_anim_draw_13
+    li   $t1, 13
+    beq  $s5, $t1, end_anim_draw_14
+    li   $t1, 14
+    beq  $s5, $t1, end_anim_draw_15
+    li   $t1, 15
+    beq  $s5, $t1, end_anim_draw_16
+    li   $t7, 16
 
-    # beq  $s5, $zero, end_anim_draw_1
-    # li   $t1, 1
-    # beq  $s5, $t1, end_anim_draw_2
-    # li   $t1, 2
-    # beq  $s5, $t1, end_anim_draw_3
-    # li   $t1, 3
-    # beq  $s5, $t1, end_anim_draw_4
-    # li   $t1, 4
-    # beq  $s5, $t1, end_anim_draw_5
-    # li   $t1, 5
-    # beq  $s5, $t1, end_anim_draw_6
-    # li   $t1, 6
-    # beq  $s5, $t1, end_anim_draw_7
-    # li   $t1, 7
-    # beq  $s5, $t1, end_anim_draw_8
-    # li   $t1, 8
-    # beq  $s5, $t1, end_anim_draw_9
-    # li   $t9, 9
-    # beq  $s5, $t1, end_anim_draw_10
-    # li   $t1, 10
-    # beq  $s5, $t1, end_anim_draw_11
-    # li   $t1, 11
-    # beq  $s5, $t1, end_anim_draw_12
-    # li   $t1, 12
-    # beq  $s5, $t1, end_anim_draw_13
-    # li   $t1, 13
-    # beq  $s5, $t1, end_anim_draw_14
-    # li   $t1, 14
-    # beq  $s5, $t1, end_anim_draw_15
-    # li   $t1, 15
-    # beq  $s5, $t1, end_anim_draw_16
-    # li   $t7, 16
-    #
-    # li   $t1, 17
-    # li   $t2, 18
-    # li   $t3, 19
-    # li   $t4, 20
-    # li   $t5, 21
-    # li   $t6, 22
-    # li   $t7, 23
-    # beq  $s5, $t1, end_anim_draw_17
-    # beq  $s5, $t2, end_anim_draw_18
-    # beq  $s5, $t3, end_anim_draw_19
-    # beq  $s5, $t4, end_anim_draw_20
-    # beq  $s5, $t5, end_anim_draw_21
-    # beq  $s5, $t6, end_anim_draw_22
-    # beq  $s5, $t7, end_anim_draw_23
-    #
-    # li   $t1, 24
-    # li   $t2, 25
-    # li   $t3, 26
-    # li   $t4, 27
-    # li   $t5, 28
-    # li   $t6, 29
-    # li   $t7, 30
-    # beq  $s5, $t1, end_anim_draw_24
-    # beq  $s5, $t2, end_anim_draw_25
-    # beq  $s5, $t3, end_anim_draw_26
-    # beq  $s5, $t4, end_anim_draw_27
-    # beq  $s5, $t5, end_anim_draw_28
-    # beq  $s5, $t6, end_anim_draw_29
-    # beq  $s5, $t7, end_anim_draw_30
-    #
-    # li   $t1, 31
-    # li   $t2, 32
-    # li   $t3, 33
-    # li   $t4, 34
-    # li   $t5, 35
-    # li   $t6, 36
-    # li   $t7, 37
-    # beq  $s5, $t1, end_anim_draw_31
-    # beq  $s5, $t2, end_anim_draw_32
-    # beq  $s5, $t3, end_anim_draw_33
-    # beq  $s5, $t4, end_anim_draw_34
-    # beq  $s5, $t5, end_anim_draw_35
-    # beq  $s5, $t6, end_anim_draw_36
-    # beq  $s5, $t7, end_anim_draw_37
-    #
-    # li   $t1, 38
-    # li   $t2, 39
-    # li   $t3, 40
-    # li   $t4, 41
-    # li   $t5, 42
-    # li   $t6, 43
-    # li   $t7, 44
-    # beq  $s5, $t1, end_anim_draw_38
-    # beq  $s5, $t2, end_anim_draw_39
-    # beq  $s5, $t3, end_anim_draw_40
-    # beq  $s5, $t4, end_anim_draw_41
-    # beq  $s5, $t5, end_anim_draw_42
-    # beq  $s5, $t6, end_anim_draw_43
-    # beq  $s5, $t7, end_anim_draw_44
-    #
-    # li   $t1, 45
-    # li   $t2, 46
-    # li   $t3, 47
-    # li   $t4, 48
-    # li   $t5, 49
-    # li   $t6, 50
-    # li   $t7, 51
-    # beq  $s5, $t1, end_anim_draw_45
-    # beq  $s5, $t2, end_anim_draw_46
-    # beq  $s5, $t3, end_anim_draw_47
-    # beq  $s5, $t4, end_anim_draw_48
-    # beq  $s5, $t5, end_anim_draw_49
-    # beq  $s5, $t6, end_anim_draw_50
-    # beq  $s5, $t7, end_anim_draw_51
-    #
-    # li   $t1, 52
-    # li   $t2, 53
-    # li   $t3, 54
-    # li   $t4, 55
-    # li   $t5, 56
-    # li   $t6, 57
-    # li   $t7, 58
-    # beq  $s5, $t1, end_anim_draw_52
-    # beq  $s5, $t2, end_anim_draw_53
-    # beq  $s5, $t3, end_anim_draw_54
-    # beq  $s5, $t4, end_anim_draw_55
-    # beq  $s5, $t5, end_anim_draw_56
-    # beq  $s5, $t6, end_anim_draw_57
-    # beq  $s5, $t7, end_anim_draw_58
-    #
-    # li   $t1, 59
-    # li   $t2, 60
-    # beq  $s5, $t1, end_anim_draw_59
-    # beq  $s5, $t2, end_anim_draw_60
+    li   $t1, 17
+    li   $t2, 18
+    li   $t3, 19
+    li   $t4, 20
+    li   $t5, 21
+    li   $t6, 22
+    li   $t7, 23
+    beq  $s5, $t1, end_anim_draw_17
+    beq  $s5, $t2, end_anim_draw_18
+    beq  $s5, $t3, end_anim_draw_19
+    beq  $s5, $t4, end_anim_draw_20
+    beq  $s5, $t5, end_anim_draw_21
+    beq  $s5, $t6, end_anim_draw_22
+    beq  $s5, $t7, end_anim_draw_23
+
+    li   $t1, 24
+    li   $t2, 25
+    li   $t3, 26
+    li   $t4, 27
+    li   $t5, 28
+    li   $t6, 29
+    li   $t7, 30
+    beq  $s5, $t1, end_anim_draw_24
+    beq  $s5, $t2, end_anim_draw_25
+    beq  $s5, $t3, end_anim_draw_26
+    beq  $s5, $t4, end_anim_draw_27
+    beq  $s5, $t5, end_anim_draw_28
+    beq  $s5, $t6, end_anim_draw_29
+    beq  $s5, $t7, end_anim_draw_30
+
+    li   $t1, 31
+    li   $t2, 32
+    li   $t3, 33
+    li   $t4, 34
+    li   $t5, 35
+    li   $t6, 36
+    li   $t7, 37
+    beq  $s5, $t1, end_anim_draw_31
+    beq  $s5, $t2, end_anim_draw_32
+    beq  $s5, $t3, end_anim_draw_33
+    beq  $s5, $t4, end_anim_draw_34
+    beq  $s5, $t5, end_anim_draw_35
+    beq  $s5, $t6, end_anim_draw_36
+    beq  $s5, $t7, end_anim_draw_37
+
+    li   $t1, 38
+    li   $t2, 39
+    li   $t3, 40
+    li   $t4, 41
+    li   $t5, 42
+    li   $t6, 43
+    li   $t7, 44
+    beq  $s5, $t1, end_anim_draw_38
+    beq  $s5, $t2, end_anim_draw_39
+    beq  $s5, $t3, end_anim_draw_40
+    beq  $s5, $t4, end_anim_draw_41
+    beq  $s5, $t5, end_anim_draw_42
+    beq  $s5, $t6, end_anim_draw_43
+    beq  $s5, $t7, end_anim_draw_44
+
+    li   $t1, 45
+    li   $t2, 46
+    li   $t3, 47
+    li   $t4, 48
+    li   $t5, 49
+    li   $t6, 50
+    li   $t7, 51
+    beq  $s5, $t1, end_anim_draw_45
+    beq  $s5, $t2, end_anim_draw_46
+    beq  $s5, $t3, end_anim_draw_47
+    beq  $s5, $t4, end_anim_draw_48
+    beq  $s5, $t5, end_anim_draw_49
+    beq  $s5, $t6, end_anim_draw_50
+    beq  $s5, $t7, end_anim_draw_51
+
+    li   $t1, 52
+    li   $t2, 53
+    li   $t3, 54
+    li   $t4, 55
+    li   $t5, 56
+    li   $t6, 57
+    li   $t7, 58
+    beq  $s5, $t1, end_anim_draw_52
+    beq  $s5, $t2, end_anim_draw_53
+    beq  $s5, $t3, end_anim_draw_54
+    beq  $s5, $t4, end_anim_draw_55
+    beq  $s5, $t5, end_anim_draw_56
+    beq  $s5, $t6, end_anim_draw_57
+    beq  $s5, $t7, end_anim_draw_58
+
+    li   $t1, 59
+    li   $t2, 60
+    beq  $s5, $t1, end_anim_draw_59
+    beq  $s5, $t2, end_anim_draw_60
 
   end_anim_end:
     j nenhum_state
@@ -1584,7 +1437,7 @@ draw_sprite_end:
 # a0 = para qual player
 # t4 valor atual
 ###
-  cria_peca:
+  cria_peca_player_1:
     li  $t5, 0xff000020
     lw  $t4, 16($t5)     # 0xff00000010
 
@@ -1665,6 +1518,245 @@ draw_sprite_end:
     sw  $t0, 20($t5)
 
     j   game_state
+
+###
+# CRIA PECA
+# a0 = para qual player
+# t4 valor atual
+###
+  cria_peca_player_2:
+    li  $t5, 0xff000120
+    lw  $t4, 16($t5)     # 0xff00000010
+
+    li   $t8, 8
+    addi $t4, $t4, 1
+    bne  $t4, $t8, continua_criacao_player_2
+    li   $t4, 1
+
+  continua_criacao_player_2:
+    li  $t8, 1
+    beq $t4, $t8, pula_para_peca_1_player_2
+    li  $t8, 2
+    beq $t4, $t8, pula_para_peca_2_player_2
+    li  $t8, 3
+    beq $t4, $t8, pula_para_peca_3_player_2
+    li  $t8, 4
+    beq $t4, $t8, pula_para_peca_4_player_2
+    li  $t8, 5
+    beq $t4, $t8, pula_para_peca_5_player_2
+    li  $t8, 6
+    beq $t4, $t8, pula_para_peca_6_player_2
+    li  $t8, 7
+    beq $t4, $t8, pula_para_peca_7_player_2
+    j   game_state
+
+  pula_para_peca_1_player_2:
+    li  $t0, 24984
+    li  $t1, 24992
+    li  $t2, 25000
+    li  $t3, 25008
+    j   pula_todas_pecas_player_2
+  pula_para_peca_2_player_2:
+    li  $t0, 24984
+    li  $t1, 24992
+    li  $t2, 25000
+    li  $t3, 27552
+    j   pula_todas_pecas_player_2
+  pula_para_peca_3_player_2:
+    li  $t0, 24984
+    li  $t1, 24992
+    li  $t2, 25000
+    li  $t3, 27544
+    j   pula_todas_pecas_player_2
+  pula_para_peca_4_player_2:
+    li  $t0, 24984
+    li  $t1, 24992
+    li  $t2, 27536
+    li  $t3, 27544
+    j   pula_todas_pecas_player_2
+  pula_para_peca_5_player_2:
+    li  $t0, 24984
+    li  $t1, 24992
+    li  $t2, 25000
+    li  $t3, 27560
+    j   pula_todas_pecas_player_2
+  pula_para_peca_6_player_2:
+    li  $t0, 24984
+    li  $t1, 24992
+    li  $t2, 27552
+    li  $t3, 27560
+    j   pula_todas_pecas_player_2
+  pula_para_peca_7_player_2:
+    li  $t0, 24984
+    li  $t1, 24992
+    li  $t2, 27544
+    li  $t3, 27552
+    j   pula_todas_pecas_player_2
+  pula_todas_pecas_player_2:
+
+  coloca_peca_memoria_player_2:
+    sw  $t0, 0($t5)
+    sw  $t1, 4($t5)
+    sw  $t2, 8($t5)
+    sw  $t3, 12($t5)
+    sw  $t4, 16($t5)
+
+    li  $t0, 1
+    sw  $t0, 20($t5)
+
+    j   game_state
+
+###
+# DESENHA PECAS ANTIGAS
+# $a0 = Endereço da matriz do player
+###
+  desenha_pecas_antigas:
+    li   $t1, 18		            # inicializa y = 17
+    move $t5, $a0
+
+  FOR1:
+    lb   $t0, 0($t5)	          # le o byte a ser avaliado
+    addi $t5, $t5, -1           # byte anterior
+    addi $t1, $t1, -1	          # decrementa y
+
+    li   $t2, 8 	 	            # inicializa x
+    beq  $t1, $zero, CLOSE
+
+  FOR2:
+    addi $t2, $t2, -1	          # decrementa x
+    li   $t3, 1		              # inicializa comparador
+    and  $t3, $t3, $t0	        # pega primeiro bit do byte
+    srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
+
+    beq  $t3, $zero, END_FOR2
+
+    move $t4 $t2		            # operações do x feitas no $t4
+    move $t6, $t1		            # operações do y feitas no $t6
+
+    # fix pra y (a ideia aqui é que a colisao é prevista, ou seja,
+    # se vamos preve-la o bloco deve ser colocado no lugar que ele
+    # estaria quando colide e nao no lugar que ele realmente esta)
+    # addi $t6, $t6, 1
+
+    addi $t6, $t6, 1       # y+1
+    addi $t4, $t4, 1       # x+1
+    li   $t7, 8
+    mul  $t4, $t4, $t7     # (x+1)*8
+    mul  $t6, $t6, $t7	   # y*8
+    li   $t7, 70
+    add  $t6, $t6, $t7	   # (y*8)+70
+    li   $t7, 320
+    mul  $t6, $t6, $t7	   # ((y*8)+70)*320
+    add  $t6, $t6, $t4	   # ((y*8)+70)*320 + (x+1)*8
+    la   $t7, BASE_DISPLAY
+    add  $t6, $t6, $t7	   # ((y*8)+70)*320 + (x+1)*8 + POS_DISPLAY
+
+    # BACKUP DE REGISTRADORES IMPORTANTES
+    addi $sp, $sp, -20     # salva registradores importantes antes de enviar
+    sw   $ra, 0($sp)
+    sw   $t0, 4($sp)       # salva o byte que estou usando atualmente
+    sw   $t1, 8($sp)       # salva o meu y atual
+    sw   $t2, 12($sp)      # salva o meu x atual
+    sw   $t5, 16($sp)      # salva o endereço do byte do próximo loop
+
+    # LOAD
+    la   $a0, p7_img
+    la   $a1, PECA_7_RAM
+    la   $a2, PECA_WIDTH
+    la   $a3, PECA_HEIGHT
+    jal  load_image
+
+    # PRINTA
+    move $a2, $t6
+    la   $a0, PECA_WIDTH
+    la   $a1, PECA_7_RAM
+    la   $a3, PECA_HEIGHT
+    jal  draw_sprite
+
+    # RESTAURA REGISTRADORES IMPORTANTES
+    lw   $t5, 16($sp)      # salva o endereço do byte do próximo loop
+    lw   $t2, 12($sp)      # salva o meu x atual
+    lw   $t1, 8($sp)       # salva o meu y atual
+    lw   $t0, 4($sp)       # salva o byte que estou usando atualmente
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 20
+
+  END_FOR2:
+    beq $t2, $zero, FOR1
+    j FOR2
+
+  CLOSE:
+    jr $ra
+
+###
+# DESENHA PECAS ATUAIS
+# $a0 = Endereco das pecas do player
+###
+  desenha_pecas_atuais:
+    li  $t7, BASE_DISPLAY
+    move  $t5, $a0
+    lw  $s0, 0($t5)
+    lw  $s1, 4($t5)
+    lw  $s2, 8($t5)
+    lw  $s3, 12($t5)
+    lw  $s4, 16($t5)
+
+    li    $a0, PECA_HEIGHT
+    li    $a3, PECA_WIDTH
+
+  case_desenha_peca_1:
+    li    $t0, 1
+    bne   $s4, $t0, case_desenha_peca_2
+    li    $a1, PECA_1_RAM
+    j     break_desenha_peca
+  case_desenha_peca_2:
+    li    $t0, 2
+    beq   $s4, $t0, case_desenha_peca_3
+    li    $a1, PECA_2_RAM
+    j     break_desenha_peca
+  case_desenha_peca_3:
+    li    $t0, 3
+    beq   $s4, $t0, case_desenha_peca_4
+    li    $a1, PECA_3_RAM
+    j     break_desenha_peca
+  case_desenha_peca_4:
+    li    $t0, 4
+    beq   $s4, $t0, case_desenha_peca_5
+    li    $a1, PECA_4_RAM
+    j     break_desenha_peca
+  case_desenha_peca_5:
+    li    $t0, 5
+    beq   $s4, $t0, case_desenha_peca_6
+    li    $a1, PECA_5_RAM
+    j     break_desenha_peca
+  case_desenha_peca_6:
+    li    $t0, 6
+    beq   $s4, $t0, case_desenha_peca_7
+    li    $a1, PECA_6_RAM
+    j     break_desenha_peca
+  case_desenha_peca_7:
+    li    $t0, 7
+    beq   $s4, $t0, break_desenha_peca
+    li    $a1, PECA_7_RAM
+  break_desenha_peca:
+
+    addi  $sp, $sp, -4
+    sw    $ra, 0($sp)
+
+    add   $a2, $s0, $t7
+    jal   draw_sprite
+    add   $a2, $s1, $t7
+    jal   draw_sprite
+    add   $a2, $s2, $t7
+    jal   draw_sprite
+    add   $a2, $s3, $t7
+    jal   draw_sprite
+
+    lw   $ra, 0($sp)
+    addi $sp, $sp, 4
+
+    jr   $ra
+
 
 ################################################################################
 # Input/Output MARS
