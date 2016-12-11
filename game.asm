@@ -28,42 +28,7 @@
   a22:   .asciiz "i21.bin"
   a23:   .asciiz "i22.bin"
   a24:   .asciiz "i23.bin"
-  a25:   .asciiz "i24.bin"
-  a26:   .asciiz "i25.bin"
-  a27:   .asciiz "i26.bin"
-  a28:   .asciiz "i27.bin"
-  a29:   .asciiz "i28.bin"
-  a30:   .asciiz "i29.bin"
-  a31:   .asciiz "i30.bin"
-  a32:   .asciiz "i31.bin"
-  a33:   .asciiz "i32.bin"
-  a34:   .asciiz "i33.bin"
-  a35:   .asciiz "i34.bin"
-  a36:   .asciiz "i35.bin"
-  a37:   .asciiz "i36.bin"
-  a38:   .asciiz "i37.bin"
-  a39:   .asciiz "i38.bin"
-  a40:   .asciiz "i39.bin"
-  a41:   .asciiz "i40.bin"
-  a42:   .asciiz "i41.bin"
-  a43:   .asciiz "i42.bin"
-  a44:   .asciiz "i43.bin"
-  a45:   .asciiz "i44.bin"
-  a46:   .asciiz "i45.bin"
-  a47:   .asciiz "i46.bin"
-  a48:   .asciiz "i47.bin"
-  a49:   .asciiz "i48.bin"
-  a50:   .asciiz "i49.bin"
-  a51:   .asciiz "i50.bin"
-  a52:   .asciiz "i51.bin"
-  a53:   .asciiz "i52.bin"
-  a54:   .asciiz "i53.bin"
-  a55:   .asciiz "i54.bin"
-  a56:   .asciiz "i55.bin"
-  a57:   .asciiz "i56.bin"
-  a58:   .asciiz "i57.bin"
-  a59:   .asciiz "i58.bin"
-  a60:   .asciiz "i59.bin"
+  aFim:  .asciiz "iFim.bin"
 
   nintendo_img: .asciiz "nintendo.bin"
   menu_img:     .asciiz "menu.bin"
@@ -383,94 +348,125 @@ main:
   game_state:
     addi $sp $sp, -4
     sw   $ra, 0($sp)
-    la  $a0, 0xff000000
+
+    la   $a0, 0xff000000  # PLAYER 1
     jal limpa_linhas
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
+    # la   $a0, 0xff000100  # PLAYER 2
+    # jal limpa_linhas
+    # la   $a0, 0xff000200  # PLAYER 3
+    # jal limpa_linhas
+    # la   $a0, 0xff000300  # PLAYER 4
+    # jal limpa_linhas
 
-    li  $t0, 1
-    li  $t1, 2
-    li  $t2, 3
-    li  $t3, 4
+    jal  desenha_game_state_bg
 
-  desenha_game_state_bg:
-    beq $s6, $t0, game_state_1
-    beq $s6, $t1, game_state_2
-    beq $s6, $t2, game_state_3
-    beq $s6, $t3, game_state_4
-    j   desenha_pecas_game_state
-
-  game_state_1:
-    li    $a1, GAME_BG_1_PLAYER_RAM
-    li    $a2, GAME_BG_1_PLAYER_POS
-    li    $a0, GAME_BG_1_PLAYER_WIDTH
-    li    $a3, GAME_BG_1_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  game_state_2:
-    li    $a1, GAME_BG_2_PLAYER_RAM
-    li    $a2, GAME_BG_2_PLAYER_POS
-    li    $a0, GAME_BG_2_PLAYER_WIDTH
-    li    $a3, GAME_BG_2_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  game_state_3:
-    li    $a1, GAME_BG_3_PLAYER_RAM
-    li    $a2, GAME_BG_3_PLAYER_POS
-    li    $a0, GAME_BG_3_PLAYER_WIDTH
-    li    $a3, GAME_BG_3_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  game_state_4:
-    li    $a1, GAME_BG_4_PLAYER_RAM
-    li    $a2, GAME_BG_4_PLAYER_POS
-    li    $a0, GAME_BG_4_PLAYER_WIDTH
-    li    $a3, GAME_BG_4_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  desenha_pecas_game_state:
-    addi $sp, $sp, -4
-    sw   $ra, 0($sp)
-
-    la   $a0, 0xff000012
+    la   $a0, 0xff000012        # PLAYER 1
     jal  desenha_pecas_antigas
     la   $a0, 0xff000020
     jal  desenha_pecas_atuais
+    # la   $a0, 0xff000112        # PLAYER 2
+    # jal  desenha_pecas_antigas
+    # la   $a0, 0xff000120
+    # jal  desenha_pecas_atuais
+    # la   $a0, 0xff000212        # PLAYER 3
+    # jal  desenha_pecas_antigas
+    # la   $a0, 0xff000220
+    # jal  desenha_pecas_atuais
+    # la   $a0, 0xff000312        # PLAYER 4
+    # jal  desenha_pecas_antigas
+    # la   $a0, 0xff000320
+    # jal  desenha_pecas_atuais
+
+    # aqui game over
+
+    li   $a0, 2560        # PLAYER 1
+    la   $a1, 0xff000012
+    la   $a2, 0xff000020
+    la   $a3, 0xff000000
+    jal  preve_colisao_matriz
+    # TODO: nao volta para ca vira e mexe, ver como modificar isso
+    # li   $a0, 2560        # PLAYER 2
+    # la   $a1, 0xff000112
+    # la   $a2, 0xff000120
+    # la   $a3, 0xff000100
+    # jal  preve_colisao_matriz
+    # li   $a0, 2560        # PLAYER 3
+    # la   $a1, 0xff000212
+    # la   $a2, 0xff000220
+    # la   $a3, 0xff000200
+    # jal  preve_colisao_matriz
+    # li   $a0, 2560        # PLAYER 4
+    # la   $a1, 0xff000312
+    # la   $a2, 0xff000320
+    # la   $a3, 0xff000300
+    # jal  preve_colisao_matriz
+
+    addi $sp $sp, -4
+    sw   $ra, 0($sp)
+
+    la   $a0, 0xff000000
+    la   $a1, 0xff000020
+    jal  preve_colisao_chao     # PLAYER 1
+    # la   $a0, 0xff000100
+    # la   $a1, 0xff000120
+    # jal  preve_colisao_chao     # PLAYER 2
+    # la   $a0, 0xff000200
+    # la   $a1, 0xff000220
+    # jal  preve_colisao_chao     # PLAYER 3
+    # la   $a0, 0xff000300
+    # la   $a1, 0xff000320
+    # jal  preve_colisao_chao     # PLAYER 4
+
+    la   $a0, 0xff000020     # PLAYER 1
+    jal  cai_normal
+    # la   $a0, 0xff000120     # PLAYER 2
+    # jal  cai_normal
+    # la   $a0, 0xff000220     # PLAYER 3
+    # jal  cai_normal
+    # la   $a0, 0xff000320     # PLAYER 4
+    # jal  cai_normal
 
     lw   $ra, 0($sp)
     addi $sp, $sp, 4
 
-    li    $t5, 0xff000020
-
-    # aqui game over
+    j     nenhum_state
 
 
-    addi $sp, $sp, -20
-    sw   $ra, 0($sp)
-    sw   $s0, 4($sp)
-    sw   $s1, 8($sp)
-    sw   $s2, 12($sp)
-    sw   $s3, 16($sp)
+###
+# CAI NORMAL A PECA
+# $a0 =  Endereco da peca do player
+###
+  cai_normal:
+    sw    $s0, 0($a0)
+    sw    $s1, 4($a0)
+    sw    $s2, 8($a0)
+    sw    $s3, 12($a0)
+
     addi  $s0, $s0, 2560
     addi  $s1, $s1, 2560
     addi  $s2, $s2, 2560
     addi  $s3, $s3, 2560
-    jal  preve_colisao_matriz
-    lw   $ra, 0($sp)
-    lw   $s0, 4($sp)
-    lw   $s1, 8($sp)
-    lw   $s2, 12($sp)
-    lw   $s3, 16($sp)
-    addi $sp, $sp, 20
 
-    bne  $v0, $zero, viu_que_colidiu
+    sw    $s0, 0($a0)
+    sw    $s1, 4($a0)
+    sw    $s2, 8($a0)
+    sw    $s3, 12($a0)
 
-    li    $t5, 0xff000020
-    li    $t4, 65928 # canto inferior
+    jr $ra
+
+###
+# PREVE COLISAO COM O CHAO
+# $a0 = Endereco da matriz dos player
+# $a1 = Endereco das pecas dos player
+###
+preve_colisao_chao:
+    move $t5, $a1
+    lw   $s0, 0($t5)
+    lw   $s1, 4($t5)
+    lw   $s2, 8($t5)
+    lw   $s3, 12($t5)
+
+    li    $t4, 65928                   # canto inferior
     slt   $t6, $s0, $t4
     beq   $t6, $zero, preve_colisao
     slt   $t6, $s1, $t4
@@ -480,141 +476,131 @@ main:
     slt   $t6, $s3, $t4
     beq   $t6, $zero, preve_colisao
 
-    li    $t0, 0xff000410
-    li    $t1, 1
-    lw    $t2, 0($t0)
-
-    beq   $t2, $t1, cai_normal
-    li    $t1, 3
-    addi  $s0, $s0, 2560
-    addi  $s1, $s1, 2560
-    addi  $s2, $s2, 2560
-    addi  $s3, $s3, 2560
-    j fim_cai
-
-  cai_normal:
-    addi  $s0, $s0, 2560
-    addi  $s1, $s1, 2560
-    addi  $s2, $s2, 2560
-    addi  $s3, $s3, 2560
-
-  fim_cai:
-    sw    $s0, 0($t5)
-    sw    $s1, 4($t5)
-    sw    $s2, 8($t5)
-    sw    $s3, 12($t5)
-
-    j     nenhum_state
-
-  viu_que_colidiu:
-    # a0 = pos inicial da matriz
-    # a1 = pos da peça
-    li    $a0, 0xff000000
-    move  $a1, $s0
-    jal   escreve_na_matriz
-    move  $a1, $s1
-    jal   escreve_na_matriz
-    move  $a1, $s2
-    jal   escreve_na_matriz
-    move  $a1, $s3
-    jal   escreve_na_matriz
-    j   cria_peca_player_1
-    j   nenhum_state
+    jr $ra
 
   preve_colisao:
-    addi  $sp, $sp, -4
-    sw    $ra, 0($sp)
-
-    li    $a0, 0xff000000
-
-    move  $a1, $s0
-    jal   escreve_na_matriz
-
-    move  $a1, $s1
-    jal   escreve_na_matriz
-
-    move  $a1, $s2
-    jal   escreve_na_matriz
-
-    move  $a1, $s3
-    jal   escreve_na_matriz
-
-    move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
-    j cria_peca_player_1
+    jal   coloca_peca_matriz
 
     lw    $ra, 0($sp)
     addi  $sp, $sp, 4
 
+    # TODO: modificar isso para pegar de qualquer player
+    move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
+    j     cria_peca_player_1
     j     nenhum_state
-
-  preve_colisao_matriz:
-    li   $v0, 0                 # inicializa o retorno como um
-    li   $t1, 18		            # inicializa y = 18
-    la   $t5, 0xff000012        # último byte
-
-  colisionFOR1:
-    lb   $t0, 0($t5)	          # le o byte a ser avaliado
-    addi $t5, $t5, -1           # byte anterior
-    addi $t1, $t1, -1	          # decrementa y
-
-    li   $t2, 8 	 	            # inicializa x
-    beq  $t1, $zero, CLOSE
-
-  colisionFOR2:
-    addi $t2, $t2, -1	          # decrementa x
-    li   $t3, 1		              # inicializa comparador
-    and  $t3, $t3, $t0	        # pega primeiro bit do byte
-    srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
-
-    beq  $t3, $zero, colisionEND_FOR2
-
-    move $t4 $t2		            # operações do x feitas no $t4
-    move $t6, $t1		            # operações do y feitas no $t6
-
-    addi $t6, $t6, 1       	    # y+1
-    addi $t4, $t4, 1       	    # x+1
-    li   $t7, 8
-    mul  $t4, $t4, $t7          # (x+1)*8
-    mul  $t6, $t6, $t7	        # y*8
-    li   $t7, 70
-    add  $t6, $t6, $t7	        # (y*8)+70
-    li   $t7, 320
-    mul  $t6, $t6, $t7	        # ((y*8)+70)*320
-    add  $t6, $t6, $t4	        # ((y*8)+70)*320 + (x+1)*8
-
-    # VERIFICA COLISAO COM A MATRIZ
-    beq  $s0, $t6, COLIDIU
-    beq  $s1, $t6, COLIDIU
-    beq  $s2, $t6, COLIDIU
-    beq  $s3, $t6, COLIDIU
-
-  colisionEND_FOR2:
-    beq  $t2, $zero, colisionFOR1        # finaliza o FOR
-    j colisionFOR2
-
-  COLIDIU:
-    li   $v0, 1
-    jr   $ra
-
-  colisionCLOSE:
-    jr   $ra
-
-  nova_peca:
-    j   desenha_game_state_bg
 
   change_end_state:
     li    $s5, 0
     j     end_state
 
-#######
+  ###
+  # PREVE COLISAO MATRIZ
+  # $a0 = valor da soma
+  # $a1 = endereco do final da matriz
+  # $a2 = endereco das pecas do player
+  # $a3 = endereco do comeco da matriz
+  ###
+    preve_colisao_matriz:
+      lw   $s0, 0($a2)
+      lw   $s1, 4($a2)
+      lw   $s2, 8($a2)
+      lw   $s3, 12($a2)
+      add  $s0, $s0, $a0
+      add  $s1, $s1, $a0
+      add  $s2, $s2, $a0
+      add  $s3, $s3, $a0
+
+      li   $t1, 18		            # inicializa y = 18
+      move $t5, $a1               # último byte
+
+    colisionFOR1:
+      lb   $t0, 0($t5)	          # le o byte a ser avaliado
+      addi $t5, $t5, -1           # byte anterior
+      addi $t1, $t1, -1	          # decrementa y
+
+      li   $t2, 8 	 	            # inicializa x
+      beq  $t1, $zero, CLOSE
+
+    colisionFOR2:
+      addi $t2, $t2, -1	          # decrementa x
+      li   $t3, 1		              # inicializa comparador
+      and  $t3, $t3, $t0	        # pega primeiro bit do byte
+      srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
+
+      beq  $t3, $zero, colisionEND_FOR2
+
+      move $t4 $t2		            # operações do x feitas no $t4
+      move $t6, $t1		            # operações do y feitas no $t6
+
+      addi $t6, $t6, 1       	    # y+1
+      addi $t4, $t4, 1       	    # x+1
+      li   $t7, 8
+      mul  $t4, $t4, $t7          # (x+1)*8
+      mul  $t6, $t6, $t7	        # y*8
+      li   $t7, 70
+      add  $t6, $t6, $t7	        # (y*8)+70
+      li   $t7, 320
+      mul  $t6, $t6, $t7	        # ((y*8)+70)*320
+      add  $t6, $t6, $t4	        # ((y*8)+70)*320 + (x+1)*8
+
+      # VERIFICA COLISAO COM A MATRIZ
+      beq  $s0, $t6, COLIDIU
+      beq  $s1, $t6, COLIDIU
+      beq  $s2, $t6, COLIDIU
+      beq  $s3, $t6, COLIDIU
+
+    colisionEND_FOR2:
+      beq  $t2, $zero, colisionFOR1        # finaliza o FOR
+      j colisionFOR2
+
+    COLIDIU:
+      addi $sp, $sp, -4
+      sw   $ra, 0($sp)
+
+      move  $a0, $a3
+      move  $a1, $a2
+      jal   coloca_peca_matriz
+
+      lw   $ra, 0($sp)
+      addi $sp, $sp, 4
+
+      # HERE
+      j     cria_peca_player_1
+      j     nenhum_state
+
+      jr   $ra
+
+###
+# COLOCA PECA NA MATRIZ
+# a0 = pos inicial da matriz
+# a1 = endereco das pecas do player
+###
+coloca_peca_matriz:
+  addi $sp, $sp, -4
+  sw   $ra, 0($sp)
+
+  lw   $a2, 0($a1)
+  jal  escreve_na_matriz
+  lw   $a2, 4($a1)
+  jal  escreve_na_matriz
+  lw   $a2, 8($a1)
+  jal  escreve_na_matriz
+  lw   $a2, 12($a1)
+  jal  escreve_na_matriz
+
+  lw   $ra, 0($sp)
+  addi $sp, $sp, 4
+
+  jr $ra
+
+###
 # ESCREVE NA MATRIZ
 # a0 = pos inicial da matriz
-# a1 = pos da peça
-# t3 = x
-# t4 = y
+# a2 = pos da peça
+###
 escreve_na_matriz:
     li   $t0, 320
-    div  $a1, $t0
+    div  $a2, $t0
     mfhi $t3
     mflo $t4
     addi $t3, $t3, -8
@@ -627,16 +613,70 @@ escreve_na_matriz:
     li   $t0, 8
     div  $t4, $t0
     mflo $t4
-    move  $t5, $a0
+    move $t5, $a0
 
-    addu  $t5, $t5, $t4
+    addu $t5, $t5, $t4
     lb   $t6, 0($t5)
     li   $t7, 128
     srlv $t7, $t7, $t3
     or   $t6, $t6, $t7
     sb   $t6, 0($t5)
 
-    jr $ra
+    jr   $ra
+
+###
+# DESENHA GAME STATE
+###
+  desenha_game_state_bg:
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+
+    li   $t0, 1
+    li   $t1, 2
+    li   $t2, 3
+    li   $t3, 4
+
+    beq  $s6, $t0, game_state_1
+    beq  $s6, $t1, game_state_2
+    beq  $s6, $t2, game_state_3
+    beq  $s6, $t3, game_state_4
+    j    close_desenha_game_state
+
+  game_state_1:
+    li   $a1, GAME_BG_1_PLAYER_RAM
+    li   $a2, GAME_BG_1_PLAYER_POS
+    li   $a0, GAME_BG_1_PLAYER_WIDTH
+    li   $a3, GAME_BG_1_PLAYER_HEIGHT
+    jal  draw_sprite
+    j    close_desenha_game_state
+
+  game_state_2:
+    li   $a1, GAME_BG_2_PLAYER_RAM
+    li   $a2, GAME_BG_2_PLAYER_POS
+    li   $a0, GAME_BG_2_PLAYER_WIDTH
+    li   $a3, GAME_BG_2_PLAYER_HEIGHT
+    jal  draw_sprite
+    j    close_desenha_game_state
+
+  game_state_3:
+    li   $a1, GAME_BG_3_PLAYER_RAM
+    li   $a2, GAME_BG_3_PLAYER_POS
+    li   $a0, GAME_BG_3_PLAYER_WIDTH
+    li   $a3, GAME_BG_3_PLAYER_HEIGHT
+    jal  draw_sprite
+    j    close_desenha_game_state
+
+  game_state_4:
+    li   $a1, GAME_BG_4_PLAYER_RAM
+    li   $a2, GAME_BG_4_PLAYER_POS
+    li   $a0, GAME_BG_4_PLAYER_WIDTH
+    li   $a3, GAME_BG_4_PLAYER_HEIGHT
+    jal  draw_sprite
+
+  close_desenha_game_state:
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+    jr   $ra
 
 ###
 # END
@@ -716,90 +756,20 @@ escreve_na_matriz:
     li   $t1, 20
     beq  $s5, $t1, end_anim_draw_20
     li   $t1, 21
-    beq  $s5, $t1, end_anim_draw_21
-    li   $t1, 22
-    beq  $s5, $t1, end_anim_draw_22
-    li   $t1, 23
-    beq  $s5, $t1, end_anim_draw_23
-    li   $t1, 24
-    beq  $s5, $t1, end_anim_draw_24
-    li   $t1, 25
     beq  $s5, $t1, end_anim_draw_25
-    li   $t1, 26
-    beq  $s5, $t1, end_anim_draw_26
-    li   $t1, 27
-    beq  $s5, $t1, end_anim_draw_27
-    li   $t1, 28
-    beq  $s5, $t1, end_anim_draw_28
-    li   $t1, 29
-    beq  $s5, $t1, end_anim_draw_20  #
-    li   $t1, 30
-    beq  $s5, $t1, end_anim_draw_20  #
+    li   $t1, 22
+    beq  $s5, $t1, end_anim_draw_25
 
-    li   $t1, 31
-    li   $t2, 32
-    li   $t3, 33
-    li   $t4, 34
-    li   $t5, 35
-    li   $t6, 36
-    li   $t7, 37
-    beq  $s5, $t1, end_anim_draw_20 #
-    beq  $s5, $t2, end_anim_draw_20 #
-    beq  $s5, $t3, end_anim_draw_20 #
-    beq  $s5, $t4, end_anim_draw_20 #
-    beq  $s5, $t5, end_anim_draw_20 #
-    beq  $s5, $t6, end_anim_draw_20 #
-    beq  $s5, $t7, end_anim_draw_37
+    jal endAudio
+    jal endAudio
+    jal endAudio
+    jal endAudio
 
-    li   $t1, 38
-    li   $t2, 39
-    li   $t3, 40
-    li   $t4, 41
-    li   $t5, 42
-    li   $t6, 43
-    li   $t7, 44
-    beq  $s5, $t1, end_anim_draw_38
-    beq  $s5, $t2, end_anim_draw_39
-    beq  $s5, $t3, end_anim_draw_40
-    beq  $s5, $t4, end_anim_draw_41
-    beq  $s5, $t5, end_anim_draw_42
-    beq  $s5, $t6, end_anim_draw_43
-    beq  $s5, $t7, end_anim_draw_44
+    jal sleep
+    jal sleep
+    jal sleep
 
-    li   $t1, 45
-    li   $t2, 46
-    li   $t3, 47
-    li   $t4, 48
-    li   $t5, 49
-    li   $t6, 50
-    li   $t7, 51
-    beq  $s5, $t1, end_anim_draw_45
-    beq  $s5, $t2, end_anim_draw_46
-    beq  $s5, $t3, end_anim_draw_47
-    beq  $s5, $t4, end_anim_draw_48
-    beq  $s5, $t5, end_anim_draw_49
-    beq  $s5, $t6, end_anim_draw_50
-    beq  $s5, $t7, end_anim_draw_51
-
-    li   $t1, 52
-    li   $t2, 53
-    li   $t3, 54
-    li   $t4, 55
-    li   $t5, 56
-    li   $t6, 57
-    li   $t7, 58
-    beq  $s5, $t1, end_anim_draw_52
-    beq  $s5, $t2, end_anim_draw_53
-    beq  $s5, $t3, end_anim_draw_54
-    beq  $s5, $t4, end_anim_draw_55
-    beq  $s5, $t5, end_anim_draw_56
-    beq  $s5, $t6, end_anim_draw_57
-    beq  $s5, $t7, end_anim_draw_58
-
-    li   $t1, 59
-    li   $t2, 60
-    beq  $s5, $t1, end_anim_draw_59
-    beq  $s5, $t2, end_anim_draw_60
+    j  end_game
 
   end_anim_end:
     j end_anim
@@ -997,287 +967,7 @@ escreve_na_matriz:
     j   end_anim_end
 
   end_anim_draw_25:
-    la  $a0, a25
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_26:
-    la  $a0, a26
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_27:
-    la  $a0, a27
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_28:
-    la  $a0, a28
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_29:
-    la  $a0, a29
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_30:
-    la  $a0, a30
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_31:
-    la  $a0, a31
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_32:
-    la  $a0, a32
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_33:
-    la  $a0, a33
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_34:
-    la  $a0, a34
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_35:
-    la  $a0, a35
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_36:
-    la  $a0, a36
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_37:
-    la  $a0, a37
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_38:
-    la  $a0, a38
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_39:
-    la  $a0, a39
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_40:
-    la  $a0, a40
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_41:
-    la  $a0, a41
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_42:
-    la  $a0, a42
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_43:
-    la  $a0, a43
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_44:
-    la  $a0, a44
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_45:
-    la  $a0, a45
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_46:
-    la  $a0, a46
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_47:
-    la  $a0, a47
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_48:
-    la  $a0, a48
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_49:
-    la  $a0, a49
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_50:
-    la  $a0, a50
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_51:
-    la  $a0, a51
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_52:
-    la  $a0, a52
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_53:
-    la  $a0, a53
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_54:
-    la  $a0, a54
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_55:
-    la  $a0, a55
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_56:
-    la  $a0, a56
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_57:
-    la  $a0, a57
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_58:
-    la  $a0, a58
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_59:
-    la  $a0, a59
-    jal load_image
-    li  $a2, END_ANIM_POS
-    li  $a0, END_ANIM_WIDTH
-    jal draw_sprite
-    j   end_anim_end
-
-  end_anim_draw_60:
-    la  $a0, a60
+    la  $a0, aFim
     jal load_image
     li  $a2, END_ANIM_POS
     li  $a0, END_ANIM_WIDTH
