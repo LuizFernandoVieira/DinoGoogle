@@ -383,6 +383,7 @@ main:
   game_state:
     addi $sp $sp, -4
     sw   $ra, 0($sp)
+    la  $a0, 0xff000000
     jal limpa_linhas
     lw   $ra, 0($sp)
     addi $sp, $sp, 4
@@ -445,6 +446,9 @@ main:
 
     li    $t5, 0xff000020
 
+    # aqui game over
+
+
     addi $sp, $sp, -20
     sw   $ra, 0($sp)
     sw   $s0, 4($sp)
@@ -499,6 +503,7 @@ main:
     sw    $s1, 4($t5)
     sw    $s2, 8($t5)
     sw    $s3, 12($t5)
+
     j     nenhum_state
 
   viu_que_colidiu:
@@ -2699,42 +2704,32 @@ fim_limpa_area:
 
 ###
 # LIMPA LINHAS COMPLETAS DO TETRIS
-# $t0 = contador do primeiro for
-# $t1 = contador do segundo for
-# $t2 = endereço da linha atual
+# $a0 =  endereco do inicio da memoria do player
 ###
 limpa_linhas:
   li   $t0, 18		            # inicializa i = 18
 
 ll_FOR1:
-  beq  $t0, $zero, CLOSE      # termina caso chegue em zero
-  la   $t5, 0xff000000        # começo da matriz
+  beq   $t0, $zero, CLOSE      # termina caso chegue em zero
+  move  $t5, $a0
   addu  $t5, $t5, $t0          # coloca na posição de memoria
 
   lbu   $t2, 0($t5)            # pega o byte da linha $t0
 
-  li  $v0, 1
-  move  $a0, $t2
-  syscall
+  li    $t3, 0xFF
+  bne   $t2, $t3, ll_FOR1_END # verifica se a linha está preenchida
 
-  li   $t3, 0xFF
-  bne  $t2, $t3, ll_FOR1_END # verifica se a linha está preenchida
-
-  move $t1, $t0             # j = i
+  move  $t1, $t0             # j = i
 
 ll_FOR2:
-  li  $v0, 1
-  move  $a0, $t0
-  syscall
+  beq   $t1, $zero, ll_FOR1_END
 
-  beq $t1, $zero, ll_FOR1_END
-
-  addi $t5, $t5, -1           # decrementa o endereço
-  lb $t4, 0($t5)              # pega a linha anterior
-  sb $t4, 1($t5)              # coloca na linha que foi apagada
+  addi  $t5, $t5, -1           # decrementa o endereço
+  lb    $t4, 0($t5)              # pega a linha anterior
+  sb    $t4, 1($t5)              # coloca na linha que foi apagada
 
 ll_FOR2_END:
-  addi $t1, $t1, -1           # decrementa o j
+  addi  $t1, $t1, -1           # decrementa o j
   j ll_FOR2
 
 ll_FOR1_END:
@@ -4775,3 +4770,5 @@ end_game:
 # li  $t1, 25232
 # li  $t2, 25240
 # li  $t3, 25248
+
+# 0xff..00 + 24
