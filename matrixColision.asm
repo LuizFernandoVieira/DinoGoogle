@@ -1,54 +1,37 @@
-# Considerando que:
-# IMPORTANTE! Carregue $s0 ~ $s3 tem as posições da peça atual antes de chamar
-# IMPORTANTE! Retorna em $v0 o resultado, se colidiu $v0 = 0, senão $v0 = 1
+# LIMPA LINHAS COMPLETAS DO TETRIS
+# $t0 = contador do primeiro for
+# $t1 = contador do segundo for
+# $t2 = endereço da linha atual
+limpa_linhas:
+  li   $t0, 18		            # inicializa i = 18
 
-  li   $v0, 1                 # inicializa o retorno como um
-  li   $t1, 18		            # inicializa y = 17
-  la   $t5, 0xff000012        # último byte
+ll_FOR1:
+  beq  $t0, $zero, CLOSE      # termina caso chegue em zero
+  la   $t5, 0xff000000        # começo da matriz
+  add  $t5, $t5, $t0          # coloca na posição de memoria
 
-colisionFOR1:
-  lb   $t0, 0($t5)	          # le o byte a ser avaliado
-  addi $t5, $t5, -1           # byte anterior
-  addi $t1, $t1, -1	          # decrementa y
+  lb   $t2, 0($t5)            # pega o byte da linha $t0
 
-  li   $t2, 8 	 	            # inicializa x
-  beq  $t1, $zero, CLOSE
+  li   $t3, 255
+  bne  $t2, $t3, ll_FOR1_END # verifica se a linha está preenchida
 
-colisionFOR2:
-  addi $t2, $t2, -1	          # decrementa x
-  li   $t3, 1		              # inicializa comparador
-  and  $t3, $t3, $t0	        # pega primeiro bit do byte
-  srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
+  move $t1, $t0             # j = i
 
-  beq  $t3, $zero, colisionEND_FOR2
+ll_FOR2:
+  beq $t1, $zero, ll_FOR1
 
-  move $t4 $t2		            # operações do x feitas no $t4
-  move $t6, $t1		            # operações do y feitas no $t6
+  addi $t5, $t5, -1           # decrementa o endereço
+  lb $t4, 0($t5)              # pega a linha anterior
+  sw $t4, 1($t5)              # coloca na linha que foi apagada
 
-  addi $t6, $t6, 1       	    # y+1
-  addi $t4, $t4, 1       	    # x+1
-  li   $t7, 8
-  mul  $t4, $t4, $t7          # (x+1)*8
-  mul  $t6, $t6, $t7	        # y*8
-  li   $t7, 70
-  add  $t6, $t6, $t7	        # (y*8)+70
-  li   $t7, 320
-  mul  $t6, $t6, $t7	        # ((y*8)+70)*320
-  add  $t6, $t6, $t4	        # ((y*8)+70)*320 + (x+1)*8
+ll_FOR2_END:
+  addi $t1, $t1, -1           # decrementa o j
+  j ll_FOR2
 
-  # VERIFICA COLISAO COM A MATRIZ
-  beq  $s0, $t6, COLIDIU
-  beq  $s1, $t6, COLIDIU
-  beq  $s2, $t6, COLIDIU
-  beq  $s3, $t6, COLIDIU
 
-colisionEND_FOR2:
-  beq  $t2, $zero, colisionFOR1        # finaliza o FOR
-  j colisionFOR2
+ll_FOR1_END:
+  addi $t0, $t0, -1           # decrementa o i
+  j ll_FOR1                   # volta para o FOR1
 
-COLIDIU:
-  li   $v0, 1
-  jr   $ra
-
-colisionCLOSE:
+CLOSE:
   jr   $ra
