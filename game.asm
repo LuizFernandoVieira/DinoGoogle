@@ -383,94 +383,125 @@ main:
   game_state:
     addi $sp $sp, -4
     sw   $ra, 0($sp)
-    la  $a0, 0xff000000
+
+    la   $a0, 0xff000000  # PLAYER 1
     jal limpa_linhas
-    lw   $ra, 0($sp)
-    addi $sp, $sp, 4
+    # la   $a0, 0xff000100  # PLAYER 2
+    # jal limpa_linhas
+    # la   $a0, 0xff000200  # PLAYER 3
+    # jal limpa_linhas
+    # la   $a0, 0xff000300  # PLAYER 4
+    # jal limpa_linhas
 
-    li  $t0, 1
-    li  $t1, 2
-    li  $t2, 3
-    li  $t3, 4
+    jal  desenha_game_state_bg
 
-  desenha_game_state_bg:
-    beq $s6, $t0, game_state_1
-    beq $s6, $t1, game_state_2
-    beq $s6, $t2, game_state_3
-    beq $s6, $t3, game_state_4
-    j   desenha_pecas_game_state
-
-  game_state_1:
-    li    $a1, GAME_BG_1_PLAYER_RAM
-    li    $a2, GAME_BG_1_PLAYER_POS
-    li    $a0, GAME_BG_1_PLAYER_WIDTH
-    li    $a3, GAME_BG_1_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  game_state_2:
-    li    $a1, GAME_BG_2_PLAYER_RAM
-    li    $a2, GAME_BG_2_PLAYER_POS
-    li    $a0, GAME_BG_2_PLAYER_WIDTH
-    li    $a3, GAME_BG_2_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  game_state_3:
-    li    $a1, GAME_BG_3_PLAYER_RAM
-    li    $a2, GAME_BG_3_PLAYER_POS
-    li    $a0, GAME_BG_3_PLAYER_WIDTH
-    li    $a3, GAME_BG_3_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  game_state_4:
-    li    $a1, GAME_BG_4_PLAYER_RAM
-    li    $a2, GAME_BG_4_PLAYER_POS
-    li    $a0, GAME_BG_4_PLAYER_WIDTH
-    li    $a3, GAME_BG_4_PLAYER_HEIGHT
-    jal   draw_sprite
-    j     desenha_pecas_game_state
-
-  desenha_pecas_game_state:
-    addi $sp, $sp, -4
-    sw   $ra, 0($sp)
-
-    la   $a0, 0xff000012
+    la   $a0, 0xff000012        # PLAYER 1
     jal  desenha_pecas_antigas
     la   $a0, 0xff000020
     jal  desenha_pecas_atuais
+    # la   $a0, 0xff000112        # PLAYER 2
+    # jal  desenha_pecas_antigas
+    # la   $a0, 0xff000120
+    # jal  desenha_pecas_atuais
+    # la   $a0, 0xff000212        # PLAYER 3
+    # jal  desenha_pecas_antigas
+    # la   $a0, 0xff000220
+    # jal  desenha_pecas_atuais
+    # la   $a0, 0xff000312        # PLAYER 4
+    # jal  desenha_pecas_antigas
+    # la   $a0, 0xff000320
+    # jal  desenha_pecas_atuais
+
+    # aqui game over
+
+    li   $a0, 2560        # PLAYER 1
+    la   $a1, 0xff000012
+    la   $a2, 0xff000020
+    la   $a3, 0xff000000
+    jal  preve_colisao_matriz
+    # TODO: nao volta para ca vira e mexe, ver como modificar isso
+    # li   $a0, 2560        # PLAYER 2
+    # la   $a1, 0xff000112
+    # la   $a2, 0xff000120
+    # la   $a3, 0xff000100
+    # jal  preve_colisao_matriz
+    # li   $a0, 2560        # PLAYER 3
+    # la   $a1, 0xff000212
+    # la   $a2, 0xff000220
+    # la   $a3, 0xff000200
+    # jal  preve_colisao_matriz
+    # li   $a0, 2560        # PLAYER 4
+    # la   $a1, 0xff000312
+    # la   $a2, 0xff000320
+    # la   $a3, 0xff000300
+    # jal  preve_colisao_matriz
+
+    addi $sp $sp, -4
+    sw   $ra, 0($sp)
+
+    la   $a0, 0xff000000
+    la   $a1, 0xff000020
+    jal  preve_colisao_chao     # PLAYER 1
+    # la   $a0, 0xff000100
+    # la   $a1, 0xff000120
+    # jal  preve_colisao_chao     # PLAYER 2
+    # la   $a0, 0xff000200
+    # la   $a1, 0xff000220
+    # jal  preve_colisao_chao     # PLAYER 3
+    # la   $a0, 0xff000300
+    # la   $a1, 0xff000320
+    # jal  preve_colisao_chao     # PLAYER 4
+
+    la   $a0, 0xff000020     # PLAYER 1
+    jal  cai_normal
+    # la   $a0, 0xff000120     # PLAYER 2
+    # jal  cai_normal
+    # la   $a0, 0xff000220     # PLAYER 3
+    # jal  cai_normal
+    # la   $a0, 0xff000320     # PLAYER 4
+    # jal  cai_normal
 
     lw   $ra, 0($sp)
     addi $sp, $sp, 4
 
-    li    $t5, 0xff000020
-
-    # aqui game over
+    j     nenhum_state
 
 
-    addi $sp, $sp, -20
-    sw   $ra, 0($sp)
-    sw   $s0, 4($sp)
-    sw   $s1, 8($sp)
-    sw   $s2, 12($sp)
-    sw   $s3, 16($sp)
+###
+# CAI NORMAL A PECA
+# $a0 =  Endereco da peca do player
+###
+  cai_normal:
+    sw    $s0, 0($a0)
+    sw    $s1, 4($a0)
+    sw    $s2, 8($a0)
+    sw    $s3, 12($a0)
+
     addi  $s0, $s0, 2560
     addi  $s1, $s1, 2560
     addi  $s2, $s2, 2560
     addi  $s3, $s3, 2560
-    jal  preve_colisao_matriz
-    lw   $ra, 0($sp)
-    lw   $s0, 4($sp)
-    lw   $s1, 8($sp)
-    lw   $s2, 12($sp)
-    lw   $s3, 16($sp)
-    addi $sp, $sp, 20
 
-    bne  $v0, $zero, viu_que_colidiu
+    sw    $s0, 0($a0)
+    sw    $s1, 4($a0)
+    sw    $s2, 8($a0)
+    sw    $s3, 12($a0)
 
-    li    $t5, 0xff000020
-    li    $t4, 65928 # canto inferior
+    jr $ra
+
+###
+# PREVE COLISAO COM O CHAO
+# $a0 = Endereco da matriz dos player
+# $a1 = Endereco das pecas dos player
+###
+preve_colisao_chao:
+    move $t5, $a1
+    lw   $s0, 0($t5)
+    lw   $s1, 4($t5)
+    lw   $s2, 8($t5)
+    lw   $s3, 12($t5)
+
+    li    $t4, 65928                   # canto inferior
     slt   $t6, $s0, $t4
     beq   $t6, $zero, preve_colisao
     slt   $t6, $s1, $t4
@@ -480,141 +511,131 @@ main:
     slt   $t6, $s3, $t4
     beq   $t6, $zero, preve_colisao
 
-    li    $t0, 0xff000410
-    li    $t1, 1
-    lw    $t2, 0($t0)
-
-    beq   $t2, $t1, cai_normal
-    li    $t1, 3
-    addi  $s0, $s0, 2560
-    addi  $s1, $s1, 2560
-    addi  $s2, $s2, 2560
-    addi  $s3, $s3, 2560
-    j fim_cai
-
-  cai_normal:
-    addi  $s0, $s0, 2560
-    addi  $s1, $s1, 2560
-    addi  $s2, $s2, 2560
-    addi  $s3, $s3, 2560
-
-  fim_cai:
-    sw    $s0, 0($t5)
-    sw    $s1, 4($t5)
-    sw    $s2, 8($t5)
-    sw    $s3, 12($t5)
-
-    j     nenhum_state
-
-  viu_que_colidiu:
-    # a0 = pos inicial da matriz
-    # a1 = pos da peça
-    li    $a0, 0xff000000
-    move  $a1, $s0
-    jal   escreve_na_matriz
-    move  $a1, $s1
-    jal   escreve_na_matriz
-    move  $a1, $s2
-    jal   escreve_na_matriz
-    move  $a1, $s3
-    jal   escreve_na_matriz
-    j   cria_peca_player_1
-    j   nenhum_state
+    jr $ra
 
   preve_colisao:
-    addi  $sp, $sp, -4
-    sw    $ra, 0($sp)
-
-    li    $a0, 0xff000000
-
-    move  $a1, $s0
-    jal   escreve_na_matriz
-
-    move  $a1, $s1
-    jal   escreve_na_matriz
-
-    move  $a1, $s2
-    jal   escreve_na_matriz
-
-    move  $a1, $s3
-    jal   escreve_na_matriz
-
-    move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
-    j cria_peca_player_1
+    jal   coloca_peca_matriz
 
     lw    $ra, 0($sp)
     addi  $sp, $sp, 4
 
+    # TODO: modificar isso para pegar de qualquer player
+    move  $s4, $zero # zera a peca isso ira implicar no surgimento de outra peca
+    j     cria_peca_player_1
     j     nenhum_state
-
-  preve_colisao_matriz:
-    li   $v0, 0                 # inicializa o retorno como um
-    li   $t1, 18		            # inicializa y = 18
-    la   $t5, 0xff000012        # último byte
-
-  colisionFOR1:
-    lb   $t0, 0($t5)	          # le o byte a ser avaliado
-    addi $t5, $t5, -1           # byte anterior
-    addi $t1, $t1, -1	          # decrementa y
-
-    li   $t2, 8 	 	            # inicializa x
-    beq  $t1, $zero, CLOSE
-
-  colisionFOR2:
-    addi $t2, $t2, -1	          # decrementa x
-    li   $t3, 1		              # inicializa comparador
-    and  $t3, $t3, $t0	        # pega primeiro bit do byte
-    srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
-
-    beq  $t3, $zero, colisionEND_FOR2
-
-    move $t4 $t2		            # operações do x feitas no $t4
-    move $t6, $t1		            # operações do y feitas no $t6
-
-    addi $t6, $t6, 1       	    # y+1
-    addi $t4, $t4, 1       	    # x+1
-    li   $t7, 8
-    mul  $t4, $t4, $t7          # (x+1)*8
-    mul  $t6, $t6, $t7	        # y*8
-    li   $t7, 70
-    add  $t6, $t6, $t7	        # (y*8)+70
-    li   $t7, 320
-    mul  $t6, $t6, $t7	        # ((y*8)+70)*320
-    add  $t6, $t6, $t4	        # ((y*8)+70)*320 + (x+1)*8
-
-    # VERIFICA COLISAO COM A MATRIZ
-    beq  $s0, $t6, COLIDIU
-    beq  $s1, $t6, COLIDIU
-    beq  $s2, $t6, COLIDIU
-    beq  $s3, $t6, COLIDIU
-
-  colisionEND_FOR2:
-    beq  $t2, $zero, colisionFOR1        # finaliza o FOR
-    j colisionFOR2
-
-  COLIDIU:
-    li   $v0, 1
-    jr   $ra
-
-  colisionCLOSE:
-    jr   $ra
-
-  nova_peca:
-    j   desenha_game_state_bg
 
   change_end_state:
     li    $s5, 0
     j     end_state
 
-#######
+  ###
+  # PREVE COLISAO MATRIZ
+  # $a0 = valor da soma
+  # $a1 = endereco do final da matriz
+  # $a2 = endereco das pecas do player
+  # $a3 = endereco do comeco da matriz
+  ###
+    preve_colisao_matriz:
+      lw   $s0, 0($a2)
+      lw   $s1, 4($a2)
+      lw   $s2, 8($a2)
+      lw   $s3, 12($a2)
+      add  $s0, $s0, $a0
+      add  $s1, $s1, $a0
+      add  $s2, $s2, $a0
+      add  $s3, $s3, $a0
+
+      li   $t1, 18		            # inicializa y = 18
+      move $t5, $a1               # último byte
+
+    colisionFOR1:
+      lb   $t0, 0($t5)	          # le o byte a ser avaliado
+      addi $t5, $t5, -1           # byte anterior
+      addi $t1, $t1, -1	          # decrementa y
+
+      li   $t2, 8 	 	            # inicializa x
+      beq  $t1, $zero, CLOSE
+
+    colisionFOR2:
+      addi $t2, $t2, -1	          # decrementa x
+      li   $t3, 1		              # inicializa comparador
+      and  $t3, $t3, $t0	        # pega primeiro bit do byte
+      srl  $t0, $t0, 1	          # coloca o segundo bit como primeiro
+
+      beq  $t3, $zero, colisionEND_FOR2
+
+      move $t4 $t2		            # operações do x feitas no $t4
+      move $t6, $t1		            # operações do y feitas no $t6
+
+      addi $t6, $t6, 1       	    # y+1
+      addi $t4, $t4, 1       	    # x+1
+      li   $t7, 8
+      mul  $t4, $t4, $t7          # (x+1)*8
+      mul  $t6, $t6, $t7	        # y*8
+      li   $t7, 70
+      add  $t6, $t6, $t7	        # (y*8)+70
+      li   $t7, 320
+      mul  $t6, $t6, $t7	        # ((y*8)+70)*320
+      add  $t6, $t6, $t4	        # ((y*8)+70)*320 + (x+1)*8
+
+      # VERIFICA COLISAO COM A MATRIZ
+      beq  $s0, $t6, COLIDIU
+      beq  $s1, $t6, COLIDIU
+      beq  $s2, $t6, COLIDIU
+      beq  $s3, $t6, COLIDIU
+
+    colisionEND_FOR2:
+      beq  $t2, $zero, colisionFOR1        # finaliza o FOR
+      j colisionFOR2
+
+    COLIDIU:
+      addi $sp, $sp, -4
+      sw   $ra, 0($sp)
+
+      move  $a0, $a3
+      move  $a1, $a2
+      jal   coloca_peca_matriz
+
+      lw   $ra, 0($sp)
+      addi $sp, $sp, 4
+
+      # HERE
+      j     cria_peca_player_1
+      j     nenhum_state
+
+      jr   $ra
+
+###
+# COLOCA PECA NA MATRIZ
+# a0 = pos inicial da matriz
+# a1 = endereco das pecas do player
+###
+coloca_peca_matriz:
+  addi $sp, $sp, -4
+  sw   $ra, 0($sp)
+
+  lw   $a2, 0($a1)
+  jal  escreve_na_matriz
+  lw   $a2, 4($a1)
+  jal  escreve_na_matriz
+  lw   $a2, 8($a1)
+  jal  escreve_na_matriz
+  lw   $a2, 12($a1)
+  jal  escreve_na_matriz
+
+  lw   $ra, 0($sp)
+  addi $sp, $sp, 4
+
+  jr $ra
+
+###
 # ESCREVE NA MATRIZ
 # a0 = pos inicial da matriz
-# a1 = pos da peça
-# t3 = x
-# t4 = y
+# a2 = pos da peça
+###
 escreve_na_matriz:
     li   $t0, 320
-    div  $a1, $t0
+    div  $a2, $t0
     mfhi $t3
     mflo $t4
     addi $t3, $t3, -8
@@ -627,16 +648,70 @@ escreve_na_matriz:
     li   $t0, 8
     div  $t4, $t0
     mflo $t4
-    move  $t5, $a0
+    move $t5, $a0
 
-    addu  $t5, $t5, $t4
+    addu $t5, $t5, $t4
     lb   $t6, 0($t5)
     li   $t7, 128
     srlv $t7, $t7, $t3
     or   $t6, $t6, $t7
     sb   $t6, 0($t5)
 
-    jr $ra
+    jr   $ra
+
+###
+# DESENHA GAME STATE
+###
+  desenha_game_state_bg:
+    addi $sp, $sp, -4
+    sw   $ra, 0($sp)
+
+    li   $t0, 1
+    li   $t1, 2
+    li   $t2, 3
+    li   $t3, 4
+
+    beq  $s6, $t0, game_state_1
+    beq  $s6, $t1, game_state_2
+    beq  $s6, $t2, game_state_3
+    beq  $s6, $t3, game_state_4
+    j    close_desenha_game_state
+
+  game_state_1:
+    li   $a1, GAME_BG_1_PLAYER_RAM
+    li   $a2, GAME_BG_1_PLAYER_POS
+    li   $a0, GAME_BG_1_PLAYER_WIDTH
+    li   $a3, GAME_BG_1_PLAYER_HEIGHT
+    jal  draw_sprite
+    j    close_desenha_game_state
+
+  game_state_2:
+    li   $a1, GAME_BG_2_PLAYER_RAM
+    li   $a2, GAME_BG_2_PLAYER_POS
+    li   $a0, GAME_BG_2_PLAYER_WIDTH
+    li   $a3, GAME_BG_2_PLAYER_HEIGHT
+    jal  draw_sprite
+    j    close_desenha_game_state
+
+  game_state_3:
+    li   $a1, GAME_BG_3_PLAYER_RAM
+    li   $a2, GAME_BG_3_PLAYER_POS
+    li   $a0, GAME_BG_3_PLAYER_WIDTH
+    li   $a3, GAME_BG_3_PLAYER_HEIGHT
+    jal  draw_sprite
+    j    close_desenha_game_state
+
+  game_state_4:
+    li   $a1, GAME_BG_4_PLAYER_RAM
+    li   $a2, GAME_BG_4_PLAYER_POS
+    li   $a0, GAME_BG_4_PLAYER_WIDTH
+    li   $a3, GAME_BG_4_PLAYER_HEIGHT
+    jal  draw_sprite
+
+  close_desenha_game_state:
+    lw   $ra, 0($sp)
+    addi $sp $sp, 4
+    jr   $ra
 
 ###
 # END
