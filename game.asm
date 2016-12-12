@@ -335,10 +335,29 @@ main:
     addi $sp, $sp, -4
     sw   $ra, 0($sp)
 
+  cria_peca_1:
+    la    $a0, 0xff000020
+    li    $a1, 0
     jal   cria_peca_player_1
-    # jal   cria_peca_player_2
-    # jal   cria_peca_player_3
-    # jal   cria_peca_player_4
+  cria_peca_2:
+    li   $t0, 2
+    bgt  $t0, $s6, cria_peca_3
+    la    $a0, 0xff000120
+    li    $a1, 80
+    jal   cria_peca_player_1
+  cria_peca_3:
+    li   $t0, 3
+    bgt  $t0, $s6, cria_peca_4
+    la    $a0, 0xff000220
+    li    $a1, 160
+    jal   cria_peca_player_1
+  cria_peca_4:
+    li   $t0, 4
+    bgt  $t0, $s6, break_cria_peca
+    la    $a0, 0xff000320
+    li    $a1, 240
+    jal   cria_peca_player_1
+  break_cria_peca:
 
     lw   $ra, 0($sp)
     addi $sp, $sp, 4
@@ -351,80 +370,132 @@ main:
 
     la   $a0, 0xff000000  # PLAYER 1
     jal limpa_linhas
-    # la   $a0, 0xff000100  # PLAYER 2
-    # jal limpa_linhas
-    # la   $a0, 0xff000200  # PLAYER 3
-    # jal limpa_linhas
-    # la   $a0, 0xff000300  # PLAYER 4
-    # jal limpa_linhas
+    la   $a0, 0xff000100  # PLAYER 2
+    jal limpa_linhas
+    la   $a0, 0xff000200  # PLAYER 3
+    jal limpa_linhas
+    la   $a0, 0xff000300  # PLAYER 4
+    jal limpa_linhas
 
     jal  desenha_game_state_bg
 
+  atualiza_1:
     la   $a0, 0xff000012        # PLAYER 1
     jal  desenha_pecas_antigas
     la   $a0, 0xff000020
     jal  desenha_pecas_atuais
-    # la   $a0, 0xff000112        # PLAYER 2
-    # jal  desenha_pecas_antigas
-    # la   $a0, 0xff000120
-    # jal  desenha_pecas_atuais
-    # la   $a0, 0xff000212        # PLAYER 3
-    # jal  desenha_pecas_antigas
-    # la   $a0, 0xff000220
-    # jal  desenha_pecas_atuais
-    # la   $a0, 0xff000312        # PLAYER 4
-    # jal  desenha_pecas_antigas
-    # la   $a0, 0xff000320
-    # jal  desenha_pecas_atuais
 
-    # aqui game over
+  atualiza_2:
+    li   $t0, 2
+    bgt  $t0, $s6, atualiza_3
+    la   $a0, 0xff000112        # PLAYER 2
+    jal  desenha_pecas_antigas
+    la   $a0, 0xff000120
+    jal  desenha_pecas_atuais
 
+  atualiza_3:
+    li   $t0, 3
+    bgt  $t0, $s6, atualiza_4
+    la   $a0, 0xff000212        # PLAYER 3
+    jal  desenha_pecas_antigas
+    la   $a0, 0xff000220
+    jal  desenha_pecas_atuais
+
+  atualiza_4:
+    li   $t0, 4
+    bgt  $t0, $s6, break_atualiza
+    la   $a0, 0xff000312        # PLAYER 4
+    jal  desenha_pecas_antigas
+    la   $a0, 0xff000320
+    jal  desenha_pecas_atuais
+  break_atualiza:
+
+    # aqui game over !!! TODO
+
+  preve_1:
     li   $a0, 2560        # PLAYER 1
     la   $a1, 0xff000012
     la   $a2, 0xff000020
     la   $a3, 0xff000000
     jal  preve_colisao_matriz
-    # TODO: nao volta para ca vira e mexe, ver como modificar isso
-    # li   $a0, 2560        # PLAYER 2
-    # la   $a1, 0xff000112
-    # la   $a2, 0xff000120
-    # la   $a3, 0xff000100
-    # jal  preve_colisao_matriz
-    # li   $a0, 2560        # PLAYER 3
-    # la   $a1, 0xff000212
-    # la   $a2, 0xff000220
-    # la   $a3, 0xff000200
-    # jal  preve_colisao_matriz
-    # li   $a0, 2560        # PLAYER 4
-    # la   $a1, 0xff000312
-    # la   $a2, 0xff000320
-    # la   $a3, 0xff000300
-    # jal  preve_colisao_matriz
+
+  preve_2:
+    li   $t0, 2
+    bgt  $t0, $s6, preve_3
+    li   $a0, 2560        # PLAYER 2
+    la   $a1, 0xff000112
+    la   $a2, 0xff000120
+    la   $a3, 0xff000100
+    jal  preve_colisao_matriz
+
+  preve_3:
+    li   $t0, 3
+    bgt  $t0, $s6, preve_4
+    li   $a0, 2560        # PLAYER 3
+    la   $a1, 0xff000212
+    la   $a2, 0xff000220
+    la   $a3, 0xff000200
+    jal  preve_colisao_matriz
+
+  preve_4:
+    li   $t0, 4
+    bgt  $t0, $s6, break_preve
+    li   $a0, 2560        # PLAYER 4
+    la   $a1, 0xff000312
+    la   $a2, 0xff000320
+    la   $a3, 0xff000300
+    jal  preve_colisao_matriz
+  break_preve:
 
     addi $sp $sp, -4
     sw   $ra, 0($sp)
 
+  preve_chao_1:
     la   $a0, 0xff000000
     la   $a1, 0xff000020
     jal  preve_colisao_chao     # PLAYER 1
+
+  preve_chao_2:
+    li   $t0, 2
+    bgt  $t0, $s6, preve_chao_3
     # la   $a0, 0xff000100
     # la   $a1, 0xff000120
     # jal  preve_colisao_chao     # PLAYER 2
+
+  preve_chao_3:
+    li   $t0, 3
+    bgt  $t0, $s6, preve_chao_4
     # la   $a0, 0xff000200
     # la   $a1, 0xff000220
     # jal  preve_colisao_chao     # PLAYER 3
+
+  preve_chao_4:
+    li   $t0, 4
+    bgt  $t0, $s6, break_preve_chao
     # la   $a0, 0xff000300
     # la   $a1, 0xff000320
     # jal  preve_colisao_chao     # PLAYER 4
+  break_preve_chao:
 
+  cai_1:
     la   $a0, 0xff000020     # PLAYER 1
     jal  cai_normal
-    # la   $a0, 0xff000120     # PLAYER 2
-    # jal  cai_normal
-    # la   $a0, 0xff000220     # PLAYER 3
-    # jal  cai_normal
-    # la   $a0, 0xff000320     # PLAYER 4
-    # jal  cai_normal
+  cai_2:
+    li   $t0, 2
+    bgt  $t0, $s6, cai_3
+    la   $a0, 0xff000120     # PLAYER 2
+    jal  cai_normal
+  cai_3:
+    li   $t0, 3
+    bgt  $t0, $s6, cai_4
+    la   $a0, 0xff000220     # PLAYER 3
+    jal  cai_normal
+  cai_4:
+    li   $t0, 4
+    bgt  $t0, $s6, break_cai
+    la   $a0, 0xff000320     # PLAYER 4
+    jal  cai_normal
+  break_cai:
 
     lw   $ra, 0($sp)
     addi $sp, $sp, 4
@@ -561,12 +632,11 @@ preve_colisao_chao:
       move  $a1, $a2
       jal   coloca_peca_matriz
 
+      # HERE
+      jal     cria_peca_player_1
+
       lw   $ra, 0($sp)
       addi $sp, $sp, 4
-
-      # HERE
-      j     cria_peca_player_1
-      j     nenhum_state
 
       jr   $ra
 
@@ -1138,12 +1208,12 @@ draw_sprite_end:
 
 ###
 # CRIA PECA
-# a0 = para qual player
-# t4 valor atual
+# $a0 = endereco das pecas do player
+# $a1 = sum
 ###
   cria_peca_player_1:
-    li  $t5, 0xff000020
-    lw  $t4, 16($t5)     # 0xff00000010
+    move $t5, $a0    # li  $t5, 0xff000020
+    lw  $t4, 16($t5)
 
     li   $t8, 8
     addi $t4, $t4, 1
@@ -1172,42 +1242,70 @@ draw_sprite_end:
     li  $t1, 24992
     li  $t2, 25000
     li  $t3, 25008
+    add $t0, $t0, $a1
+    add $t1, $t1, $a1
+    add $t2, $t2, $a1
+    add $t3, $t3, $a1
     j   pula_todas_pecas
   pula_para_peca_2:
     li  $t0, 24984
     li  $t1, 24992
     li  $t2, 25000
     li  $t3, 27552
+    add $t0, $t0, $a1
+    add $t1, $t1, $a1
+    add $t2, $t2, $a1
+    add $t3, $t3, $a1
     j   pula_todas_pecas
   pula_para_peca_3:
     li  $t0, 24984
     li  $t1, 24992
     li  $t2, 25000
     li  $t3, 27544
+    add $t0, $t0, $a1
+    add $t1, $t1, $a1
+    add $t2, $t2, $a1
+    add $t3, $t3, $a1
     j   pula_todas_pecas
   pula_para_peca_4:
     li  $t0, 24984
     li  $t1, 24992
     li  $t2, 27536
     li  $t3, 27544
+    add $t0, $t0, $a1
+    add $t1, $t1, $a1
+    add $t2, $t2, $a1
+    add $t3, $t3, $a1
     j   pula_todas_pecas
   pula_para_peca_5:
     li  $t0, 24984
     li  $t1, 24992
     li  $t2, 25000
     li  $t3, 27560
+    add $t0, $t0, $a1
+    add $t1, $t1, $a1
+    add $t2, $t2, $a1
+    add $t3, $t3, $a1
     j   pula_todas_pecas
   pula_para_peca_6:
     li  $t0, 24984
     li  $t1, 24992
     li  $t2, 27552
     li  $t3, 27560
+    add $t0, $t0, $a1
+    add $t1, $t1, $a1
+    add $t2, $t2, $a1
+    add $t3, $t3, $a1
     j   pula_todas_pecas
   pula_para_peca_7:
     li  $t0, 24984
     li  $t1, 24992
     li  $t2, 27544
     li  $t3, 27552
+    add $t0, $t0, $a1
+    add $t1, $t1, $a1
+    add $t2, $t2, $a1
+    add $t3, $t3, $a1
     j   pula_todas_pecas
   pula_todas_pecas:
 
@@ -1221,7 +1319,7 @@ draw_sprite_end:
     li  $t0, 1
     sw  $t0, 20($t5)
 
-    j   game_state
+    jr  $ra          # j  game_state
 
 ###
 # CRIA PECA
@@ -1308,7 +1406,7 @@ draw_sprite_end:
     li  $t0, 1
     sw  $t0, 20($t5)
 
-    j   game_state
+    jr  $ra
 
 ###
 # DESENHA PECAS ANTIGAS
@@ -1489,14 +1587,14 @@ draw_sprite_end:
 
     li    $t2, 0x66
     beq   $t5, $t2, click_f
-    li    $t2, 0x67
-    beq   $t5, $t2, click_g
     li    $t2, 0x6D
     beq   $t5, $t2, click_m
     li    $t2, 0x6E               # n
     beq   $t5, $t2, click_n
     li    $t2, 0x20               # space
     beq   $t5, $t2, click_space
+
+    # PLAYER 1
     li    $t2, 0x61               # a
     beq   $t5, $t2, click_a
     li    $t2, 0x64               # d
@@ -1505,6 +1603,30 @@ draw_sprite_end:
     beq   $t5, $t2, click_w
     li    $t2, 0x73               # s
     beq   $t5, $t2, click_s
+
+    # PLAYER 2
+    li    $t2, 0x67             # g
+    beq   $t5, $t2, click_g
+    li    $t2, 0x68             # h
+    beq   $t5, $t2, click_h
+    li    $t2, 0x62             # b
+    beq   $t5, $t2, click_b
+
+    # PLAYER 3
+    li    $t2, 0x6A             # j
+    beq   $t5, $t2, click_j
+    li    $t2, 0x6B             # k
+    beq   $t5, $t2, click_k
+    li    $t2, 0x75             # u
+    beq   $t5, $t2, click_u
+
+    # PLAYER 4
+    li    $t2, 0x6F             # o
+    beq   $t5, $t2, click_o
+    li    $t2, 0x70             # p
+    beq   $t5, $t2, click_p
+    li    $t2, 0x6C             # l
+    beq   $t5, $t2, click_l
 
     li    $t5, 0
   volta:
@@ -2348,7 +2470,355 @@ NAO_D:
   # CLICK G
   ###
   click_g:
+    li    $t5, 0xff000120
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_G
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_G
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_G
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_G
+
+    addi  $s0, $s0, -8
+    addi  $s1, $s1, -8
+    addi  $s2, $s2, -8
+    addi  $s3, $s3, -8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+
+  NAO_G:
     j volta
+
+  ###
+  # CLICK H
+  ###
+  click_h:
+    li    $t5, 0xff000120
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_H
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_H
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_H
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_H
+
+    addi  $s0, $s0, 8
+    addi  $s1, $s1, 8
+    addi  $s2, $s2, 8
+    addi  $s3, $s3, 8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+
+  NAO_H:
+    j     volta
+
+  ###
+  # CLICK B
+  ###
+  click_b:
+    j  volta
+
+  ###
+  # CLICK J
+  ###
+  click_j:
+    li    $t5, 0xff000220
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_J
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_J
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_J
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_J
+
+    addi  $s0, $s0, -8
+    addi  $s1, $s1, -8
+    addi  $s2, $s2, -8
+    addi  $s3, $s3, -8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+
+  NAO_J:
+    j volta
+
+  ###
+  # CLICK K
+  ###
+  click_k:
+    li    $t5, 0xff000220
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_K
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_K
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_K
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_K
+
+    addi  $s0, $s0, 8
+    addi  $s1, $s1, 8
+    addi  $s2, $s2, 8
+    addi  $s3, $s3, 8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+
+  NAO_K:
+    j     volta
+
+  ###
+  # CLICK U
+  ###
+  click_u:
+    j  volta
+
+  ###
+  # CLICK O
+  ###
+  click_o:
+    li    $t5, 0xff000320
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_O
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_O
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_O
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9
+    addi  $t9, $t9, -1               # posição do x -> 0 ~ 7
+    beq   $t9, $zero, NAO_O
+
+    addi  $s0, $s0, -8
+    addi  $s1, $s1, -8
+    addi  $s2, $s2, -8
+    addi  $s3, $s3, -8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+
+  NAO_O:
+    j volta
+
+  ###
+  # CLICK P
+  ###
+  click_p:
+    li    $t5, 0xff000320
+    lw    $s0, 0($t5)
+    lw    $s1, 4($t5)
+    lw    $s2, 8($t5)
+    lw    $s3, 12($t5)
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s0, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_P
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s1, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_P
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s2, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_P
+
+    li    $t8, 8
+    li    $t9, 320
+    div   $s3, $t9 # TODO: verificar se estamos usando isso
+    mfhi  $t9
+    div   $t9, $t8
+    mflo  $t9                      # posição do x -> 1 ~ 8
+    beq   $t9, $t8, NAO_P
+
+    addi  $s0, $s0, 8
+    addi  $s1, $s1, 8
+    addi  $s2, $s2, 8
+    addi  $s3, $s3, 8
+    sw    $s0, 0($t5)
+    sw    $s1, 4($t5)
+    sw    $s2, 8($t5)
+    sw    $s3, 12($t5)
+
+  NAO_P:
+    j     volta
+
+  ###
+  # CLICK L
+  ###
+  click_l:
+    j  volta
 
 ###
 #  LIMPA TELA
